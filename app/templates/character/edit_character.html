@@ -4,11 +4,11 @@
 {% block content %}
 <form action="" method="POST">
 	{{ form.hidden_tag() }}
-	<fieldset class="form-group">
+	<fieldset class="form-group form-horizontal">
 		<legend class="border-top border-bottom mb-4">Edit {{ character.name }}</legend>
 
 		{# name #}
-		<div class="form-group">
+		<div class="form-group form-horizontal">
 			{{ form.name.label(class="form-control-label") }}
 			{% if form.name.errors %}
 			{{ form.name(class="form-control is-invalid") }}
@@ -23,7 +23,7 @@
 		</div>
 
 		{# age #}
-		<div class="form-group">
+		<div class="form-group form-inline">
 			{{ form.age.label(class="form-control-label") }}
 			{% if form.age.errors %}
 			{{ form.age(class="form-control is-invalid") }}
@@ -35,10 +35,7 @@
 			{% else %}
 			{{ form.age(class="form-control form-control-sm") }}
 			{% endif %}
-		</div>
-
-		{# gender #}
-		<div class="form-group">
+			{# gender #}
 			{{ form.gender.label(class="form-control-label") }}
 			{% if form.gender.errors %}
 			{{ form.gender(class="form-control is-invalid") }}
@@ -50,10 +47,7 @@
 			{% else %}
 			{{ form.gender(class="form-control form-control-sm") }}
 			{% endif %}
-		</div>
-
-		{# alignment #}
-		<div class="form-group">
+			{# alignment #}
 			{{ form.alignment.label(class="form-control-label") }}
 			{% if form.alignment.errors %}
 			{{ form.alignment(class="form-control is-invalid") }}
@@ -98,9 +92,9 @@
 		</div>
 
 		{# class name #}
-		<div class="form-group">
-			{{ form.class_name.label(class="form-control-label") }}
-			<br><small>Decorative only. Make a new character to change class.</small>
+		<div class="form-group form-horizontal">
+			{{ form.class_name.label(class="form-control-label") }} <small>(Decorative only. Make a new character to
+				change class.)</small>
 			{% if form.class_name.errors %}
 			{{ form.class_name(class="form-control is-invalid") }}
 			<div class="invalid-feedback">
@@ -114,33 +108,29 @@
 		</div>
 
 		{# ability scores #}
-		<div class="form-group">
-			{{ form.constitution.label(class="form-control-label") }}
+		<div class="form-group form-inline">
+			{{ form.constitution.label(class="form-control-label pr-4") }}
 			{% if form.constitution.errors %}
-			{{ form.constitution(class="form-control form-control-sm is-invalid") }}
+			{{ form.constitution(class="form-control form-control-sm is-invalid pr-4") }}
 			<div class="invalid-feedback">
 				{% for error in form.constitution.errors %}
 				<span>{{ error }}</span>
 				{% endfor %}
 			</div>
 			{% else %}
-			{{ form.constitution(class="form-control form-control-sm") }}
+			{{ form.constitution(class="form-control form-control-sm pr-4") }}
 			{% endif %}
-		</div>
-		<div class="form-group">
 			{{ form.strength.label(class="form-control-label") }}
 			{% if form.strength.errors %}
-			{{ form.strength(class="form-control form-control-sm is-invalid") }}
+			{{ form.strength(class="form-control form-control-sm is-invalid pr-4") }}
 			<div class="invalid-feedback">
 				{% for error in form.strength.errors %}
 				<span>{{ error }}</span>
 				{% endfor %}
 			</div>
 			{% else %}
-			{{ form.strength(class="form-control form-control-sm") }}
+			{{ form.strength(class="form-control form-control-sm pr-4") }}
 			{% endif %}
-		</div>
-		<div class="form-group">
 			{{ form.dexterity.label(class="form-control-label") }}
 			{% if form.dexterity.errors %}
 			{{ form.dexterity(class="form-control form-control-sm is-invalid") }}
@@ -153,33 +143,29 @@
 			{{ form.dexterity(class="form-control form-control-sm") }}
 			{% endif %}
 		</div>
-		<div class="form-group">
-			{{ form.wisdom.label(class="form-control-label") }}
+		<div class="form-group form-inline">
+			{{ form.wisdom.label(class="form-control-label pr-4") }}
 			{% if form.wisdom.errors %}
-			{{ form.wisdom(class="form-control form-control-sm is-invalid") }}
+			{{ form.wisdom(class="form-control form-control-sm is-invalid pr-4") }}
 			<div class="invalid-feedback">
 				{% for error in form.wisdom.errors %}
 				<span>{{ error }}</span>
 				{% endfor %}
 			</div>
 			{% else %}
-			{{ form.wisdom(class="form-control form-control-sm") }}
+			{{ form.wisdom(class="form-control form-control-sm pr-4") }}
 			{% endif %}
-		</div>
-		<div class="form-group">
 			{{ form.intelligence.label(class="form-control-label") }}
 			{% if form.intelligence.errors %}
-			{{ form.intelligence(class="form-control form-control-sm is-invalid") }}
+			{{ form.intelligence(class="form-control form-control-sm is-invalid pr-4") }}
 			<div class="invalid-feedback">
 				{% for error in form.intelligence.errors %}
 				<span>{{ error }}</span>
 				{% endfor %}
 			</div>
 			{% else %}
-			{{ form.intelligence(class="form-control form-control-sm") }}
+			{{ form.intelligence(class="form-control form-control-sm pr-4") }}
 			{% endif %}
-		</div>
-		<div class="form-group">
 			{{ form.charisma.label(class="form-control-label") }}
 			{% if form.charisma.errors %}
 			{{ form.charisma(class="form-control form-control-sm is-invalid") }}
