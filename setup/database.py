@@ -56,7 +56,7 @@ def create_test_db():
             is_admin=False,
         )
     )
-    thor = Character(name="Thor", alignment="TN")  # , classs=CLASSES["bard"])
+    thor = Character(name="Thor", alignment="TN", classs=CLASSES["bard"])
     db.session.add(
         GameCharacter(
             user_id=2,
@@ -87,7 +87,7 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser()
-    parser.description = "Database creation script for this shop application"
+    parser.description = "Database creation script for this application"
     actions = parser.add_mutually_exclusive_group()
     actions.add_argument("new", help="create a blank db file", nargs="?")
     actions.add_argument(

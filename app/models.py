@@ -2,6 +2,7 @@ from .plugins import plugins
 from itsdangerous import TimedJSONWebSignatureSerializer
 import os
 from dnd_character import Character
+from ast import literal_eval
 
 # plugins = create_plugins()
 db, migrate, bcrypt, login_manager = plugins
@@ -93,18 +94,7 @@ class GameCharacter(db.Model):
         return self.data_keys[2:-2].split("', '")
 
     def values(self):
-        return [
-            None
-            if val == "None"
-            else []
-            if val == "[]"
-            else {}
-            if val == "{}"
-            else int(val)
-            if not val.startswith("'")
-            else val[1:-1]
-            for val in self.data_vals[1:-1].split(", ")
-        ]
+        return literal_eval(self.data_vals)
 
     def as_dict(self):
         return dict(zip(self.keys(), self.values()))
