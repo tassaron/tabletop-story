@@ -9,6 +9,7 @@ import string
 import random
 from email_validator import validate_email, EmailNotValidError
 from dnd_character import Character
+from dnd_character.classes import CLASSES
 
 
 app = create_app()
@@ -55,7 +56,7 @@ def create_test_db():
             is_admin=False,
         )
     )
-    thor = Character(name="Thor")
+    thor = Character(name="Thor", alignment="TN")  # , classs=CLASSES["bard"])
     db.session.add(
         GameCharacter(
             user_id=2,

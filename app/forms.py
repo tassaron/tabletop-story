@@ -1,6 +1,44 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField
-from wtforms.validators import DataRequired, Length, Email, EqualTo
+from wtforms import (
+    StringField,
+    PasswordField,
+    SubmitField,
+    BooleanField,
+    SelectField,
+    IntegerField,
+)
+from wtforms.validators import DataRequired, Length, Email, EqualTo, NumberRange
+
+
+class CharacterForm(FlaskForm):
+    name = StringField("Name", validators=[Length(min=1, max=127)])
+    age = StringField("Age")
+    gender = StringField("Gender", validators=[Length(max=127)])
+    alignment = SelectField(
+        "Alignment",
+        choices=[
+            ("LG", "LG"),
+            ("NG", "NG"),
+            ("CG", "CG"),
+            ("LN", "LN"),
+            ("TN", "TN"),
+            ("CN", "CN"),
+            ("LE", "LE"),
+            ("NE", "NE"),
+            ("CE", "CE"),
+        ],
+        validate_choice=False,
+    )
+    description = StringField("Physical Description", validators=[Length(max=127)])
+    biography = StringField("Backstory", validators=[Length(max=2048)])
+    class_name = StringField("Class Name", validators=[Length(max=127)])
+    constitution = IntegerField("CON", validators=[NumberRange(min=3, max=20)])
+    strength = IntegerField("STR", validators=[NumberRange(min=3, max=20)])
+    dexterity = IntegerField("DEX", validators=[NumberRange(min=3, max=20)])
+    wisdom = IntegerField("WIS", validators=[NumberRange(min=3, max=20)])
+    intelligence = IntegerField("INT", validators=[NumberRange(min=3, max=20)])
+    charisma = IntegerField("CHA", validators=[NumberRange(min=3, max=20)])
+    submit = SubmitField("Save Changes")
 
 
 class LoginForm(FlaskForm):

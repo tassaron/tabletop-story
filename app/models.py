@@ -87,10 +87,38 @@ class GameCharacter(db.Model):
     name = db.Column(db.String(127), nullable=False)
     image = db.Column(db.String(127), nullable=True)
     data_keys = db.Column(db.String(1024), nullable=False)
-    data_vals = db.Column(db.String(1024), nullable=False)
+    data_vals = db.Column(db.String(4096), nullable=False)
+
+    def keys(self):
+        return self.data_keys[2:-2].split("', '")
+
+    def values(self):
+        return [
+            None
+            if val == "None"
+            else []
+            if val == "[]"
+            else {}
+            if val == "{}"
+            else int(val)
+            if not val.startswith("'")
+            else val[1:-1]
+            for val in self.data_vals[1:-1].split(", ")
+        ]
+
+    def as_dict(self):
+        return dict(zip(self.keys(), self.values()))
+
+    def update_data(self, data):
+        new = Character(**data)
+        self.data_keys = str(new.keys())
+        self.data_vals = str(new.values())
 
     @property
     def character(self):
-        keys = self.data_keys[2:][:-2].split("', '")
-        vals = self.data_vals[2:][:-2].split("', '")
-        return Character(**dict(zip(keys, vals)))
+        """
+        Turn two strings in the database into a dict without using eval!
+        Then we can use the dict to create a real Character object
+        """
+        i = 0
+        return Character(**self.as_dict())

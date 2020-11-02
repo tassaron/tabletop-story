@@ -54,11 +54,7 @@ def login():
 def user_dashboard():
     """ Let the user manage their account settings, change password """
     user_id = int(flask_login.current_user.get_id())
-    try:
-        characters = GameCharacter.query.filter_by(user_id=user_id)
-        return f"{str(characters[0].character)}"
-    except IndexError:
-        return ""
+    return str(user_id)
 
 
 @blueprint.route("/profile/edit")
