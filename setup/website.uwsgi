@@ -1,5 +1,5 @@
 [uwsgi]
-module = tassaron_flask_template.run:app
+module = tabletop_story.run:app
 
 master = true
 processes = 5

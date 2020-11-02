@@ -1,8 +1,7 @@
 from flask import *
 import flask_login
 from werkzeug.utils import secure_filename
-from tassaron_flask_template.plugins import bcrypt, db
-from tassaron_flask_template.models import Product
+from tabletop_story.plugins import bcrypt, db
 
 
 blueprint = Blueprint(
@@ -25,9 +24,7 @@ def index():
         "storefront_index.html",
         logged_in=flask_login.current_user.is_authenticated,
         no_of_items=0,
-        products=[]
-        if not db.engine.dialect.has_table(db.engine, "Product")
-        else Product.query.all(),
+        products=[],
     )
 
 

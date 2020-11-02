@@ -2,9 +2,9 @@ import os
 import tempfile
 import pytest
 import flask_login
-from tassaron_flask_template.__init__ import create_app
-from tassaron_flask_template.app import init_app, plugins
-from tassaron_flask_template.models import User
+from tabletop_story.__init__ import create_app
+from tabletop_story.app import init_app, plugins
+from tabletop_story.models import User
 
 
 def nav_selected_bytes(route):
@@ -51,7 +51,9 @@ def test_404_page(client):
 
 def test_login_success(client):
     db.create_all()
-    user = User(email="test@example.com", password="password", is_admin=False)
+    user = User(
+        email="test@example.com", username="test", password="password", is_admin=False
+    )
     db.session.add(user)
     db.session.commit()
     resp = client.post(
@@ -65,7 +67,9 @@ def test_login_success(client):
 
 def test_login_failure(client):
     db.create_all()
-    user = User(email="test@example.com", password="password", is_admin=False)
+    user = User(
+        email="test@example.com", username="test", password="password", is_admin=False
+    )
     db.session.add(user)
     db.session.commit()
     resp = client.post(
@@ -117,16 +121,6 @@ def test_registration_failure(client):
     assert User.query.filter_by(email="nodomainname").first() is None
 
 
-def test_anonymous_user(client):
-    db.create_all()
-    anon1 = login_manager.anonymous_user()
-    anon2 = login_manager.anonymous_user()
-    db.session.add(anon1)
-    db.session.add(anon2)
-    db.session.commit()
-    assert len(User.query.filter_by(email=None).all()) == 2
-
-
 def test_reregistration_failure(client):
     test_registration_success(client)
     resp = client.post(
@@ -143,7 +137,9 @@ def test_reregistration_failure(client):
 
 def test_admin_privilege(client):
     db.create_all()
-    user = User(email="test@example.com", password="password", is_admin=True)
+    user = User(
+        email="test@example.com", username="test", password="password", is_admin=True
+    )
     db.session.add(user)
     db.session.commit()
     client.post(
@@ -158,7 +154,9 @@ def test_admin_privilege(client):
 
 def test_user_privilege(client):
     db.create_all()
-    user = User(email="test@example.com", password="password", is_admin=False)
+    user = User(
+        email="test@example.com", username="test", password="password", is_admin=False
+    )
     db.session.add(user)
     db.session.commit()
     resp = client.get("/account/profile")

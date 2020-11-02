@@ -12,6 +12,7 @@ def init_app(app):
     migrate.init_app(app, db)
     register_blueprints(app)
 
+    """
     import flask_monitoringdashboard as monitor
     import os
 
@@ -23,6 +24,7 @@ def init_app(app):
         raise KeyError("MONITOR_USERNAME and MONITOR_PASSWORD must be added to .env")
     monitor.config.security_token = os.urandom(24)
     monitor.bind(app)
+    """
 
     from .models import User
 

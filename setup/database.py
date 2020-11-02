@@ -2,12 +2,13 @@
 """
 Database management script for a shop application. Use during initial setup or testing.
 """
-from tassaron_flask_template.__init__ import create_app
-from tassaron_flask_template.models import *
+from tabletop_story.__init__ import create_app
+from tabletop_story.models import *
 import os
 import string
 import random
 from email_validator import validate_email, EmailNotValidError
+from dnd_character import Character
 
 
 app = create_app()
@@ -29,15 +30,40 @@ def create_new_db(email=None):
         except EmailNotValidError:
             pass
     password = random_password(16)
-    db.session.add(User(email=email, password=password, is_admin=True))
+    db.session.add(
+        User(username="admin", email=email, password=password, is_admin=True)
+    )
     db.session.commit()
     print(f"Admin's temporary password is {password}")
 
 
 def create_test_db():
     db.create_all()
-    db.session.add(User(email="admin@example.com", password="password", is_admin=True))
-    db.session.add(User(email="user@example.com", password="password", is_admin=False))
+    db.session.add(
+        User(
+            email="admin@example.com",
+            username="admin",
+            password="password",
+            is_admin=True,
+        )
+    )
+    db.session.add(
+        User(
+            email="user@example.com",
+            username="user",
+            password="password",
+            is_admin=False,
+        )
+    )
+    thor = Character(name="Thor")
+    db.session.add(
+        GameCharacter(
+            user_id=2,
+            name="Thor",
+            data_keys=str(thor.keys()),
+            data_vals=str(thor.values()),
+        )
+    )
     db.session.commit()
 
 

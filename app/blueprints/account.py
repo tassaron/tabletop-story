@@ -13,9 +13,9 @@ from flask import (
 import flask_login
 from sqlalchemy.exc import IntegrityError
 from is_safe_url import is_safe_url
-from tassaron_flask_template.plugins import db
-from tassaron_flask_template.forms import ShortRegistrationForm, LoginForm
-from tassaron_flask_template.models import User, ShippingAddress
+from tabletop_story.plugins import db
+from tabletop_story.forms import ShortRegistrationForm, LoginForm
+from tabletop_story.models import User, GameCharacter
 
 
 blueprint = Blueprint(
@@ -52,10 +52,13 @@ def login():
 @blueprint.route("/profile")
 @flask_login.login_required
 def user_dashboard():
-    """ Let the user manage their shipping address, change password """
+    """ Let the user manage their account settings, change password """
     user_id = int(flask_login.current_user.get_id())
-    # shipping = ShippingAddress.query.filter_by(id=user_id).first()
-    return f"{str(user_id)}"
+    try:
+        characters = GameCharacter.query.filter_by(user_id=user_id)
+        return f"{str(characters[0].character)}"
+    except IndexError:
+        return ""
 
 
 @blueprint.route("/profile/edit")
@@ -86,7 +89,12 @@ def register():
     if form.validate_on_submit():
         try:
             db.session.add(
-                User(email=form.email.data, password=form.password.data, is_admin=False)
+                User(
+                    email=form.email.data,
+                    username="test",
+                    password=form.password.data,
+                    is_admin=False,
+                )
             )
             db.session.commit()
         except IntegrityError:

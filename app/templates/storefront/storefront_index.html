@@ -2,34 +2,32 @@
 {% extends 'base.html' %}
 
 {% block title %}
-Your Website Name
+Tabletop Story
 {% endblock %}
 
 {% block content %}
 <div class="row">
     <div class="col">
-        {% include 'carousel.html' %}
         <div class="row">
-            {% if products|length == 0 %}
-            No products are in stock! Check back later :)
+            {% if characters|length == 0 %}
+            <a href="">Create your first character on Tabletop Story!</a>
             {% endif %}
-            {% for product in products %}
+            {% for character in characters %}
             <div class="col-lg-4 col-md-6 mb-4">
                 <div class="card h-100">
                     <a href="#">
-                        <img class="card-img-top" src="{{url_for('static', filename='/img/product/')+product.image}}"
-                            alt="{{product.name}}">
+                        <img class="card-img-top"
+                            src="{{url_for('static', filename='/img/character/')+character.image}}"
+                            alt="{{character.name}}">
                     </a>
                     <div class="card-body">
                         <h4 class="card-title">
-                            <a href="#">{{product.name}}</a>
+                            <a href="#">{{character.name}}</a>
                         </h4>
-                        <h5>{{product.stock}} in stock</h5>
-                        <p class="card-text">{{product.description}}</p>
                     </div>
                     <div class="card-footer">
                         <small class="text-muted">
-                            Add to box for ${{product.price|currency}}
+                            <a href="#">Edit this character</a>
                         </small>
                     </div>
                 </div>

@@ -1,10 +1,13 @@
 from setuptools import setup
 
 setup(
-    name="tassaron's flask template",
-    version="20.10.29",  # year.month.day
-    packages=["tassaron_flask_template", "tassaron_flask_template.blueprints"],
-    package_dir={"tassaron_flask_template": "app", "tassaron_flask_template.blueprints": "app/blueprints"},
+    name="Tabletop Story",
+    version="20.11.01",  # year.month.day
+    packages=["tabletop_story", "tabletop_story.blueprints"],
+    package_dir={
+        "tabletop_story": "app",
+        "tabletop_story.blueprints": "app/blueprints",
+    },
     include_package_data=True,
     install_requires=[
         "uwsgi",
@@ -14,10 +17,11 @@ setup(
         "flask-sqlalchemy",
         "flask_wtf",
         "flask_migrate",
-        "flask_monitoringdashboard",
+        # "flask_monitoringdashboard",
         "email_validator",
         "is_safe_url",
         "mistune==2.0.0a5",
         "python-dotenv",
+        "dnd_character",
     ],
 )
