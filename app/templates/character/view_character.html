@@ -1,25 +1,71 @@
 {% extends 'base.html' %}
-{% block title %}Edit {{ character.name }}{% endblock %}
+{% block title %}View {{ character.name }}{% endblock %}
 
 {% block content %}
-<div class="col">
-    <div class="row">
-        <div class="col-lg-4 col-md-6 mb-4">
-            <div class="card h-100">
-                <a href="#">
-                    <img class="card-img-top" src="{{url_for('static', filename='/img/character/')+character.image}}"
-                        alt="{{character.name}}">
-                </a>
-                <div class="card-body">
-                    <h4 class="card-title">
-                        <a href="#">{{character.name}}</a>
-                    </h4>
-                </div>
-                <div class="card-footer">
-                    <small class="text-muted">
-                        Age: {{character.age}} &bullet; Gender: {{character.gender}}
-                    </small>
-                </div>
+<div class="row">&nbsp;</div>
+<div class="row">
+    <div class="col-lg-4 col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                EXP to next level: {{character.experience.to_next_level}}
+            </div>
+            <div class="card-body">
+                <h3 class="card-title ">
+                    {{character.name}}
+                </h3>
+                <img class="card-img-top" src="{{url_for('static', filename='/img/character/')+character.image}}"
+                    alt="{{character.name}}">
+                <p>{{character.description}}<br>
+                    CON: {{character.constitution}}<br>
+                    STR: {{character.strength}}<br>
+                    DEX: {{character.dexterity}}<br>
+                    WIS: {{character.wisdom}}<br>
+                    INT: {{character.intelligence}}<br>
+                    CHA: {{character.charisma}}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 col-md-6 mb-4">
+        <h4><strong>{{character.alignment|alignment}} Level {{character.level}} {{character.class_name}}</strong></h4>
+        <p>Age: {{character.age}}<br>Gender: {{character.gender}}</p>
+        <p>{{character.biography}}</p>
+    </div>
+    <div class="col-lg-4 col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <p><strong>Class Features:</strong>
+                <ol>
+                    {% for value in character.class_features.values() %}
+                    <li>{{value["name"]}}</li>
+                    {% endfor %}
+                </ol>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <p><strong>Inventory:</strong>
+                <ol>
+                    {% for item in character.inventory %}
+                    <li>{{item["name"]}}</li>
+                    {% endfor %}
+                </ol>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <p><strong>Proficiencies:</strong>
+                <ol>
+                    {% for value in character.proficiencies.values() %}
+                    <li>{{value["name"]}}</li>
+                    {% endfor %}
+                </ol>
+                </p>
             </div>
         </div>
     </div>

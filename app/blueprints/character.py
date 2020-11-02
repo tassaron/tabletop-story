@@ -62,3 +62,19 @@ def edit_character(character_id):
         character=character,
         form=form,
     )
+
+
+@blueprint.route("/view/<character_id>")
+@flask_login.login_required
+def view_character(character_id):
+    db_character = GameCharacter.query.get(character_id)
+    if db_character.user_id != int(flask_login.current_user.get_id()):
+        abort(403)
+    character = db_character.character
+    character.image = (
+        db_character.image if db_character.image is not None else "potato.jpg"
+    )
+    return render_template(
+        "view_character.html",
+        character=character,
+    )
