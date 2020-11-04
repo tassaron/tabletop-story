@@ -65,29 +65,45 @@
                         </a>
                     </li>
                     {% endif %}
+                    {% if selected == 3 %}
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/rules">
+                            How to Play
+                            <span class="sr-only">
+                                (current)
+                            </span>
+                        </a>
+                    </li>
+                    {% else %}
                     <li class="nav-item">
-                        {% if not logged_in %}
-                        <a class="nav-link" href="/account/register">Sign Up</a>
-                        {% else %}
-                        <div class="dropright mr-2">
+                        <a class="nav-link" href="/rules">
+                            How to Play
+                        </a>
+                    </li>
+                    {% endif %}
+                    <li class="nav-item">
+                        <div class="dropdown mr-2">
                             <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Profile</a>
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                {% if not logged_in %}
+                                Sign Up
+                                {% else %}
+                                Account
+                                {% endif %}
+                            </a>
                             <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                                <a class="dropdown-item" href="/account/profile">Edit</a>
-                                <a class="dropdown-item" href="/account/logout">Sign Out</a>
+                                {% if not logged_in %}
+                                <a class="dropdown-item" href="/account/register">Sign Up</a>
+                                <a class="dropdown-item" href="/account/login">Log In</a>
+                                {% else %}
+                                <a class="dropdown-item" href="/account/profile">Edit Account</a>
+                                <a class="dropdown-item" href="/account/logout">Log Out</a>
+                                {% endif %}
                             </div>
                         </div>
-                        {% endif %}
                     </li>
                 </ul>
             </div>
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a href={{ url_for('storefront.view_cart') }}>
-                        <img src={{url_for('static', filename='img/cart.png')}} id="cart_icon"> {{no_of_items}}
-                    </a>
-                </li>
-            </ul>
         </div>
     </nav>
 

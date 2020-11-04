@@ -10,35 +10,58 @@ Tabletop Story
     <div class="col">
         <div class="row">
             {% if characters|length == 0 %}
-            <a href="">Create your first character on Tabletop Story!</a>
-            {% endif %}
+            <div class="col col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Welcome to Tabletop Story!</h5>
+                        <p class="card-text">If you're new to D&D, this is a great way to learn how to play.
+                            <a href="/rules">Skim the rules</a> and start coming up with a backstory 🎲
+                        </p>
+                        <a href="/character/create" class="btn btn-primary">Create your first character</a>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <h4>Your Characters:</h4>
             {% for character in characters %}
-            <div class="col-lg-4 col-md-6 mb-4">
+            <div class="col-lg-3 col-md-6 mb-4">
                 <div class="card h-100">
-                    <a href="#">
+                    <a href="/character/view/{{character.dbid}}">
                         <img class="card-img-top"
                             src="{{url_for('static', filename='/img/character/')+character.image}}"
                             alt="{{character.name}}">
                     </a>
                     <div class="card-body">
                         <h4 class="card-title">
-                            <a href="#">{{character.name}}</a>
+                            <a href="/character/view/{{character.dbid}}">{{character.name}}</a>
                         </h4>
                     </div>
                     <div class="card-footer">
                         <small class="text-muted">
-                            <a href="#">Edit this character</a>
+                            <a href="/character/edit/{{character.dbid}}">Edit this character</a>
                         </small>
                     </div>
                 </div>
             </div>
             {% endfor %}
+            {# Create New Character #}
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <a href="/character/create" class="btn btn-primary">Create New Character</a>
+                    </div>
+                    <div class="card-footer">
+                        <small class="text-muted">
+                            <a href="#">Create NPC (for gamemasters)</a>
+                        </small>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
         </div>
         <!-- /.row -->
 
     </div>
-    <!-- /.col-lg-9 -->
 
 </div>
-<!-- /.row -->
 {% endblock %}

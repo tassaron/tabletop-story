@@ -56,11 +56,12 @@ def create_test_db():
             is_admin=False,
         )
     )
-    thor = Character(name="Thor", alignment="TN", classs=CLASSES["bard"])
+    thor = Character(name="Tassaron", alignment="TN", classs=CLASSES["bard"])
+    thor.experience = 165000
     db.session.add(
         GameCharacter(
             user_id=2,
-            name="Thor",
+            name="Tassaron",
             data_keys=str(thor.keys()),
             data_vals=str(thor.values()),
         )
