@@ -17,7 +17,15 @@ def md_to_html(string):
 
 @main_routes.app_template_filter("url_safe")
 def url_safe(string):
-    return string.replace(" ", "-").lower().replace("?", "")
+    # FIXME
+    return (
+        string.replace(" ", "-")
+        .lower()
+        .replace("?", "")
+        .replace(":", "")
+        .replace("(", "")
+        .replace(")", "")
+    )
 
 
 @main_routes.route("/about")

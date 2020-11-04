@@ -34,11 +34,21 @@
         <div class="card h-100">
             <div class="card-body">
                 <p><strong>Class Features:</strong>
-                <ol>
+                <ul>
                     {% for value in character.class_features.values() %}
-                    <li>{{value["name"]}}</li>
+                    <li>
+                        <a data-toggle="collapse" href="#{{ value['name']|url_safe }}">{{ value["name"] }}</a>
+                        <div class="collapse" id="{{ value['name']|url_safe }}">
+                            <span class="text-muted">Unlocked at Level {{ value["level"] }}</span>
+                            <ul>
+                                {% for line in value["desc"] %}
+                                <li>{{ line }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </li>
                     {% endfor %}
-                </ol>
+                </ul>
                 </p>
             </div>
         </div>
