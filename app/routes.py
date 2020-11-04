@@ -41,7 +41,7 @@ def page_not_found(error):
     flash("Sorry, that page doesn't exist", "danger")
     return (
         render_template(
-            "index.html", logged_in=flask_login.current_user.is_authenticated
+            "index.html", logged_in=flask_login.current_user.is_authenticated, err=True
         ),
         404,
     )
@@ -52,7 +52,7 @@ def page_forbidden(error):
     flash("Unauthorized", "danger")
     return (
         render_template(
-            "index.html", logged_in=flask_login.current_user.is_authenticated
+            "index.html", logged_in=flask_login.current_user.is_authenticated, err=True
         ),
         403,
     )
@@ -63,7 +63,7 @@ def critical_error(error):
     flash("The server experienced an error", "danger")
     return (
         render_template(
-            "index.html", logged_in=flask_login.current_user.is_authenticated
+            "index.html", logged_in=flask_login.current_user.is_authenticated, err=True
         ),
         500,
     )

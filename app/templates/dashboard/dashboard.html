@@ -9,6 +9,7 @@ Tabletop Story
 <div class="row">
     <div class="col">
         <div class="row">
+            {% if not err %}
             {% if characters|length == 0 %}
             <div class="col col-md-4 mb-4">
                 <div class="card">
@@ -52,7 +53,7 @@ Tabletop Story
                     </div>
                 </div>
             </div>
-            {% endif %}
+            {% endif %}{% endif %}
         </div>
         <!-- /.row -->
 
