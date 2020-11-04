@@ -59,6 +59,7 @@ def edit_character(character_id):
     )
     return render_template(
         "edit_character.html",
+        logged_in=flask_login.current_user.is_authenticated,
         character=character,
         form=form,
     )
@@ -76,5 +77,6 @@ def view_character(character_id):
     )
     return render_template(
         "view_character.html",
+        logged_in=flask_login.current_user.is_authenticated,
         character=character,
     )

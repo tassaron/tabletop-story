@@ -46,7 +46,7 @@ def login():
         else:
             flash("Wrong email or password.", "danger")
 
-    return render_template("login.html", form=form)
+    return render_template("login.html", is_logged_in=False, form=form)
 
 
 @blueprint.route("/profile")
@@ -100,4 +100,4 @@ def register():
             flash("Successly signed up! Now you can log in", "success")
         return redirect(url_for("account.login"))
 
-    return render_template("register.html", form=form)
+    return render_template("register.html", is_logged_in=False, form=form)

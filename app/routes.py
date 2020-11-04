@@ -1,3 +1,4 @@
+import flask_login
 from flask import Blueprint, render_template, flash, redirect, url_for
 from werkzeug.exceptions import NotFound, Forbidden, InternalServerError
 
@@ -7,22 +8,39 @@ main_routes = Blueprint("main", __name__)
 
 @main_routes.route("/about")
 def about_page():
-    return render_template("about.html")
+    return render_template(
+        "about.html", logged_in=flask_login.current_user.is_authenticated
+    )
 
 
 @main_routes.app_errorhandler(NotFound)
 def page_not_found(error):
     flash("Sorry, that page doesn't exist", "danger")
-    return render_template("index.html"), 404
+    return (
+        render_template(
+            "index.html", logged_in=flask_login.current_user.is_authenticated
+        ),
+        404,
+    )
 
 
 @main_routes.app_errorhandler(Forbidden)
 def page_forbidden(error):
     flash("Unauthorized", "danger")
-    return render_template("index.html"), 403
+    return (
+        render_template(
+            "index.html", logged_in=flask_login.current_user.is_authenticated
+        ),
+        403,
+    )
 
 
 @main_routes.app_errorhandler(InternalServerError)
 def critical_error(error):
     flash("The server experienced an error", "danger")
-    return render_template("index.html"), 500
+    return (
+        render_template(
+            "index.html", logged_in=flask_login.current_user.is_authenticated
+        ),
+        500,
+    )
