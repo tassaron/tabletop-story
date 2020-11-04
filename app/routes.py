@@ -1,15 +1,38 @@
 import flask_login
 from flask import Blueprint, render_template, flash, redirect, url_for
 from werkzeug.exceptions import NotFound, Forbidden, InternalServerError
+from dnd_character.SRD import SRD_rules
+from mistune import create_markdown
 
 
 main_routes = Blueprint("main", __name__)
+
+
+@main_routes.app_template_filter("markdown")
+def md_to_html(string):
+    return create_markdown(
+        escape=False, renderer="html", plugins=["strikethrough", "table"]
+    )(string)
+
+
+@main_routes.app_template_filter("url_safe")
+def url_safe(string):
+    return string.replace(" ", "-").lower().replace("?", "")
 
 
 @main_routes.route("/about")
 def about_page():
     return render_template(
         "about.html", logged_in=flask_login.current_user.is_authenticated
+    )
+
+
+@main_routes.route("/rules")
+def rules_page():
+    return render_template(
+        "rules.html",
+        logged_in=flask_login.current_user.is_authenticated,
+        rules=SRD_rules,
     )
 
 

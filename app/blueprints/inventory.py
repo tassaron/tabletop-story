@@ -1,13 +1,9 @@
 from functools import wraps
 from flask import Blueprint, current_app, render_template, flash, abort
 from flask_login import current_user
-from mistune import create_markdown
 
 
 blueprint = Blueprint("inventory", __name__, template_folder="../templates/inventory")
-
-
-md_to_html = create_markdown(escape=True, renderer="html", plugins=["strikethrough"])
 
 
 def admin_required(func):

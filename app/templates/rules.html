@@ -1,0 +1,27 @@
+{% set selected = 3 %}
+{% extends 'base.html' %}
+{% block title %}How to Play D&D 5e{% endblock %}
+
+{% block content %}
+<div class="col">
+    <div class="row">
+        {% for category_name, subsections in rules.items() %}
+        <div class="col col-lg-4 mb-4">
+            <ul class="list-group">
+                <li class="list-group-item">{{ category_name }}</li>
+                <ul class="list-group">
+                    {% for subsection_name, subsection in subsections.items() %}
+                    <li class="list-group-item">
+                        <a data-toggle="collapse" href="#{{ subsection_name|url_safe }}">
+                            {{ subsection_name }}
+                        </a>
+                        {% autoescape false %}
+                        <div id="{{ subsection_name|url_safe }}" class="collapse">{{ subsection|markdown }}</div>
+                        {% endautoescape %}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </ul>
+        </div>
+        {% endfor %}
+        {% endblock %}
