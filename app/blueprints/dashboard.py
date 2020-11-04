@@ -5,10 +5,10 @@ from tabletop_story.plugins import bcrypt, db
 
 
 blueprint = Blueprint(
-    "storefront",
+    "dashboard",
     __name__,
     static_folder="../static",
-    template_folder="../templates/storefront",
+    template_folder="../templates/dashboard",
 )
 
 
@@ -37,33 +37,7 @@ def full_alignment_title(two_letters):
 @blueprint.route("/")
 def index():
     return render_template(
-        "storefront_index.html",
+        "dashboard.html",
         logged_in=flask_login.current_user.is_authenticated,
-        no_of_items=0,
-        products=[],
+        characters=[],
     )
-
-
-@blueprint.route("/product/<product_id>")
-def product_description(product_id):
-    return Product.get(product_id)
-
-
-@blueprint.route("/product/addtocart", methods=["POST"])
-def add_to_cart():
-    pass
-
-
-@blueprint.route("/product/removefromcart", methods=["POST"])
-def remove_from_cart():
-    pass
-
-
-@blueprint.route("/shoppingcart")
-def view_cart():
-    pass
-
-
-@blueprint.route("/category/<category_id>")
-def category_index():
-    pass
