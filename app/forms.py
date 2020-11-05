@@ -10,7 +10,7 @@ from wtforms import (
 from wtforms.validators import DataRequired, Length, Email, EqualTo, NumberRange
 
 
-class CharacterForm(FlaskForm):
+class EditCharacterForm(FlaskForm):
     name = StringField("Name", validators=[Length(min=1, max=127)])
     age = StringField("Age")
     gender = StringField("Gender", validators=[Length(max=127)])

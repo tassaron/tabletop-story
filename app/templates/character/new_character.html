@@ -1,0 +1,19 @@
+{% set selected = 2 %}
+{% extends 'base.html' %}
+{% block title %}About Us{% endblock %}
+
+{% block content %}
+<div class="col">
+    <div class="row row-md-4 mb-4">
+        <ul>
+            {% for class_name in classes %}
+            <li class="pb-2"><a class="btn-outline-primary btn"
+                    href="{{ url_for('character.create_character_chosen', class_key=class_name) }}">Create
+                    New
+                    {{ class_name.title() }}</a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}

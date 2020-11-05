@@ -80,9 +80,6 @@ def test_character_mutation_with_experience(client):
     new_thor = GameCharacter.query.first()
     new_thor_character = new_thor.character
 
-    # Currently the experience must be applied again. This is a bug
-    new_thor_character.experience = 255
-
     assert (
         thor.experience.to_next_level
         == new_thor_character.experience.to_next_level
