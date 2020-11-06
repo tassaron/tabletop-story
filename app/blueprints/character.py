@@ -8,6 +8,7 @@ from flask import (
     current_app,
 )
 import flask_login
+from wtforms import BooleanField
 from werkzeug.datastructures import MultiDict
 import logging
 
@@ -42,12 +43,21 @@ def create_character_choice():
 @blueprint.route("/create/<class_key>")
 @flask_login.login_required
 def create_character_chosen(class_key):
-    new_char = Character(classs=CLASSES[class_key], name="New Character")
+    new_char = Character(
+        classs=CLASSES[class_key],
+        name="New Character",
+        age="Unknown",
+        gender="Unknown",
+        alignment="LG",
+        description="A human",
+        biography="",
+    )
     db_char = GameCharacter(
         user_id=int(flask_login.current_user.get_id()),
         name=new_char.name,
         data_keys=str(new_char.keys()),
         data_vals=str(new_char.values()),
+        image="potato.jpg",
     )
     db.session.add(db_char)
     db.session.commit()
@@ -80,9 +90,22 @@ def edit_character(character_id):
     db_character = GameCharacter.query.get(character_id)
     if db_character.user_id != int(flask_login.current_user.get_id()):
         abort(403)
+
     data = db_character.as_dict()
+
+    # Subclass the edit form so we can add fields dynamically
+    class ThisEditCharacterForm(EditCharacterForm):
+        pass
+
+    for i, class_feature in enumerate(data["class_features"].values()):
+        setattr(
+            ThisEditCharacterForm,
+            f"class_feature_{i}",
+            BooleanField(class_feature["name"]),
+        )
+
     if request.method == "POST":
-        form = EditCharacterForm()
+        form = ThisEditCharacterForm()
         if form.validate_on_submit():
             for field in form._fields:
                 data[field] = form._fields[field].data
@@ -93,7 +116,7 @@ def edit_character(character_id):
             db.session.add(db_character)
             db.session.commit()
     character = db_character.character
-    form = EditCharacterForm(
+    form = ThisEditCharacterForm(
         formdata=MultiDict(
             {
                 "name": character.name,
@@ -117,6 +140,12 @@ def edit_character(character_id):
         logged_in=True,
         character=character,
         form=form,
+        character_id=character_id,
+        character_img=db_character.image,
+        class_features=[
+            form._fields[f"class_feature_{i}"]
+            for i in range(len(data["class_features"]))
+        ],
     )
 
 
@@ -127,15 +156,13 @@ def view_character(character_id):
     logged_in = flask_login.current_user.is_authenticated
     if logged_in and db_character.user_id == int(flask_login.current_user.get_id()):
         can_edit = True
-    character = db_character.character
-    character.image = (
-        db_character.image if db_character.image is not None else "potato.jpg"
-    )
     return render_template(
         "view_character.html",
         logged_in=logged_in,
-        character=character,
+        character=db_character.character,
         can_edit=can_edit,
+        character_id=character_id,
+        character_img=db_character.image,
     )
 
 

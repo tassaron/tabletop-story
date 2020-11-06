@@ -7,28 +7,35 @@
     <div class="col-lg-4 col-md-6 mb-4">
         <div class="card h-100">
             <div class="card-header">
-                EXP to next level: {{character.experience.to_next_level}}
+                {{character.name}}
+                {% if can_edit %}
+                <a href="/character/edit/{{character_id}}" class="btn">📝</a>
+                {% endif %}
             </div>
             <div class="card-body">
-                <h3 class="card-title ">
-                    {{character.name}}
-                </h3>
-                <img class="card-img-top" src="{{url_for('static', filename='/img/character/')+character.image}}"
+                <img class="card-img-top" src="{{url_for('static', filename='/img/character/')+character_img}}"
                     alt="{{character.name}}">
-                <p>{{character.description}}<br>
-                    CON: {{character.constitution}}<br>
-                    STR: {{character.strength}}<br>
-                    DEX: {{character.dexterity}}<br>
-                    WIS: {{character.wisdom}}<br>
-                    INT: {{character.intelligence}}<br>
-                    CHA: {{character.charisma}}</p>
+                <p>Alignment: {{character.alignment|alignment}}</p>
+                <p>Age: {{character.age}}</p>
+                <p>Gender: {{character.gender}}</p>
+                <p>Description: {{character.description}} <a data-toggle="collapse" href="#bio">...</a>
+                    <span class="collapse" id="bio">
+                        {{character.biography}}
+                    </span>
+                </p>
             </div>
         </div>
     </div>
     <div class="col-lg-4 col-md-6 mb-4">
-        <h4><strong>{{character.alignment|alignment}} Level {{character.level}} {{character.class_name}}</strong></h4>
-        <p>Age: {{character.age}}<br>Gender: {{character.gender}}</p>
-        <p>{{character.biography}}</p>
+        <h4><strong>Level {{character.level}} {{character.class_name}}</strong></h4>
+        CON: {{character.constitution}}<br>
+        STR: {{character.strength}}<br>
+        DEX: {{character.dexterity}}<br>
+        WIS: {{character.wisdom}}<br>
+        INT: {{character.intelligence}}<br>
+        CHA: {{character.charisma}}</p>
+        <p>EXP to next level: {{character.experience.to_next_level}}</p>
+        <p>Saving throws:{% for throw in character.saving_throws %} {{throw}}{% endfor %}</p>
     </div>
     <div class="col-lg-4 col-md-6 mb-4">
         <div class="card h-100">

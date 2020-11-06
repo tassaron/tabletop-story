@@ -3,6 +3,10 @@ img#cart_icon {
     height: 32px;
 }
 
-.btn-delete {
-    float:right;
+.strikethrough:checked + label {
+    text-decoration:line-through !important;
+  }
+
+.strikethrough {
+    visibility: collapse;
 }
