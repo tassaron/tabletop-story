@@ -1,6 +1,6 @@
 import flask_login
 from flask import Blueprint, render_template, flash, redirect, url_for
-from werkzeug.exceptions import NotFound, Forbidden, InternalServerError
+from werkzeug.exceptions import NotFound, Forbidden, InternalServerError, BadRequest
 from dnd_character.SRD import SRD_rules
 from mistune import create_markdown
 
@@ -25,6 +25,7 @@ def url_safe(string):
         .replace(":", "")
         .replace("(", "")
         .replace(")", "")
+        .replace("'", "")
     )
 
 
@@ -69,6 +70,17 @@ def page_forbidden(error):
 @main_routes.app_errorhandler(InternalServerError)
 def critical_error(error):
     flash("The server experienced an error", "danger")
+    return (
+        render_template(
+            "index.html", logged_in=flask_login.current_user.is_authenticated, err=True
+        ),
+        500,
+    )
+
+
+@main_routes.app_errorhandler(BadRequest)
+def critical_error(error):
+    flash("Your request was invalid", "danger")
     return (
         render_template(
             "index.html", logged_in=flask_login.current_user.is_authenticated, err=True

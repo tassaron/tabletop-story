@@ -10,6 +10,18 @@ from wtforms import (
 from wtforms.validators import DataRequired, Length, Email, EqualTo, NumberRange
 
 
+class DeleteCharacterForm(FlaskForm):
+    """
+    Ask the user if they're really really sure they want to delete a character
+    """
+
+    # Ideally there should be a WTForms validator to check if the name matches
+    name = StringField(
+        "Type your character's name exactly to confirm deletion: ",
+    )
+    submit = SubmitField("Confirm")
+
+
 class EditCharacterForm(FlaskForm):
     name = StringField("Name", validators=[Length(min=1, max=127)])
     age = StringField("Age")
