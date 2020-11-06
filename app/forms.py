@@ -19,7 +19,7 @@ class DeleteCharacterForm(FlaskForm):
     name = StringField(
         "Type your character's name exactly to confirm deletion: ",
     )
-    submit = SubmitField("Confirm")
+    submit = SubmitField("🗑️ Delete")
 
 
 class EditCharacterForm(FlaskForm):
@@ -50,7 +50,7 @@ class EditCharacterForm(FlaskForm):
     wisdom = IntegerField("WIS", validators=[NumberRange(min=3, max=20)])
     intelligence = IntegerField("INT", validators=[NumberRange(min=3, max=20)])
     charisma = IntegerField("CHA", validators=[NumberRange(min=3, max=20)])
-    submit = SubmitField("Save Changes")
+    submit = SubmitField("💾 Save Changes")
 
 
 class LoginForm(FlaskForm):
