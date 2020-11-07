@@ -111,30 +111,79 @@ def edit_character(character_id):
                 data[field] = form._fields[field].data
             del data["csrf_token"]
             del data["submit"]
+            data["class_features_enabled"] = [
+                not data.pop(f"class_feature_{i}")
+                for i in range(len(data["class_features"]))
+            ]
+            new_data = {}
+            removals = []
+            for field in data:
+                if not field.startswith("skills_"):
+                    continue
+                try:
+                    key1, key2, key3 = field.split("_", 2)
+                except ValueError:
+                    continue
+                key = "_".join((key1, key2))
+                if key3 == "hagrid":
+                    key3 = "animal-handling"
+                elif key3 == "raistlin":
+                    key3 = "sleight-of-hand"
+                if key not in new_data:
+                    new_data[key] = {}
+                new_data[key].update({key3: data[field]})
+                removals.append(field)
+            for field in removals:
+                data.pop(field)
+            data.update(new_data)
+            LOG.info(data)
             db_character.name = form.name.data
             db_character.update_data(data)
             db.session.add(db_character)
             db.session.commit()
     character = db_character.character
-    form = ThisEditCharacterForm(
-        formdata=MultiDict(
-            {
-                "name": character.name,
-                "age": character.age,
-                "gender": character.gender,
-                "description": character.description,
-                "biography": character.biography,
-                "class_name": character.class_name,
-                "constitution": character.constitution,
-                "strength": character.strength,
-                "dexterity": character.dexterity,
-                "wisdom": character.wisdom,
-                "intelligence": character.intelligence,
-                "charisma": character.charisma,
-                "alignment": character.alignment,
-            }
-        )
+    filled_form = {
+        "name": character.name,
+        "age": character.age,
+        "gender": character.gender,
+        "description": character.description,
+        "biography": character.biography,
+        "class_name": character.class_name,
+        "alignment": character.alignment,
+        "constitution": character.constitution,
+        "strength": character.strength,
+        "dexterity": character.dexterity,
+        "wisdom": character.wisdom,
+        "intelligence": character.intelligence,
+        "charisma": character.charisma,
+        "skills_strength_athletics": character.skills_strength["athletics"],
+        "skills_dexterity_acrobatics": character.skills_dexterity["acrobatics"],
+        "skills_dexterity_raistlin": character.skills_dexterity["sleight-of-hand"],
+        "skills_dexterity_stealth": character.skills_dexterity["stealth"],
+        "skills_wisdom_hagrid": character.skills_wisdom["animal-handling"],
+        "skills_wisdom_insight": character.skills_wisdom["insight"],
+        "skills_wisdom_medicine": character.skills_wisdom["medicine"],
+        "skills_wisdom_perception": character.skills_wisdom["perception"],
+        "skills_wisdom_survival": character.skills_wisdom["survival"],
+        "skills_intelligence_arcana": character.skills_intelligence["arcana"],
+        "skills_intelligence_history": character.skills_intelligence["history"],
+        "skills_intelligence_investigation": character.skills_intelligence[
+            "investigation"
+        ],
+        "skills_intelligence_nature": character.skills_intelligence["nature"],
+        "skills_intelligence_religion": character.skills_intelligence["religion"],
+        "skills_charisma_deception": character.skills_charisma["deception"],
+        "skills_charisma_intimidation": character.skills_charisma["intimidation"],
+        "skills_charisma_performance": character.skills_charisma["performance"],
+        "skills_charisma_persuasion": character.skills_charisma["persuasion"],
+    }
+    filled_form.update(
+        {
+            f"class_feature_{i}": not character.class_features_enabled[i]
+            for i in range(len(character.class_features))
+        }
     )
+    form = ThisEditCharacterForm(formdata=MultiDict(filled_form))
     return render_template(
         "edit_character.html",
         logged_in=True,

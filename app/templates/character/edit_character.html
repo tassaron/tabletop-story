@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% block title %}Edit {{ character.name }}{% endblock %}
 
+
 {% block content %}
 <div class="row">&nbsp;</div>
 <div class="row">
@@ -189,28 +190,77 @@
 						</div>
 				</li>
 				<li><a data-toggle="collapse" href="#class_features">Class Features</a>
-					{% if class_features|length < 6 %}
 					<div class="collapse show" id="class_features">
-						{% else %}
-						<div class="collapse" id="class_features">
-							{% endif %}
-							<ul>
-								<small class="text-muted">Click to toggle</small>
-								<div class="form-group">
-									{% for class_feature_field in class_features %}
-									<li>
-										{{ class_feature_field(class="strikethrough") }}
-										{{ class_feature_field.label() }}
-									</li>
-									{% endfor %}
-								</div>
-							</ul>
-						</div>
+						<ul>
+							<small class="text-muted">Click to toggle</small>
+							<div class="form-group">
+								{% for class_feature_field in class_features %}
+								<li>
+									{{ class_feature_field(class="strikethrough") }}
+									{{ class_feature_field.label() }}
+								</li>
+								{% endfor %}
+							</div>
+						</ul>
+					</div>
 				</li>
 				<li><a data-toggle="collapse" href="#skills">Skills</a>
 					<div class="collapse show" id="skills">
-						{# form.charisma_skill.label(class="form-control-label") #}
-						{# form.charisma_skill(class="form-control form-control-sm") #}
+						<div class="form-group">
+							{{ form.skills_strength_athletics.label(class="form-control-label") }}
+							{% if form.skills_strength_athletics.errors %}
+							{{ form.skills_strength_athletics(class="form-control form-control-sm is-invalid") }}
+							<div class="invalid-feedback">
+								{% for error in form.skills_strength_athletics.errors %}
+								<span>{{ error }}</span>
+								{% endfor %}
+							</div>
+							{% else %}
+							{{ form.skills_strength_athletics(class="form-control form-control-sm") }}
+							{% endif %}
+						</div>
+						<div class="form-group">
+							{{ form.skills_dexterity_acrobatics.label(class="form-control-label") }}
+							{{ form.skills_dexterity_acrobatics(class="form-control form-control-sm") }}
+							{{ form.skills_dexterity_raistlin.label(class="form-control-label") }}
+							{{ form.skills_dexterity_raistlin(class="form-control form-control-sm") }}
+							{{ form.skills_dexterity_stealth.label(class="form-control-label") }}
+							{{ form.skills_dexterity_stealth(class="form-control form-control-sm") }}
+						</div>
+						<div class="form-group">
+							{{ form.skills_intelligence_arcana.label(class="form-control-label") }}
+							{{ form.skills_intelligence_arcana(class="form-control form-control-sm") }}
+							{{ form.skills_intelligence_history.label(class="form-control-label") }}
+							{{ form.skills_intelligence_history(class="form-control form-control-sm") }}
+							{{ form.skills_intelligence_investigation.label(class="form-control-label") }}
+							{{ form.skills_intelligence_investigation(class="form-control form-control-sm") }}
+							{{ form.skills_intelligence_nature.label(class="form-control-label") }}
+							{{ form.skills_intelligence_nature(class="form-control form-control-sm") }}
+							{{ form.skills_intelligence_religion.label(class="form-control-label") }}
+							{{ form.skills_intelligence_religion(class="form-control form-control-sm") }}
+						</div>
+						<div class="form-group">
+							{{ form.skills_wisdom_hagrid.label(class="form-control-label") }}
+							{{ form.skills_wisdom_hagrid(class="form-control form-control-sm") }}
+							{{ form.skills_wisdom_insight.label(class="form-control-label") }}
+							{{ form.skills_wisdom_insight(class="form-control form-control-sm") }}
+							{{ form.skills_wisdom_medicine.label(class="form-control-label") }}
+							{{ form.skills_wisdom_medicine(class="form-control form-control-sm") }}
+							{{ form.skills_wisdom_perception.label(class="form-control-label") }}
+							{{ form.skills_wisdom_perception(class="form-control form-control-sm") }}
+							{{ form.skills_wisdom_survival.label(class="form-control-label") }}
+							{{ form.skills_wisdom_survival(class="form-control form-control-sm") }}
+						</div>
+						<div class="form-group">
+							{{ form.skills_charisma_deception.label(class="form-control-label") }}
+							{{ form.skills_charisma_deception(class="form-control form-control-sm") }}
+							{{ form.skills_charisma_intimidation.label(class="form-control-label") }}
+							{{ form.skills_charisma_intimidation(class="form-control form-control-sm") }}
+							{{ form.skills_charisma_performance.label(class="form-control-label") }}
+							{{ form.skills_charisma_performance(class="form-control form-control-sm") }}
+							{{ form.skills_charisma_persuasion.label(class="form-control-label") }}
+							{{ form.skills_charisma_persuasion(class="form-control form-control-sm") }}
+						</div>
 					</div>
 				</li>
 				{% if character.class_spellcasting|length != 0 %}

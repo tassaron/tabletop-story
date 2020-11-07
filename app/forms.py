@@ -50,6 +50,60 @@ class EditCharacterForm(FlaskForm):
     wisdom = IntegerField("WIS", validators=[NumberRange(min=3, max=20)])
     intelligence = IntegerField("INT", validators=[NumberRange(min=3, max=20)])
     charisma = IntegerField("CHA", validators=[NumberRange(min=3, max=20)])
+    skills_strength_athletics = IntegerField(
+        "Strength: Athletics", validators=[NumberRange(min=-10, max=10)]
+    )
+    skills_dexterity_acrobatics = IntegerField(
+        "Dexterity: Acrobatics", validators=[NumberRange(min=-10, max=10)]
+    )
+    skills_dexterity_raistlin = IntegerField(
+        "Dexterity: Sleight of Hand", validators=[NumberRange(min=-10, max=10)]
+    )
+    skills_dexterity_stealth = IntegerField(
+        "Dexterity: Stealth", validators=[NumberRange(min=-10, max=10)]
+    )
+    skills_intelligence_arcana = IntegerField(
+        "Intelligence: Arcana", validators=[NumberRange(min=-10, max=10)]
+    )
+    skills_intelligence_history = IntegerField(
+        "Intelligence: History", validators=[NumberRange(min=-10, max=10)]
+    )
+    skills_intelligence_investigation = IntegerField(
+        "Intelligence: Investigation", validators=[NumberRange(min=-10, max=10)]
+    )
+    skills_intelligence_nature = IntegerField(
+        "Intelligence: Nature", validators=[NumberRange(min=-10, max=10)]
+    )
+    skills_intelligence_religion = IntegerField(
+        "Intelligence: Religion", validators=[NumberRange(min=-10, max=10)]
+    )
+    skills_wisdom_hagrid = IntegerField(
+        "Wisdom: Animal Handling", validators=[NumberRange(min=-10, max=10)]
+    )
+    skills_wisdom_insight = IntegerField(
+        "Wisdom: Insight", validators=[NumberRange(min=-10, max=10)]
+    )
+    skills_wisdom_medicine = IntegerField(
+        "Wisdom: Medicine", validators=[NumberRange(min=-10, max=10)]
+    )
+    skills_wisdom_perception = IntegerField(
+        "Wisdom: Perception", validators=[NumberRange(min=-10, max=10)]
+    )
+    skills_wisdom_survival = IntegerField(
+        "Wisdom: Survival", validators=[NumberRange(min=-10, max=10)]
+    )
+    skills_charisma_deception = IntegerField(
+        "Charisma: Deception", validators=[NumberRange(min=-10, max=10)]
+    )
+    skills_charisma_intimidation = IntegerField(
+        "Charisma: Intimidation", validators=[NumberRange(min=-10, max=10)]
+    )
+    skills_charisma_performance = IntegerField(
+        "Charisma: Performance", validators=[NumberRange(min=-10, max=10)]
+    )
+    skills_charisma_persuasion = IntegerField(
+        "Charisma: Persuasion", validators=[NumberRange(min=-10, max=10)]
+    )
     submit = SubmitField("💾 Save Changes")
 
 
