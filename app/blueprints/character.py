@@ -104,12 +104,15 @@ def edit_character(character_id):
             f"class_feature_{i}",
             BooleanField(class_feature["name"]),
         )
-    LOG.info(data["class_spellcasting"])
-    cantrips = None
+    cantrips = 0
+    spell_slots = []
     if data["class_spellcasting"]:
         if "cantrips_known" in data["class_spellcasting"]:
-            cantrips = True
-            for i in range(data["class_spellcasting"]["cantrips_known"]):
+            cantrips = data["class_spellcasting"]["cantrips_known"]
+            for i in range(cantrips):
+                available_cantrips = list(
+                    spells_for_class_level(data["class_index"], 0)
+                )
                 setattr(
                     ThisEditCharacterForm,
                     f"spells_known_lvl0_{i}",
@@ -117,13 +120,10 @@ def edit_character(character_id):
                         f"Cantrip #{str(i+1)}",
                         choices=[
                             (spell_name, spell_name)
-                            for spell_name in spells_for_class_level(
-                                data["class_index"], 0
-                            )
+                            for spell_name in available_cantrips
                         ],
                     ),
                 )
-        spell_slots = []
         for spell_level in range(1, 10):
             try:
                 num_spells = data["class_spellcasting"][
@@ -182,6 +182,21 @@ def edit_character(character_id):
                 removals.append(field)
             for field in removals:
                 data.pop(field)
+            data["spells_known"] = {}
+            for spell_slot in spell_slots:
+                chosen_spell = data.pop(spell_slot)
+                spell_level, spell_num = spell_slot[16:].split("_")
+                if spell_level in data["spells_known"]:
+                    data["spells_known"][spell_level].append(chosen_spell)
+                else:
+                    data["spells_known"] = {spell_level: [chosen_spell]}
+            for i in range(cantrips):
+                cantrip = f"spells_known_lvl0_{i}"
+                chosen_spell = data.pop(cantrip)
+                if i == 0:
+                    data["spells_known"] = {0: [chosen_spell]}
+                else:
+                    data["spells_known"][0].append(chosen_spell)
             data.update(new_data)
             # Now we have a valid dict to make a new Character
             db_character.name = form.name.data
@@ -232,6 +247,15 @@ def edit_character(character_id):
             for i in range(len(character.class_features))
         }
     )
+    if cantrips:
+        filled_form.update(
+            {
+                f"spells_known_lvl0_{i}": (available_cantrips[i], available_cantrips[i])
+                if character.spells_known is None or i >= len(character.spells_known[0])
+                else (character.spells_known[0][i], character.spells_known[0][i])
+                for i in range(cantrips)
+            }
+        )
     form = ThisEditCharacterForm(formdata=MultiDict(filled_form))
     return render_template(
         "edit_character.html",
@@ -245,11 +269,8 @@ def edit_character(character_id):
             for i in range(len(character.class_features))
         ],
         cantrips=[]
-        if cantrips is None
-        else [
-            form._fields[f"spells_known_lvl0_{i}"]
-            for i in range(character.class_spellcasting["cantrips_known"])
-        ],
+        if cantrips == 0
+        else [form._fields[f"spells_known_lvl0_{i}"] for i in range(cantrips)],
         spell_slots=[]
         if not character.class_spellcasting
         else [form._fields[spell_slot] for spell_slot in spell_slots],
