@@ -1,3 +1,4 @@
+import math
 import flask_login
 from flask import Blueprint, render_template, flash, redirect, url_for
 from werkzeug.exceptions import NotFound, Forbidden, InternalServerError, BadRequest
@@ -27,6 +28,14 @@ def url_safe(string):
         .replace(")", "")
         .replace("'", "")
     )
+
+
+@main_routes.app_template_filter("ability_modifier")
+def ability_modifier(number):
+    """
+    Jinja filter to turn a Character's ability score into an ability modifier
+    """
+    return math.floor((number - 10) / 2)
 
 
 @main_routes.route("/about")

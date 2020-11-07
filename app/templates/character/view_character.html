@@ -28,12 +28,12 @@
     </div>
     <div class="col-lg-4 col-md-6 mb-4">
         <h4><strong>Level {{character.level}} {{character.class_name}}</strong></h4>
-        CON: {{character.constitution}}<br>
-        STR: {{character.strength}}<br>
-        DEX: {{character.dexterity}}<br>
-        WIS: {{character.wisdom}}<br>
-        INT: {{character.intelligence}}<br>
-        CHA: {{character.charisma}}</p>
+        <pre>CON: {{character.constitution}} ({{character.constitution|ability_modifier}})
+STR: {{character.strength}} ({{character.strength|ability_modifier}})
+DEX: {{character.dexterity}} ({{character.dexterity|ability_modifier}})
+WIS: {{character.wisdom}} ({{character.wisdom|ability_modifier}})
+INT: {{character.intelligence}} ({{character.intelligence|ability_modifier}})
+CHA: {{character.charisma}} ({{character.charisma|ability_modifier}})</pre>
         <p>EXP to next level: {{character.experience.to_next_level}}</p>
         <p>Saving throws:{% for throw in character.saving_throws %} {{throw}}{% endfor %}</p>
     </div>
@@ -66,7 +66,27 @@
                 <p><strong>Inventory:</strong>
                 <ol>
                     {% for item in character.inventory %}
-                    <li>{{item["name"]}}</li>
+                    <li>
+                        {% if item["equipment_category"]["index"] == "armor" %}
+                        {{ item["armor_category"] }}
+                        {% endif %}
+                        {{ item["name"] }}
+                        {% if item["equipment_category"]["index"] == "armor" %}
+                        Armour <small
+                            class="text-muted">(AC{{ item["armor_class"]["base"] }}{% if item["armor_class"]["dex_bonus"] %}+{{character.dexterity|ability_modifier}}{% endif %})
+                            {% if item["stealth_disadvantage"] %}<span class="danger">-stealth</span>{% endif %}</small>
+                        {% endif %}
+                        {% if item["equipment_category"]["index"] == "weapon" %}
+                        <small class="text-muted">
+                            ({{ item["damage"]["damage_dice"] }} {{ item["damage"]["damage_type"]["name"] }}) (
+                            {% for prop in item["properties"] %}{% if prop["index"] != "monk" %}{{ prop["name"] }}
+                            {%endif%}{%endfor%})
+                            {% if "throw_range" in item %} (Throw range:
+                            {{ item["throw_range"]["normal"] }}/{{ item["throw_range"]["long"] }})
+                            {% endif %}
+                        </small>
+                        {% endif %}
+                    </li>
                     {% endfor %}
                 </ol>
                 </p>
