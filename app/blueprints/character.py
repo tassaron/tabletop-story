@@ -8,7 +8,7 @@ from flask import (
     current_app,
 )
 import flask_login
-from wtforms import BooleanField
+from wtforms import BooleanField, SelectField
 from werkzeug.datastructures import MultiDict
 import logging
 
@@ -17,6 +17,7 @@ from tabletop_story.forms import EditCharacterForm, DeleteCharacterForm
 from tabletop_story.plugins import db
 from dnd_character import Character
 from dnd_character.classes import CLASSES
+from dnd_character.spellcasting import spells_for_class_level
 
 
 LOG = logging.getLogger(__package__)
@@ -103,14 +104,60 @@ def edit_character(character_id):
             f"class_feature_{i}",
             BooleanField(class_feature["name"]),
         )
+    LOG.info(data["class_spellcasting"])
+    cantrips = None
+    if data["class_spellcasting"]:
+        if "cantrips_known" in data["class_spellcasting"]:
+            cantrips = True
+            for i in range(data["class_spellcasting"]["cantrips_known"]):
+                setattr(
+                    ThisEditCharacterForm,
+                    f"spells_known_lvl0_{i}",
+                    SelectField(
+                        f"Cantrip #{str(i+1)}",
+                        choices=[
+                            (spell_name, spell_name)
+                            for spell_name in spells_for_class_level(
+                                data["class_index"], 0
+                            )
+                        ],
+                    ),
+                )
+        spell_slots = []
+        for spell_level in range(1, 10):
+            try:
+                num_spells = data["class_spellcasting"][
+                    f"spell_slots_level_{spell_level}"
+                ]
+            except KeyError:
+                # Half-spellcasters have less spell slot levels, so ignore this for now
+                break
+            for spell_num in range(num_spells):
+                label = f"spells_known_lvl{spell_level}_{spell_num}"
+                spell_slots.append(label)
+                setattr(
+                    ThisEditCharacterForm,
+                    label,
+                    SelectField(
+                        f"Level {spell_level} Spell Slot #{str(spell_num+1)}",
+                        choices=[
+                            (spell_name, spell_name)
+                            for spell_name in spells_for_class_level(
+                                data["class_index"], spell_level
+                            )
+                        ],
+                    ),
+                )
 
     if request.method == "POST":
         form = ThisEditCharacterForm()
         if form.validate_on_submit():
+            # Most fields match up with attributes of Character
             for field in form._fields:
                 data[field] = form._fields[field].data
             del data["csrf_token"]
             del data["submit"]
+            # But we must reassign class_features and skills to different names
             data["class_features_enabled"] = [
                 not data.pop(f"class_feature_{i}")
                 for i in range(len(data["class_features"]))
@@ -136,12 +183,14 @@ def edit_character(character_id):
             for field in removals:
                 data.pop(field)
             data.update(new_data)
-            LOG.info(data)
+            # Now we have a valid dict to make a new Character
             db_character.name = form.name.data
             db_character.update_data(data)
             db.session.add(db_character)
             db.session.commit()
+
     character = db_character.character
+    # Fill form with existing character data
     filled_form = {
         "name": character.name,
         "age": character.age,
@@ -193,8 +242,17 @@ def edit_character(character_id):
         character_img=db_character.image,
         class_features=[
             form._fields[f"class_feature_{i}"]
-            for i in range(len(data["class_features"]))
+            for i in range(len(character.class_features))
         ],
+        cantrips=[]
+        if cantrips is None
+        else [
+            form._fields[f"spells_known_lvl0_{i}"]
+            for i in range(character.class_spellcasting["cantrips_known"])
+        ],
+        spell_slots=[]
+        if not character.class_spellcasting
+        else [form._fields[spell_slot] for spell_slot in spell_slots],
     )
 
 

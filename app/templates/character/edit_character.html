@@ -266,6 +266,14 @@
 				{% if character.class_spellcasting|length != 0 %}
 				<li><a data-toggle="collapse" href="#spellcasting">Spellcasting</a>
 					<div class="collapse show" id="spellcasting">
+						{% for cantrip_field in cantrips %}
+						{{ cantrip_field.label(class="form-control-label") }}
+						{{ cantrip_field(class="form-control form-control-sm") }}
+						{% endfor %}
+						{% for spell_slot_field in spell_slots %}
+						{{ spell_slot_field.label(class="form-control-label") }}
+						{{ spell_slot_field(class="form-control form-control-sm") }}
+						{% endfor %}
 					</div>
 				</li>
 				{% endif %}
