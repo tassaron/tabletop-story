@@ -182,14 +182,8 @@ def edit_character(character_id):
                 removals.append(field)
             for field in removals:
                 data.pop(field)
+            data.update(new_data)
             data["spells_known"] = {}
-            for spell_slot in spell_slots:
-                chosen_spell = data.pop(spell_slot)
-                spell_level, spell_num = spell_slot[16:].split("_")
-                if spell_level in data["spells_known"]:
-                    data["spells_known"][spell_level].append(chosen_spell)
-                else:
-                    data["spells_known"] = {spell_level: [chosen_spell]}
             for i in range(cantrips):
                 cantrip = f"spells_known_lvl0_{i}"
                 chosen_spell = data.pop(cantrip)
@@ -197,7 +191,13 @@ def edit_character(character_id):
                     data["spells_known"] = {0: [chosen_spell]}
                 else:
                     data["spells_known"][0].append(chosen_spell)
-            data.update(new_data)
+            for spell_slot in spell_slots:
+                chosen_spell = data.pop(spell_slot)
+                spell_level = int(spell_slot[16:].split("_")[0])
+                if spell_level in data["spells_known"]:
+                    data["spells_known"][spell_level].append(chosen_spell)
+                else:
+                    data["spells_known"][spell_level] = [chosen_spell]
             # Now we have a valid dict to make a new Character
             db_character.name = form.name.data
             db_character.update_data(data)
@@ -247,6 +247,17 @@ def edit_character(character_id):
             for i in range(len(character.class_features))
         }
     )
+    for spell_slot in spell_slots:
+        spell_level, spell_num = spell_slot[16:].split("_")
+        try:
+            chosen_spell = character.spells_known[int(spell_level)][int(spell_num)]
+        except KeyError:
+            # default value for blank spell slots
+            chosen_spell = list(
+                spells_for_class_level(character.class_index, int(spell_level))
+            )[int(spell_num)]
+
+        filled_form[spell_slot] = (chosen_spell, chosen_spell)
     if cantrips:
         filled_form.update(
             {
