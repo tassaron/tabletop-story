@@ -71,13 +71,23 @@ CHA: {{character.charisma}} ({{character.charisma|ability_modifier}})</pre>
                     {% for item in character.inventory %}
                     <li>
                         {% if item["equipment_category"]["index"] == "armor" %}
+                        {% if item["armor_category"] != "Shield" %}
                         {{ item["armor_category"] }}
+                        {% endif %}
                         {% endif %}
                         {{ item["name"] }}
                         {% if item["equipment_category"]["index"] == "armor" %}
-                        Armour <small
+                        {% if item["armor_category"] != "Shield" %}
+                        Armour
+                        <small
                             class="text-muted">(AC{{ item["armor_class"]["base"] }}{% if item["armor_class"]["dex_bonus"] %}+{{character.dexterity|ability_modifier}}{% endif %})
-                            {% if item["stealth_disadvantage"] %}<span class="danger">-stealth</span>{% endif %}</small>
+                            {% if item["stealth_disadvantage"] %}<span
+                                style="color:darkred">-stealth</span>{% endif %}</small>
+                        {% else %}
+                        <small class="text-muted">
+                            (AC+{{item["armor_class"]["base"]}})
+                        </small>
+                        {% endif %}
                         {% endif %}
                         {% if item["equipment_category"]["index"] == "weapon" %}
                         <small class="text-muted">
@@ -105,7 +115,7 @@ CHA: {{character.charisma}} ({{character.charisma|ability_modifier}})</pre>
                 {% endif %}
                 <p><strong>Spells Known:</strong>
                     {% if character.spells_known == None %}
-                    <br>This spellcaster hasn't selected any spells yet! ✨
+                    <br>This character doesn't have any spells yet! ✨
                     {% elif 0 in character.spells_known %}
                 <ol>Cantrips:
                     {% for cantrip in character.spells_known[0] %}
