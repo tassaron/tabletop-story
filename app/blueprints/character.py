@@ -17,7 +17,7 @@ from tabletop_story.forms import EditCharacterForm, DeleteCharacterForm
 from tabletop_story.plugins import db
 from dnd_character import Character
 from dnd_character.classes import CLASSES
-from dnd_character.spellcasting import spells_for_class_level
+from dnd_character.spellcasting import spells_for_class_level, SRD_spells
 
 
 LOG = logging.getLogger(__package__)
@@ -119,7 +119,7 @@ def edit_character(character_id):
                     SelectField(
                         f"Cantrip #{str(i+1)}",
                         choices=[
-                            (spell_name, spell_name)
+                            (spell_name, SRD_spells[spell_name]["name"])
                             for spell_name in available_cantrips
                         ],
                     ),
@@ -141,7 +141,7 @@ def edit_character(character_id):
                     SelectField(
                         f"Level {spell_level} Spell Slot #{str(spell_num+1)}",
                         choices=[
-                            (spell_name, spell_name)
+                            (spell_name, SRD_spells[spell_name]["name"])
                             for spell_name in spells_for_class_level(
                                 data["class_index"], spell_level
                             )
@@ -251,19 +251,25 @@ def edit_character(character_id):
         spell_level, spell_num = spell_slot[16:].split("_")
         try:
             chosen_spell = character.spells_known[int(spell_level)][int(spell_num)]
-        except KeyError:
+        except (KeyError, TypeError):
             # default value for blank spell slots
             chosen_spell = list(
                 spells_for_class_level(character.class_index, int(spell_level))
             )[int(spell_num)]
 
-        filled_form[spell_slot] = (chosen_spell, chosen_spell)
+        filled_form[spell_slot] = (chosen_spell, SRD_spells[chosen_spell]["name"])
     if cantrips:
         filled_form.update(
             {
-                f"spells_known_lvl0_{i}": (available_cantrips[i], available_cantrips[i])
+                f"spells_known_lvl0_{i}": (
+                    available_cantrips[i],
+                    SRD_spells[available_cantrips[i]]["name"],
+                )
                 if character.spells_known is None or i >= len(character.spells_known[0])
-                else (character.spells_known[0][i], character.spells_known[0][i])
+                else (
+                    character.spells_known[0][i],
+                    SRD_spells[character.spells_known[0][i]]["name"],
+                )
                 for i in range(cantrips)
             }
         )
@@ -295,13 +301,21 @@ def view_character(character_id):
     logged_in = flask_login.current_user.is_authenticated
     if logged_in and db_character.user_id == int(flask_login.current_user.get_id()):
         can_edit = True
+
+    character = db_character.character
     return render_template(
         "view_character.html",
         logged_in=logged_in,
-        character=db_character.character,
+        character=character,
         can_edit=can_edit,
         character_id=character_id,
         character_img=db_character.image,
+        spells=SRD_spells,
+        spell_levels=0
+        if character.spells_known is None
+        else len(character.spells_known)
+        if 0 not in character.spells_known
+        else len(character.spells_known) - 1,
     )
 
 

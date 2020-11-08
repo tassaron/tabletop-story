@@ -40,6 +40,9 @@ CHA: {{character.charisma}} ({{character.charisma|ability_modifier}})</pre>
     <div class="col-lg-4 col-md-6 mb-4">
         <div class="card h-100">
             <div class="card-body">
+                {% if can_edit %}
+                <a style="float:right" href="/character/edit/{{character_id}}#class_features" class="btn">📝</a>
+                {% endif %}
                 <p><strong>Class Features:</strong>
                 <ul>
                     {% for value in character.class_features.values() %}
@@ -93,6 +96,53 @@ CHA: {{character.charisma}} ({{character.charisma|ability_modifier}})</pre>
             </div>
         </div>
     </div>
+    {% if character["class_spellcasting"] %}
+    <div class="col-lg-4 col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                {% if can_edit %}
+                <a style="float:right" href="/character/edit/{{character_id}}#spellcasting" class="btn">📝</a>
+                {% endif %}
+                <p><strong>Spells Known:</strong>
+                    {% if character.spells_known == None %}
+                    <br>This spellcaster hasn't selected any spells yet! ✨
+                    {% elif 0 in character.spells_known %}
+                <ol>Cantrips:
+                    {% for cantrip in character.spells_known[0] %}
+                    <li>
+                        <a data-toggle="collapse" href="#{{ cantrip }}">{{spells[cantrip]["name"]}}</a>
+                        <div class="collapse" id="{{ cantrip }}">
+                            <ul>
+                                {% for line in spells[cantrip]["desc"] %}
+                                <li>{{line}}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ol>
+                {% endif %}
+                {% for spell_level in range(1, spell_levels+1) %}
+                <ol>Level {{spell_level}} Spells:
+                    {% for spell_index in character.spells_known[spell_level] %}
+                    <li>
+                        <a data-toggle="collapse" href="#{{ spell_index }}">{{spells[spell_index]["name"]}}</a>
+                        <div class="collapse" id="{{ spell_index }}">
+                            <ul>
+                                {% for line in spells[spell_index]["desc"] %}
+                                <li>{{line}}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ol>
+                {% endfor %}
+                </p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
     <div class="col-lg-4 col-md-6 mb-4">
         <div class="card h-100">
             <div class="card-body">
