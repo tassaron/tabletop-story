@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name="Tabletop Story",
-    version="20.11.07",  # year.month.day
+    version="20.11.09",  # year.month.day
     packages=["tabletop_story", "tabletop_story.blueprints"],
     package_dir={
         "tabletop_story": "app",

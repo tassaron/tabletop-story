@@ -20,6 +20,7 @@ from tabletop_story.forms import (
     EditCharacterRemoveInventoryForm,
     EditCharacterAddInventoryForm,
 )
+from tabletop_story.routes import ability_modifier
 from tabletop_story.plugins import db
 from dnd_character import Character
 from dnd_character.classes import CLASSES
@@ -346,6 +347,9 @@ def view_character(character_id):
         else len(character.spells_known)
         if 0 not in character.spells_known
         else len(character.spells_known) - 1,
+        passive_perception=10
+        + character.skills_wisdom["perception"]
+        + int(ability_modifier(character.wisdom)),
     )
 
 

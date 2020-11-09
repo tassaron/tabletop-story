@@ -183,27 +183,28 @@ CHA: {{character.charisma}} ({{character.charisma|ability_modifier}})</pre>
                 {% endif %}
                 <strong>Skills:</strong>
                 <ul>
-                    <li>STR: Athletics {{character.skills_strength["athletics"]}}</li>
-                    <li>DEX: Acrobatics {{character.skills_dexterity["acrobatics"]}}<ul>
+                    <li><strong>Passive Perception:</strong> {{ passive_perception }}</li>
+                    <li><strong>STR:</strong> Athletics {{character.skills_strength["athletics"]}}</li>
+                    <li><strong>DEX:</strong> Acrobatics {{character.skills_dexterity["acrobatics"]}}<ul>
                             <li>Sleight of Hand {{character.skills_dexterity["sleight-of-hand"]}}</li>
                             <li>Stealth {{character.skills_dexterity["stealth"]}}</li>
                         </ul>
                     </li>
-                    <li>INT: Arcana {{character.skills_intelligence["arcana"]}}<ul>
+                    <li><strong>INT:</strong> Arcana {{character.skills_intelligence["arcana"]}}<ul>
                             <li>History {{character.skills_intelligence["history"]}}</li>
                             <li>Investigation {{character.skills_intelligence["investigation"]}}</li>
                             <li>Nature {{character.skills_intelligence["nature"]}}</li>
                             <li>Religion {{character.skills_intelligence["religion"]}}</li>
                         </ul>
                     </li>
-                    <li>WIS: Animal Handling {{character.skills_wisdom["animal-handling"]}}<ul>
+                    <li><strong>WIS:</strong> Animal Handling {{character.skills_wisdom["animal-handling"]}}<ul>
                             <li>Insight {{character.skills_wisdom["insight"]}}</li>
                             <li>Medicine {{character.skills_wisdom["medicine"]}}</li>
                             <li>Perception {{character.skills_wisdom["perception"]}}</li>
                             <li>Survival {{character.skills_wisdom["survival"]}}</li>
                         </ul>
                     </li>
-                    <li>CHA: Deception {{character.skills_charisma["deception"]}}<ul>
+                    <li><strong>CHA:</strong> Deception {{character.skills_charisma["deception"]}}<ul>
                             <li>Intimidation {{character.skills_charisma["intimidation"]}}</li>
                             <li>Performance {{character.skills_charisma["performance"]}}</li>
                             <li>Persuasion {{character.skills_charisma["persuasion"]}}</li>
