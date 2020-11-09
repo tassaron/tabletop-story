@@ -46,8 +46,10 @@ CHA: {{character.charisma}} ({{character.charisma|ability_modifier}})</pre>
                 <p><strong>Class Features:</strong>
                 <ul>
                     {% for value in character.class_features.values() %}
-                    <li>
-                        <a data-toggle="collapse" href="#{{ value['name']|url_safe }}">{{ value["name"] }}</a>
+                    <li>{% if character.class_features_enabled[loop.index0] %}
+                        <a data-toggle="collapse" href="#{{ value['name']|url_safe }}">{{ value["name"] }}</a>{% else %}
+                        <del><a data-toggle="collapse"
+                                href="#{{ value['name']|url_safe }}">{{ value["name"] }}</a></del>{% endif %}
                         <div class="collapse" id="{{ value['name']|url_safe }}">
                             <span class="text-muted">Unlocked at Level {{ value["level"] }}</span>
                             <ul>
