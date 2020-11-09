@@ -23,13 +23,17 @@ class DeleteCharacterForm(FlaskForm):
     submit = SubmitField("🗑️ Delete")
 
 
-class EditCharacterInventoryForm(FlaskForm):
+class EditCharacterRemoveInventoryForm(FlaskForm):
+    submit_remove = SubmitField("Remove Item ➖")
+
+
+class EditCharacterAddInventoryForm(FlaskForm):
     # custom_item = StringField("Item Name:", validator=[Length(min=1, max=24)])
     new_item = SelectField(
-        "Choose Item: ",
+        "Add New Item: ",
         choices=[(item["index"], item["name"]) for item in SRD_equipment.values()],
     )
-    submit = SubmitField("Add Item ➕")
+    submit_add = SubmitField("Add Item ➕")
 
 
 class EditCharacterForm(FlaskForm):

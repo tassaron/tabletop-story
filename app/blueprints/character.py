@@ -6,6 +6,7 @@ from flask import (
     url_for,
     flash,
     current_app,
+    abort,
 )
 import flask_login
 from wtforms import BooleanField, SelectField
@@ -16,7 +17,8 @@ from tabletop_story.models import User, GameCharacter
 from tabletop_story.forms import (
     EditCharacterForm,
     DeleteCharacterForm,
-    EditCharacterInventoryForm,
+    EditCharacterRemoveInventoryForm,
+    EditCharacterAddInventoryForm,
 )
 from tabletop_story.plugins import db
 from dnd_character import Character
@@ -356,17 +358,42 @@ def edit_character_inventory(character_id):
     if db_character.user_id != int(flask_login.current_user.get_id()):
         abort(403)
     character = db_character.character
-    form = EditCharacterInventoryForm()
-    if form.validate_on_submit():
-        if form.new_item.data not in SRD_equipment:
-            flash("Sorry, the selected item doesn't exist", "danger")
-        else:
-            character.giveItem(SRD_equipment[form.new_item.data])
+
+    # Subclass the remove-item form so we can add the select field
+    class ThisRemoveItemForm(EditCharacterRemoveInventoryForm):
+        pass
+
+    setattr(
+        ThisRemoveItemForm,
+        "remove_item",
+        SelectField(
+            "Remove Item:",
+            choices=[(i, item["name"]) for i, item in enumerate(character.inventory)],
+        ),
+    )
+
+    remove_form = ThisRemoveItemForm()
+    add_form = EditCharacterAddInventoryForm()
+
+    if request.method == "POST":
+        processed = False
+
+        if remove_form.submit_remove.data and remove_form.validate_on_submit():
+            character.removeItem(character.inventory[int(remove_form.remove_item.data)])
+            processed = True
+
+        if add_form.submit_add.data and add_form.validate_on_submit():
+            character.giveItem(SRD_equipment[add_form.new_item.data])
+            processed = True
+
+        if processed:
             db_character.update_data(dict(character))
             db.session.add(db_character)
             db.session.commit()
             return redirect(url_for(".view_character", character_id=character_id))
 
+    # If the player has options relating to equipment, alert them now!
+    # TODO Allow this message to be cleared away
     if character.player_options["starting_equipment"]:
         lines = [
             f"<li>{line}</li>"
@@ -377,10 +404,12 @@ def edit_character_inventory(character_id):
         )
     else:
         message = ""
+
     return render_template(
         "edit_character_inventory.html",
         logged_in=True,
-        form=form,
+        add_form=add_form,
+        remove_form=remove_form,
         character=character,
         message=message,
     )

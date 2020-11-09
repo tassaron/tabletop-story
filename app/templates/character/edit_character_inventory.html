@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}Edit Inventory{% endblock %}
+{% block title %}Edit {{character.name}}'s Inventory{% endblock %}
 
 {% block content %}
 {% if message %}
@@ -8,25 +8,19 @@
 </div>
 {% endif %}
 <form action="" method="POST">
-	{{ form.hidden_tag() }}
+	{{ add_form.hidden_tag() }}
 	<fieldset class="form-group form-horizontal">
-		<legend class="border-top border-bottom mb-4">Add Item to Inventory</legend>
+		<legend class="border-top border-bottom mb-4">Edit {{character.name}}'s Inventory</legend>
 		<div class="form-group form-horizontal">
-			{{ form.new_item.label(class="form-control-label") }}
-			{% if form.new_item.errors %}
-			{{ form.new_item(class="form-control is-invalid") }}
-			<div class="invalid-feedback">
-				{% for error in form.new_item.errors %}
-				<span>{{ error }}</span>
-				{% endfor %}
-			</div>
-			{% else %}
-			{{ form.new_item(class="form-control form-control-sm") }}
-			{% endif %}
+			{{ add_form.new_item.label(class="form-control-label") }}
+			{{ add_form.new_item(class="form-control form-control-sm") }}
+			{{ add_form.submit_add(class="btn btn-success") }}
+		</div>
+		<div class="form-group">
+			{{ remove_form.remove_item.label(class="form-control-label") }}
+			{{ remove_form.remove_item(class="form-control form-control-sm") }}
+			{{ remove_form.submit_remove(class="btn btn-danger") }}
 		</div>
 	</fieldset>
-	<div class="form-group">
-		{{ form.submit(class="btn btn-success") }}
-	</div>
 </form>
 {% endblock %}
