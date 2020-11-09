@@ -276,7 +276,7 @@ def edit_character(character_id, selected_field):
         spell_level, spell_num = spell_slot[16:].split("_")
         try:
             chosen_spell = character.spells_known[int(spell_level)][int(spell_num)]
-        except (KeyError, TypeError):
+        except (KeyError, TypeError, IndexError):
             # default value for blank spell slots
             chosen_spell = list(
                 spells_for_class_level(character.class_index, int(spell_level))
