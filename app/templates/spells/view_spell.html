@@ -1,0 +1,39 @@
+{% set selected = 4 %}
+{% extends 'base.html' %}
+{% block title %}D&D 5e Spell "{{spell["name"]}}"{% endblock %}
+
+{% block content %}
+<div class="col-lg-8 mb-4">
+    <div class="card h-100">
+        <div class="card-header">
+            <h3>{{spell["name"]}}</h3> <small class="text-muted">Spell Level
+                {{spell["level"]}}</small>
+        </div>
+        <div class="card-body">
+            <ul>
+                <li><strong>Range:</strong> {{spell["range"]}}</li>
+                <li><strong>Components:</strong>&nbsp;{% for component in spell["components"] %}{{component}}&nbsp;{% endfor %}
+                </li>
+                {% if "material" in spell %}<li><strong>Material:</strong> {{spell["material"]}}</li>{% endif %}
+                <li><strong>Duration:</strong> {{spell["duration"]}}</li>
+                <li><strong>Casting time:</strong> {{spell["casting_time"]}}</li>
+                <li><strong>Description:</strong> {{spell["desc"][0]}}</li>
+                {% if spell["desc"]|length > 1 %}
+                {% for line in spell["desc"][1:] %}
+                <li>{{line}}</li>
+                {% endfor %}
+                {% endif %}
+            </ul>
+        </div>
+        <div class="card-footer">
+            <small class="text-muted">School: {{spell["school"]["name"]}}{% if "ritual" in spell %},
+                ritual{% endif %}{% if "concentration" in spell %}, concentration{% endif %}</small>
+        </div>
+    </div>
+    This spell is available to:<ul>
+        {% for classs in spell["classes"] %}
+        <li>{{classs["name"]}}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}
