@@ -13,7 +13,11 @@ from werkzeug.datastructures import MultiDict
 import logging
 
 from tabletop_story.models import User, GameCharacter
-from tabletop_story.forms import EditCharacterForm, DeleteCharacterForm
+from tabletop_story.forms import (
+    EditCharacterForm,
+    DeleteCharacterForm,
+    EditCharacterInventoryForm,
+)
 from tabletop_story.plugins import db
 from dnd_character import Character
 from dnd_character.classes import CLASSES
@@ -89,7 +93,9 @@ def delete_character(character_id):
 @flask_login.login_required
 def edit_character(character_id):
     db_character = GameCharacter.query.get(character_id)
-    if db_character.user_id != int(flask_login.current_user.get_id()):
+    if db_character is None:
+        abort(404)
+    elif db_character.user_id != int(flask_login.current_user.get_id()):
         abort(403)
 
     data = db_character.as_dict()
@@ -318,6 +324,35 @@ def view_character(character_id):
         else len(character.spells_known)
         if 0 not in character.spells_known
         else len(character.spells_known) - 1,
+    )
+
+
+@blueprint.route("/edit/<character_id>/inventory", methods=["GET", "POST"])
+@flask_login.login_required
+def edit_character_inventory(character_id):
+    db_character = GameCharacter.query.get(character_id)
+    if db_character is None:
+        abort(404)
+    if db_character.user_id != int(flask_login.current_user.get_id()):
+        abort(403)
+    character = db_character.character
+    if character.player_options["starting_equipment"]:
+        lines = [
+            f"<li>{line}</li>"
+            for line in character.player_options["starting_equipment"]
+        ]
+        message = (
+            f"Your class recommends this starting equipment: <ul>{''.join(lines)}</ul>"
+        )
+    else:
+        message = ""
+    form = EditCharacterInventoryForm()
+    return render_template(
+        "edit_character_inventory.html",
+        logged_in=True,
+        form=form,
+        character=character,
+        message=message,
     )
 
 

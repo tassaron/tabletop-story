@@ -8,6 +8,7 @@ from wtforms import (
     IntegerField,
 )
 from wtforms.validators import DataRequired, Length, Email, EqualTo, NumberRange
+from dnd_character.equipment import SRD_equipment
 
 
 class DeleteCharacterForm(FlaskForm):
@@ -22,6 +23,15 @@ class DeleteCharacterForm(FlaskForm):
     submit = SubmitField("🗑️ Delete")
 
 
+class EditCharacterInventoryForm(FlaskForm):
+    # custom_item = StringField("Item Name:", validator=[Length(min=1, max=24)])
+    new_item = SelectField(
+        "Choose Item: ",
+        choices=[(item["index"], item["name"]) for item in SRD_equipment.values()],
+    )
+    submit = SubmitField("Add Item ➕")
+
+
 class EditCharacterForm(FlaskForm):
     name = StringField("Name", validators=[Length(min=1, max=127)])
     age = StringField("Age")
@@ -29,15 +39,15 @@ class EditCharacterForm(FlaskForm):
     alignment = SelectField(
         "Alignment",
         choices=[
-            ("LG", "LG"),
-            ("NG", "NG"),
-            ("CG", "CG"),
-            ("LN", "LN"),
-            ("TN", "TN"),
-            ("CN", "CN"),
-            ("LE", "LE"),
-            ("NE", "NE"),
-            ("CE", "CE"),
+            ("LG", "Lawful Good"),
+            ("NG", "Neutral Good"),
+            ("CG", "Chaotic Good"),
+            ("LN", "Lawful Neutral"),
+            ("TN", "True Neutral"),
+            ("CN", "Chaotic Neutral"),
+            ("LE", "Lawful Evil"),
+            ("NE", "Neutral Evil"),
+            ("CE", "Chaotic Evil"),
         ],
         validate_choice=False,
     )

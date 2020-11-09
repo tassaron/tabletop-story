@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %}Edit Inventory{% endblock %}
+
+{% block content %}
+{% if message %}
+<div class="alert alert-info">
+	{{message|safe}}
+</div>
+{% endif %}
+<form action="" method="POST">
+	{{ form.hidden_tag() }}
+	<fieldset class="form-group form-horizontal">
+		<legend class="border-top border-bottom mb-4">Add Item to Inventory</legend>
+		<div class="form-group form-horizontal">
+			{{ form.new_item.label(class="form-control-label") }}
+			{% if form.new_item.errors %}
+			{{ form.new_item(class="form-control is-invalid") }}
+			<div class="invalid-feedback">
+				{% for error in form.new_item.errors %}
+				<span>{{ error }}</span>
+				{% endfor %}
+			</div>
+			{% else %}
+			{{ form.new_item(class="form-control form-control-sm") }}
+			{% endif %}
+		</div>
+	</fieldset>
+	<div class="form-group">
+		{{ form.submit(class="btn btn-success") }}
+	</div>
+</form>
+{% endblock %}
