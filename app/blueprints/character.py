@@ -350,6 +350,86 @@ def view_character(character_id):
         passive_perception=10
         + character.skills_wisdom["perception"]
         + int(ability_modifier(character.wisdom)),
+        skills={
+            "athletics": (
+                character.prof_bonus if character.skills_strength["athletics"] else 0
+            )
+            + ability_modifier(character.strength),
+            "acrobatics": (
+                character.prof_bonus if character.skills_dexterity["acrobatics"] else 0
+            )
+            + ability_modifier(character.dexterity),
+            "sleight-of-hand": (
+                character.prof_bonus
+                if character.skills_dexterity["sleight-of-hand"]
+                else 0
+            )
+            + ability_modifier(character.dexterity),
+            "stealth": (
+                character.prof_bonus if character.skills_dexterity["stealth"] else 0
+            )
+            + ability_modifier(character.dexterity),
+            "arcana": (
+                character.prof_bonus if character.skills_intelligence["arcana"] else 0
+            )
+            + ability_modifier(character.intelligence),
+            "history": (
+                character.prof_bonus if character.skills_intelligence["history"] else 0
+            )
+            + ability_modifier(character.intelligence),
+            "investigation": (
+                character.prof_bonus
+                if character.skills_intelligence["investigation"]
+                else 0
+            )
+            + ability_modifier(character.intelligence),
+            "nature": (
+                character.prof_bonus if character.skills_intelligence["nature"] else 0
+            )
+            + ability_modifier(character.intelligence),
+            "religion": (
+                character.prof_bonus if character.skills_intelligence["religion"] else 0
+            )
+            + ability_modifier(character.intelligence),
+            "animal-handling": (
+                character.prof_bonus
+                if character.skills_wisdom["animal-handling"]
+                else 0
+            )
+            + ability_modifier(character.wisdom),
+            "insight": (
+                character.prof_bonus if character.skills_wisdom["insight"] else 0
+            )
+            + ability_modifier(character.wisdom),
+            "medicine": (
+                character.prof_bonus if character.skills_wisdom["medicine"] else 0
+            )
+            + ability_modifier(character.wisdom),
+            "perception": (
+                character.prof_bonus if character.skills_wisdom["perception"] else 0
+            )
+            + ability_modifier(character.wisdom),
+            "survival": (
+                character.prof_bonus if character.skills_wisdom["survival"] else 0
+            )
+            + ability_modifier(character.wisdom),
+            "deception": (
+                character.prof_bonus if character.skills_charisma["deception"] else 0
+            )
+            + ability_modifier(character.charisma),
+            "intimidation": (
+                character.prof_bonus if character.skills_charisma["intimidation"] else 0
+            )
+            + ability_modifier(character.charisma),
+            "performance": (
+                character.prof_bonus if character.skills_charisma["performance"] else 0
+            )
+            + ability_modifier(character.charisma),
+            "persuasion": (
+                character.prof_bonus if character.skills_charisma["persuasion"] else 0
+            )
+            + ability_modifier(character.charisma),
+        },
     )
 
 
