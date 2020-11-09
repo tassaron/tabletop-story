@@ -118,6 +118,12 @@
         {% endfor %}
         {% endif %}
         {% endwith %}
+        {% if SRD_disclaimer == True %}
+        <div class="alert alert-info">
+            The content of this page is part of the Dungeons & Dragons 5e System Reference Document. It is covered by
+            the <a href="/license/ogl">Open Game License v1.0a</a>.
+        </div>
+        {% endif %}
         {% block content %}{% endblock %}
     </div>
     <!-- /.container -->

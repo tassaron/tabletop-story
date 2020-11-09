@@ -13,5 +13,6 @@ def view_monster(monster):
     return render_template(
         "view_monster.html",
         logged_in=current_user.is_authenticated,
+        SRD_disclaimer=True,
         monster=SRD_monsters[monster],
     )

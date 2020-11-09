@@ -13,5 +13,6 @@ def view_spell(spell):
     return render_template(
         "view_spell.html",
         logged_in=current_user.is_authenticated,
+        SRD_disclaimer=True,
         spell=SRD_spells[spell],
     )

@@ -55,7 +55,24 @@ def rules_page():
     return render_template(
         "rules.html",
         logged_in=flask_login.current_user.is_authenticated,
+        SRD_disclaimer=True,
         rules=SRD_rules,
+    )
+
+
+@main_routes.route("/license/ogl")
+def license_ogl():
+    return render_template(
+        "license/ogl.html",
+        logged_in=flask_login.current_user.is_authenticated,
+    )
+
+
+@main_routes.route("/license/mit")
+def license_mit():
+    return render_template(
+        "license/mit.html",
+        logged_in=flask_login.current_user.is_authenticated,
     )
 
 
