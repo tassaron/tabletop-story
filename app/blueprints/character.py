@@ -22,6 +22,7 @@ from tabletop_story.plugins import db
 from dnd_character import Character
 from dnd_character.classes import CLASSES
 from dnd_character.spellcasting import spells_for_class_level, SRD_spells
+from dnd_character.equipment import SRD_equipment
 
 
 LOG = logging.getLogger(__package__)
@@ -336,6 +337,17 @@ def edit_character_inventory(character_id):
     if db_character.user_id != int(flask_login.current_user.get_id()):
         abort(403)
     character = db_character.character
+    form = EditCharacterInventoryForm()
+    if form.validate_on_submit():
+        if form.new_item.data not in SRD_equipment:
+            flash("Sorry, the selected item doesn't exist", "danger")
+        else:
+            character.giveItem(SRD_equipment[form.new_item.data])
+            db_character.update_data(dict(character))
+            db.session.add(db_character)
+            db.session.commit()
+            return redirect(url_for(".view_character", character_id=character_id))
+
     if character.player_options["starting_equipment"]:
         lines = [
             f"<li>{line}</li>"
@@ -346,7 +358,6 @@ def edit_character_inventory(character_id):
         )
     else:
         message = ""
-    form = EditCharacterInventoryForm()
     return render_template(
         "edit_character_inventory.html",
         logged_in=True,
