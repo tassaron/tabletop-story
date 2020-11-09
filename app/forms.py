@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import (
     StringField,
+    TextAreaField,
     PasswordField,
     SubmitField,
     BooleanField,
@@ -56,7 +57,7 @@ class EditCharacterForm(FlaskForm):
         validate_choice=False,
     )
     description = StringField("Physical Description", validators=[Length(max=127)])
-    biography = StringField("Backstory", validators=[Length(max=2048)])
+    biography = TextAreaField("Backstory", validators=[Length(max=2048)])
     class_name = StringField("Class Name", validators=[Length(max=127)])
     constitution = IntegerField("CON", validators=[NumberRange(min=3, max=20)])
     strength = IntegerField("STR", validators=[NumberRange(min=3, max=20)])

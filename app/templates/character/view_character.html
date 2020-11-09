@@ -178,9 +178,12 @@ CHA: {{character.charisma}} ({{character.charisma|ability_modifier}})</pre>
     <div class="col-lg-4 col-md-6 mb-4">
         <div class="card h-100">
             <div class="card-body">
+                {% if can_edit %}
+                <a style="float:right" href="/character/edit/{{character_id}}/skills" class="btn">📝</a>
+                {% endif %}
                 <strong>Skills:</strong>
                 <ul>
-                    <li>Strength: Athletics {{character.skills_strength["athletics"]}}</li>
+                    <li>STR: Athletics {{character.skills_strength["athletics"]}}</li>
                     <li>DEX: Acrobatics {{character.skills_dexterity["acrobatics"]}}<ul>
                             <li>Sleight of Hand {{character.skills_dexterity["sleight-of-hand"]}}</li>
                             <li>Stealth {{character.skills_dexterity["stealth"]}}</li>
