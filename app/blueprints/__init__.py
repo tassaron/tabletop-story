@@ -1,4 +1,4 @@
-from . import inventory, dashboard, account, character, spells
+from . import inventory, dashboard, account, character, spells, monsters
 
 
 def register_blueprints(app):
@@ -8,5 +8,6 @@ def register_blueprints(app):
         inventory.blueprint,
         character.blueprint,
         spells.blueprint,
+        monsters.blueprint,
     ):
         app.register_blueprint(blueprint, url_prefix=f"/{blueprint.name}")

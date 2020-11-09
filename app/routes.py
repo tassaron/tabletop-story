@@ -16,6 +16,11 @@ def md_to_html(string):
     )(string)
 
 
+@main_routes.app_template_filter("index_to_name")
+def url_safe(string):
+    return string.replace("_", " ").title()
+
+
 @main_routes.app_template_filter("url_safe")
 def url_safe(string):
     # FIXME

@@ -1,0 +1,61 @@
+{% set selected = 3 %}
+{% extends 'base.html' %}
+{% block title %}D&D 5e Monster "{{monster["name"]}}"{% endblock %}
+
+{% block content %}
+<div class="col-lg-8 mb-4">
+    <div class="card h-100">
+        <div class="card-header">
+            <h3>{{monster["name"]}}</h3> <small class="text-muted">{{monster["size"]}} {{monster["alignment"]}}</small>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-info">
+                <span style="float:right">INT: {{monster["intelligence"]}}
+                    {{monster["intelligence"]|ability_modifier}}<br>
+                    WIS: {{monster["wisdom"]}} {{monster["wisdom"]|ability_modifier}}<br>
+                    CHA: {{monster["charisma"]}} {{monster["charisma"]|ability_modifier}}</span>
+                CON: {{monster["constitution"]}} {{monster["constitution"]|ability_modifier}}<br>
+                STR: {{monster["strength"]}} {{monster["strength"]|ability_modifier}}<br>
+                DEX: {{monster["dexterity"]}} {{monster["dexterity"]|ability_modifier}}
+            </div>
+            <ul>
+                <li><strong>Hit Points:</strong> {{monster["hit_points"]}} ({{monster["hit_dice"]}})</li>
+                <li><strong>Armour Class:</strong> {{monster["armor_class"]}}</li>
+                <li><strong>Speed:</strong>&nbsp;{% for move_type, move_speed in monster["speed"].items() %}{{move_type.title()}}&nbsp;{{move_speed}}
+                    {% endfor %}</li>
+                <li><strong>Senses:</strong>
+                    <ul>
+                        {% for sense_name, sense_desc in monster["senses"].items() %}
+                        <li>{{sense_name|index_to_name}}&nbsp;{{sense_desc}}</li>
+                        {% endfor %}
+                    </ul>
+                </li><br>
+                <li><strong>Proficiencies:</strong>
+                    <ul>
+                        {% for prof in monster["proficiencies"] %}
+                        <li>{{prof["proficiency"]["name"]}}&nbsp;{{prof["value"]}}</li>
+                        {% endfor %}
+                    </ul>
+                </li><br>
+                <li><strong>Special Abilities:</strong>
+                    <ul>
+                        {% for abil in monster["special_abilities"] %}
+                        <li><strong>{{abil["name"]}}</strong>&nbsp;{{abil["desc"]}}</li>
+                        {% endfor %}
+                    </ul>
+                </li><br>
+                <li><strong>Actions:</strong>
+                    <ul>
+                        {% for action in monster["actions"] %}
+                        <li><strong>{{action["name"]}}</strong>&nbsp;{{action["desc"]}}</li>
+                        {% endfor %}
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <div class="card-footer">
+            <small class="text-muted">Suggested XP reward: {{monster["xp"]}}</small>
+        </div>
+    </div>
+</div>
+{% endblock %}
