@@ -3,278 +3,303 @@
 
 
 {% block content %}
+<div class="row">
+	<a class="btn btn-secondary" href="/character/edit/{{character_id}}/inventory">Edit Inventory</a>&nbsp;
+	<a class="btn btn-secondary" href="/character/edit/{{character_id}}/exp/1000">Add 1000 Experience</a>
+</div>
 <div class="row">&nbsp;</div>
 <div class="row">
-	<img style="padding-right:1rem; max-height: 100px;"
-		src="{{url_for('static', filename='/img/character/')+character_img}}" alt="{{character.name}}">
+	<a href="/character/view/{{character_id}}"><img style="padding:0.5rem; max-height: 100px;"
+			src="{{url_for('static', filename='/img/character/')+character_img}}" alt="{{character.name}}"></a><br>
 	<form action="" method="POST">
 		{{ form.hidden_tag() }}
 		<fieldset class="form-group form-horizontal">
 			<legend class="border-top border-bottom mb-4">Edit {{ character.name }} 📝</legend>
 			<ol>
 				<li><a data-toggle="collapse" href="#decorative">Decorative</a>
+					{% if selected_field in ("decorative", "all") %}
 					<div class="collapse show" id="decorative">
-						{# name #}
-						<div class="form-group form-horizontal">
-							{{ form.name.label(class="form-control-label") }}
-							{% if form.name.errors %}
-							{{ form.name(class="form-control is-invalid") }}
-							<div class="invalid-feedback">
-								{% for error in form.name.errors %}
-								<span>{{ error }}</span>
-								{% endfor %}
-							</div>
-							{% else %}
-							{{ form.name(class="form-control form-control-sm") }}
+						{% else %}
+						<div class="collapse" id="decorative">
 							{% endif %}
-						</div>
+							{# name #}
+							<div class="form-group form-horizontal">
+								{{ form.name.label(class="form-control-label") }}
+								{% if form.name.errors %}
+								{{ form.name(class="form-control is-invalid") }}
+								<div class="invalid-feedback">
+									{% for error in form.name.errors %}
+									<span>{{ error }}</span>
+									{% endfor %}
+								</div>
+								{% else %}
+								{{ form.name(class="form-control form-control-sm") }}
+								{% endif %}
+							</div>
 
-						{# age #}
-						<div class="form-group form-inline">
-							{{ form.age.label(class="form-control-label") }}
-							{% if form.age.errors %}
-							{{ form.age(class="form-control is-invalid") }}
-							<div class="invalid-feedback">
-								{% for error in form.age.errors %}
-								<span>{{ error }}</span>
-								{% endfor %}
+							{# age #}
+							<div class="form-group form-inline">
+								{{ form.age.label(class="form-control-label") }}
+								{% if form.age.errors %}
+								{{ form.age(class="form-control is-invalid") }}
+								<div class="invalid-feedback">
+									{% for error in form.age.errors %}
+									<span>{{ error }}</span>
+									{% endfor %}
+								</div>
+								{% else %}
+								{{ form.age(class="form-control form-control-sm") }}
+								{% endif %}
+								{# gender #}
+								{{ form.gender.label(class="form-control-label") }}
+								{% if form.gender.errors %}
+								{{ form.gender(class="form-control is-invalid") }}
+								<div class="invalid-feedback">
+									{% for error in form.gender.errors %}
+									<span>{{ error }}</span>
+									{% endfor %}
+								</div>
+								{% else %}
+								{{ form.gender(class="form-control form-control-sm") }}
+								{% endif %}
+								{# alignment #}
+								{{ form.alignment.label(class="form-control-label") }}
+								{% if form.alignment.errors %}
+								{{ form.alignment(class="form-control is-invalid") }}
+								<div class="invalid-feedback">
+									{% for error in form.alignment.errors %}
+									<span>{{ error }}</span>
+									{% endfor %}
+								</div>
+								{% else %}
+								{{ form.alignment(class="form-control form-control-sm") }}
+								{% endif %}
 							</div>
-							{% else %}
-							{{ form.age(class="form-control form-control-sm") }}
-							{% endif %}
-							{# gender #}
-							{{ form.gender.label(class="form-control-label") }}
-							{% if form.gender.errors %}
-							{{ form.gender(class="form-control is-invalid") }}
-							<div class="invalid-feedback">
-								{% for error in form.gender.errors %}
-								<span>{{ error }}</span>
-								{% endfor %}
-							</div>
-							{% else %}
-							{{ form.gender(class="form-control form-control-sm") }}
-							{% endif %}
-							{# alignment #}
-							{{ form.alignment.label(class="form-control-label") }}
-							{% if form.alignment.errors %}
-							{{ form.alignment(class="form-control is-invalid") }}
-							<div class="invalid-feedback">
-								{% for error in form.alignment.errors %}
-								<span>{{ error }}</span>
-								{% endfor %}
-							</div>
-							{% else %}
-							{{ form.alignment(class="form-control form-control-sm") }}
-							{% endif %}
-						</div>
 
-						{# physical description #}
-						<div class="form-group">
-							{{ form.description.label(class="form-control-label") }}
-							{% if form.description.errors %}
-							{{ form.description(class="form-control is-invalid") }}
-							<div class="invalid-feedback">
-								{% for error in form.description.errors %}
-								<span>{{ error }}</span>
-								{% endfor %}
+							{# physical description #}
+							<div class="form-group">
+								{{ form.description.label(class="form-control-label") }}
+								{% if form.description.errors %}
+								{{ form.description(class="form-control is-invalid") }}
+								<div class="invalid-feedback">
+									{% for error in form.description.errors %}
+									<span>{{ error }}</span>
+									{% endfor %}
+								</div>
+								{% else %}
+								{{ form.description(class="form-control form-control-sm") }}
+								{% endif %}
 							</div>
-							{% else %}
-							{{ form.description(class="form-control form-control-sm") }}
-							{% endif %}
-						</div>
 
-						{# backstory #}
-						<div class="form-group">
-							{{ form.biography.label(class="form-control-label") }}
-							{% if form.biography.errors %}
-							{{ form.biography(class="form-control is-invalid") }}
-							<div class="invalid-feedback">
-								{% for error in form.biography.errors %}
-								<span>{{ error }}</span>
-								{% endfor %}
+							{# backstory #}
+							<div class="form-group">
+								{{ form.biography.label(class="form-control-label") }}
+								{% if form.biography.errors %}
+								{{ form.biography(class="form-control is-invalid") }}
+								<div class="invalid-feedback">
+									{% for error in form.biography.errors %}
+									<span>{{ error }}</span>
+									{% endfor %}
+								</div>
+								{% else %}
+								{{ form.biography(class="form-control form-control-sm") }}
+								{% endif %}
 							</div>
-							{% else %}
-							{{ form.biography(class="form-control form-control-sm") }}
-							{% endif %}
-						</div>
 
-						{# class name #}
-						<div class="form-group form-horizontal">
-							{{ form.class_name.label(class="form-control-label") }} <small>(Decorative only. Make a new
-								character to
-								change class.)</small>
-							{% if form.class_name.errors %}
-							{{ form.class_name(class="form-control is-invalid") }}
-							<div class="invalid-feedback">
-								{% for error in form.class_name.errors %}
-								<span>{{ error }}</span>
-								{% endfor %}
+							{# class name #}
+							<div class="form-group form-horizontal">
+								{{ form.class_name.label(class="form-control-label") }} <small>(Decorative only. Make a
+									new
+									character to
+									change class.)</small>
+								{% if form.class_name.errors %}
+								{{ form.class_name(class="form-control is-invalid") }}
+								<div class="invalid-feedback">
+									{% for error in form.class_name.errors %}
+									<span>{{ error }}</span>
+									{% endfor %}
+								</div>
+								{% else %}
+								{{ form.class_name(class="form-control form-control-sm") }}
+								{% endif %}
 							</div>
-							{% else %}
-							{{ form.class_name(class="form-control form-control-sm") }}
-							{% endif %}
-						</div>
 				</li>
 				<li><a data-toggle="collapse" href="#ability">Ability Scores</a>
+					{% if selected_field in ("ability", "all") %}
 					<div class="collapse show" id="ability">
-						{# ability scores #}
-						<div class="form-group form-inline">
-							{{ form.constitution.label(class="form-control-label pr-4") }}
-							{% if form.constitution.errors %}
-							{{ form.constitution(class="form-control form-control-sm is-invalid pr-4") }}
-							<div class="invalid-feedback">
-								{% for error in form.constitution.errors %}
-								<span>{{ error }}</span>
-								{% endfor %}
-							</div>
-							{% else %}
-							{{ form.constitution(class="form-control form-control-sm pr-4") }}
+						{% else %}
+						<div class="collapse" id="ability">
 							{% endif %}
-							{{ form.strength.label(class="form-control-label") }}
-							{% if form.strength.errors %}
-							{{ form.strength(class="form-control form-control-sm is-invalid pr-4") }}
-							<div class="invalid-feedback">
-								{% for error in form.strength.errors %}
-								<span>{{ error }}</span>
-								{% endfor %}
+							{# ability scores #}
+							<div class="form-group form-inline">
+								{{ form.constitution.label(class="form-control-label pr-4") }}
+								{% if form.constitution.errors %}
+								{{ form.constitution(class="form-control form-control-sm is-invalid pr-4") }}
+								<div class="invalid-feedback">
+									{% for error in form.constitution.errors %}
+									<span>{{ error }}</span>
+									{% endfor %}
+								</div>
+								{% else %}
+								{{ form.constitution(class="form-control form-control-sm pr-4") }}
+								{% endif %}
+								{{ form.strength.label(class="form-control-label") }}
+								{% if form.strength.errors %}
+								{{ form.strength(class="form-control form-control-sm is-invalid pr-4") }}
+								<div class="invalid-feedback">
+									{% for error in form.strength.errors %}
+									<span>{{ error }}</span>
+									{% endfor %}
+								</div>
+								{% else %}
+								{{ form.strength(class="form-control form-control-sm pr-4") }}
+								{% endif %}
+								{{ form.dexterity.label(class="form-control-label") }}
+								{% if form.dexterity.errors %}
+								{{ form.dexterity(class="form-control form-control-sm is-invalid") }}
+								<div class="invalid-feedback">
+									{% for error in form.dexterity.errors %}
+									<span>{{ error }}</span>
+									{% endfor %}
+								</div>
+								{% else %}
+								{{ form.dexterity(class="form-control form-control-sm") }}
+								{% endif %}
 							</div>
-							{% else %}
-							{{ form.strength(class="form-control form-control-sm pr-4") }}
-							{% endif %}
-							{{ form.dexterity.label(class="form-control-label") }}
-							{% if form.dexterity.errors %}
-							{{ form.dexterity(class="form-control form-control-sm is-invalid") }}
-							<div class="invalid-feedback">
-								{% for error in form.dexterity.errors %}
-								<span>{{ error }}</span>
-								{% endfor %}
+							<div class="form-group form-inline">
+								{{ form.wisdom.label(class="form-control-label pr-4") }}
+								{% if form.wisdom.errors %}
+								{{ form.wisdom(class="form-control form-control-sm is-invalid pr-4") }}
+								<div class="invalid-feedback">
+									{% for error in form.wisdom.errors %}
+									<span>{{ error }}</span>
+									{% endfor %}
+								</div>
+								{% else %}
+								{{ form.wisdom(class="form-control form-control-sm pr-4") }}
+								{% endif %}
+								{{ form.intelligence.label(class="form-control-label") }}
+								{% if form.intelligence.errors %}
+								{{ form.intelligence(class="form-control form-control-sm is-invalid pr-4") }}
+								<div class="invalid-feedback">
+									{% for error in form.intelligence.errors %}
+									<span>{{ error }}</span>
+									{% endfor %}
+								</div>
+								{% else %}
+								{{ form.intelligence(class="form-control form-control-sm pr-4") }}
+								{% endif %}
+								{{ form.charisma.label(class="form-control-label") }}
+								{% if form.charisma.errors %}
+								{{ form.charisma(class="form-control form-control-sm is-invalid") }}
+								<div class="invalid-feedback">
+									{% for error in form.charisma.errors %}
+									<span>{{ error }}</span>
+									{% endfor %}
+								</div>
+								{% else %}
+								{{ form.charisma(class="form-control form-control-sm") }}
+								{% endif %}
 							</div>
-							{% else %}
-							{{ form.dexterity(class="form-control form-control-sm") }}
-							{% endif %}
-						</div>
-						<div class="form-group form-inline">
-							{{ form.wisdom.label(class="form-control-label pr-4") }}
-							{% if form.wisdom.errors %}
-							{{ form.wisdom(class="form-control form-control-sm is-invalid pr-4") }}
-							<div class="invalid-feedback">
-								{% for error in form.wisdom.errors %}
-								<span>{{ error }}</span>
-								{% endfor %}
-							</div>
-							{% else %}
-							{{ form.wisdom(class="form-control form-control-sm pr-4") }}
-							{% endif %}
-							{{ form.intelligence.label(class="form-control-label") }}
-							{% if form.intelligence.errors %}
-							{{ form.intelligence(class="form-control form-control-sm is-invalid pr-4") }}
-							<div class="invalid-feedback">
-								{% for error in form.intelligence.errors %}
-								<span>{{ error }}</span>
-								{% endfor %}
-							</div>
-							{% else %}
-							{{ form.intelligence(class="form-control form-control-sm pr-4") }}
-							{% endif %}
-							{{ form.charisma.label(class="form-control-label") }}
-							{% if form.charisma.errors %}
-							{{ form.charisma(class="form-control form-control-sm is-invalid") }}
-							<div class="invalid-feedback">
-								{% for error in form.charisma.errors %}
-								<span>{{ error }}</span>
-								{% endfor %}
-							</div>
-							{% else %}
-							{{ form.charisma(class="form-control form-control-sm") }}
-							{% endif %}
-						</div>
 				</li>
-				<li><a data-toggle="collapse" href="#class_features">Class Features</a>
-					<div class="collapse show" id="class_features">
-						<ul>
-							<small class="text-muted">Click to toggle</small>
-							<div class="form-group">
-								{% for class_feature_field in class_features %}
-								<li>
-									{{ class_feature_field(class="strikethrough") }}
-									{{ class_feature_field.label() }}
-								</li>
-								{% endfor %}
-							</div>
-						</ul>
-					</div>
+				<li><a data-toggle="collapse" href="#features">Class Features</a>
+					{% if selected_field in ("features", "all") %}
+					<div class="collapse show" id="features">
+						{% else %}
+						<div class="collapse" id="features">
+							{% endif %}
+							<ul>
+								<small class="text-muted">Click to toggle</small>
+								<div class="form-group">
+									{% for class_feature_field in class_features %}
+									<li>
+										{{ class_feature_field(class="strikethrough") }}
+										{{ class_feature_field.label() }}
+									</li>
+									{% endfor %}
+								</div>
+							</ul>
+						</div>
 				</li>
 				<li><a data-toggle="collapse" href="#skills">Skills</a>
+					{% if selected_field in ("skills", "all") %}
 					<div class="collapse show" id="skills">
-						<div class="form-group">
-							{{ form.skills_strength_athletics.label(class="form-control-label") }}
-							{% if form.skills_strength_athletics.errors %}
-							{{ form.skills_strength_athletics(class="form-control form-control-sm is-invalid") }}
-							<div class="invalid-feedback">
-								{% for error in form.skills_strength_athletics.errors %}
-								<span>{{ error }}</span>
-								{% endfor %}
-							</div>
-							{% else %}
-							{{ form.skills_strength_athletics(class="form-control form-control-sm") }}
+						{% else %}
+						<div class="collapse" id="skills">
 							{% endif %}
+							<div class="form-group">
+								{{ form.skills_strength_athletics.label(class="form-control-label") }}
+								{% if form.skills_strength_athletics.errors %}
+								{{ form.skills_strength_athletics(class="form-control form-control-sm is-invalid") }}
+								<div class="invalid-feedback">
+									{% for error in form.skills_strength_athletics.errors %}
+									<span>{{ error }}</span>
+									{% endfor %}
+								</div>
+								{% else %}
+								{{ form.skills_strength_athletics(class="form-control form-control-sm") }}
+								{% endif %}
+							</div>
+							<div class="form-group">
+								{{ form.skills_dexterity_acrobatics.label(class="form-control-label") }}
+								{{ form.skills_dexterity_acrobatics(class="form-control form-control-sm") }}
+								{{ form.skills_dexterity_raistlin.label(class="form-control-label") }}
+								{{ form.skills_dexterity_raistlin(class="form-control form-control-sm") }}
+								{{ form.skills_dexterity_stealth.label(class="form-control-label") }}
+								{{ form.skills_dexterity_stealth(class="form-control form-control-sm") }}
+							</div>
+							<div class="form-group">
+								{{ form.skills_intelligence_arcana.label(class="form-control-label") }}
+								{{ form.skills_intelligence_arcana(class="form-control form-control-sm") }}
+								{{ form.skills_intelligence_history.label(class="form-control-label") }}
+								{{ form.skills_intelligence_history(class="form-control form-control-sm") }}
+								{{ form.skills_intelligence_investigation.label(class="form-control-label") }}
+								{{ form.skills_intelligence_investigation(class="form-control form-control-sm") }}
+								{{ form.skills_intelligence_nature.label(class="form-control-label") }}
+								{{ form.skills_intelligence_nature(class="form-control form-control-sm") }}
+								{{ form.skills_intelligence_religion.label(class="form-control-label") }}
+								{{ form.skills_intelligence_religion(class="form-control form-control-sm") }}
+							</div>
+							<div class="form-group">
+								{{ form.skills_wisdom_hagrid.label(class="form-control-label") }}
+								{{ form.skills_wisdom_hagrid(class="form-control form-control-sm") }}
+								{{ form.skills_wisdom_insight.label(class="form-control-label") }}
+								{{ form.skills_wisdom_insight(class="form-control form-control-sm") }}
+								{{ form.skills_wisdom_medicine.label(class="form-control-label") }}
+								{{ form.skills_wisdom_medicine(class="form-control form-control-sm") }}
+								{{ form.skills_wisdom_perception.label(class="form-control-label") }}
+								{{ form.skills_wisdom_perception(class="form-control form-control-sm") }}
+								{{ form.skills_wisdom_survival.label(class="form-control-label") }}
+								{{ form.skills_wisdom_survival(class="form-control form-control-sm") }}
+							</div>
+							<div class="form-group">
+								{{ form.skills_charisma_deception.label(class="form-control-label") }}
+								{{ form.skills_charisma_deception(class="form-control form-control-sm") }}
+								{{ form.skills_charisma_intimidation.label(class="form-control-label") }}
+								{{ form.skills_charisma_intimidation(class="form-control form-control-sm") }}
+								{{ form.skills_charisma_performance.label(class="form-control-label") }}
+								{{ form.skills_charisma_performance(class="form-control form-control-sm") }}
+								{{ form.skills_charisma_persuasion.label(class="form-control-label") }}
+								{{ form.skills_charisma_persuasion(class="form-control form-control-sm") }}
+							</div>
 						</div>
-						<div class="form-group">
-							{{ form.skills_dexterity_acrobatics.label(class="form-control-label") }}
-							{{ form.skills_dexterity_acrobatics(class="form-control form-control-sm") }}
-							{{ form.skills_dexterity_raistlin.label(class="form-control-label") }}
-							{{ form.skills_dexterity_raistlin(class="form-control form-control-sm") }}
-							{{ form.skills_dexterity_stealth.label(class="form-control-label") }}
-							{{ form.skills_dexterity_stealth(class="form-control form-control-sm") }}
-						</div>
-						<div class="form-group">
-							{{ form.skills_intelligence_arcana.label(class="form-control-label") }}
-							{{ form.skills_intelligence_arcana(class="form-control form-control-sm") }}
-							{{ form.skills_intelligence_history.label(class="form-control-label") }}
-							{{ form.skills_intelligence_history(class="form-control form-control-sm") }}
-							{{ form.skills_intelligence_investigation.label(class="form-control-label") }}
-							{{ form.skills_intelligence_investigation(class="form-control form-control-sm") }}
-							{{ form.skills_intelligence_nature.label(class="form-control-label") }}
-							{{ form.skills_intelligence_nature(class="form-control form-control-sm") }}
-							{{ form.skills_intelligence_religion.label(class="form-control-label") }}
-							{{ form.skills_intelligence_religion(class="form-control form-control-sm") }}
-						</div>
-						<div class="form-group">
-							{{ form.skills_wisdom_hagrid.label(class="form-control-label") }}
-							{{ form.skills_wisdom_hagrid(class="form-control form-control-sm") }}
-							{{ form.skills_wisdom_insight.label(class="form-control-label") }}
-							{{ form.skills_wisdom_insight(class="form-control form-control-sm") }}
-							{{ form.skills_wisdom_medicine.label(class="form-control-label") }}
-							{{ form.skills_wisdom_medicine(class="form-control form-control-sm") }}
-							{{ form.skills_wisdom_perception.label(class="form-control-label") }}
-							{{ form.skills_wisdom_perception(class="form-control form-control-sm") }}
-							{{ form.skills_wisdom_survival.label(class="form-control-label") }}
-							{{ form.skills_wisdom_survival(class="form-control form-control-sm") }}
-						</div>
-						<div class="form-group">
-							{{ form.skills_charisma_deception.label(class="form-control-label") }}
-							{{ form.skills_charisma_deception(class="form-control form-control-sm") }}
-							{{ form.skills_charisma_intimidation.label(class="form-control-label") }}
-							{{ form.skills_charisma_intimidation(class="form-control form-control-sm") }}
-							{{ form.skills_charisma_performance.label(class="form-control-label") }}
-							{{ form.skills_charisma_performance(class="form-control form-control-sm") }}
-							{{ form.skills_charisma_persuasion.label(class="form-control-label") }}
-							{{ form.skills_charisma_persuasion(class="form-control form-control-sm") }}
-						</div>
-					</div>
 				</li>
 				{% if character.class_spellcasting|length != 0 %}
 				<li><a data-toggle="collapse" href="#spellcasting">Spellcasting</a>
+					{% if selected_field in ("spellcasting", "all") %}
 					<div class="collapse show" id="spellcasting">
-						{% for cantrip_field in cantrips %}
-						{{ cantrip_field.label(class="form-control-label") }}
-						{{ cantrip_field(class="form-control form-control-sm") }}
-						{% endfor %}
-						{% for spell_slot_field in spell_slots %}
-						{{ spell_slot_field.label(class="form-control-label") }}
-						{{ spell_slot_field(class="form-control form-control-sm") }}
-						{% endfor %}
-					</div>
+						{% else %}
+						<div class="collapse" id="spellcasting">
+							{% endif %}
+							{% for cantrip_field in cantrips %}
+							{{ cantrip_field.label(class="form-control-label") }}
+							{{ cantrip_field(class="form-control form-control-sm") }}
+							{% endfor %}
+							{% for spell_slot_field in spell_slots %}
+							{{ spell_slot_field.label(class="form-control-label") }}
+							{{ spell_slot_field(class="form-control form-control-sm") }}
+							{% endfor %}
+						</div>
 				</li>
 				{% endif %}
 			</ol>

@@ -49,6 +49,8 @@ def create_character_choice():
 @blueprint.route("/create/<class_key>")
 @flask_login.login_required
 def create_character_chosen(class_key):
+    if class_key not in CLASSES:
+        abort(400)
     new_char = Character(
         classs=CLASSES[class_key],
         name="New Character",
@@ -73,7 +75,13 @@ def create_character_chosen(class_key):
 @blueprint.route("/delete/<character_id>", methods=["GET", "POST"])
 @flask_login.login_required
 def delete_character(character_id):
+    try:
+        character_id = int(character_id)
+    except TypeError:
+        abort(400)
     db_character = GameCharacter.query.get(character_id)
+    if db_character is None:
+        abort(404)
     if db_character.user_id != int(flask_login.current_user.get_id()):
         abort(403)
     form = DeleteCharacterForm()
@@ -90,9 +98,18 @@ def delete_character(character_id):
     )
 
 
-@blueprint.route("/edit/<character_id>", methods=["GET", "POST"])
+@blueprint.route(
+    "/edit/<character_id>",
+    defaults={"selected_field": "all"},
+    methods=["GET", "POST"],
+)
+@blueprint.route("/edit/<character_id>/<selected_field>", methods=["GET", "POST"])
 @flask_login.login_required
-def edit_character(character_id):
+def edit_character(character_id, selected_field):
+    try:
+        character_id = int(character_id)
+    except TypeError:
+        abort(400)
     db_character = GameCharacter.query.get(character_id)
     if db_character is None:
         abort(404)
@@ -210,6 +227,7 @@ def edit_character(character_id):
             db_character.update_data(data)
             db.session.add(db_character)
             db.session.commit()
+            return redirect(url_for(".view_character", character_id=character_id))
 
     character = db_character.character
     # Fill form with existing character data
@@ -286,6 +304,7 @@ def edit_character(character_id):
         logged_in=True,
         character=character,
         form=form,
+        selected_field=selected_field,
         character_id=character_id,
         character_img=db_character.image,
         class_features=[
