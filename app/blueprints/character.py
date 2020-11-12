@@ -337,6 +337,7 @@ def view_character(character_id):
     return render_template(
         "view_character.html",
         logged_in=logged_in,
+        page_description=character.description,
         character=character,
         can_edit=can_edit,
         character_id=character_id,
