@@ -59,12 +59,14 @@ class EditCharacterForm(FlaskForm):
     description = StringField("Physical Description", validators=[Length(max=127)])
     biography = TextAreaField("Backstory", validators=[Length(max=2048)])
     class_name = StringField("Class Name", validators=[Length(max=127)])
+    # ability scores
     constitution = IntegerField("CON", validators=[NumberRange(min=3, max=20)])
     strength = IntegerField("STR", validators=[NumberRange(min=3, max=20)])
     dexterity = IntegerField("DEX", validators=[NumberRange(min=3, max=20)])
     wisdom = IntegerField("WIS", validators=[NumberRange(min=3, max=20)])
     intelligence = IntegerField("INT", validators=[NumberRange(min=3, max=20)])
     charisma = IntegerField("CHA", validators=[NumberRange(min=3, max=20)])
+    # skills
     skills_strength_athletics = BooleanField("Strength: Athletics")
     skills_dexterity_acrobatics = BooleanField("Dexterity: Acrobatics")
     skills_dexterity_raistlin = BooleanField("Dexterity: Sleight of Hand")
@@ -83,6 +85,17 @@ class EditCharacterForm(FlaskForm):
     skills_charisma_intimidation = BooleanField("Charisma: Intimidation")
     skills_charisma_performance = BooleanField("Charisma: Performance")
     skills_charisma_persuasion = BooleanField("Charisma: Persuasion")
+    # character visual design
+    visual_body = SelectField(
+        "Body Type: ",
+        choices=[(0, "Neutral"), (1, "Feminine"), (2, "Masculine")],
+        validate_choice=False,
+    )
+    visual_head_accessory = SelectField(
+        "Hat: ",
+        choices=[(None, "None"), ("crown", "Crown"), ("elfhat", "Elf Hat")],
+        validate_choice=False,
+    )
     submit = SubmitField("💾 Save Changes")
 
 

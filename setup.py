@@ -23,5 +23,6 @@ setup(
         "mistune==2.0.0a5",
         "python-dotenv",
         "dnd_character",
+        "pillow",
     ],
 )

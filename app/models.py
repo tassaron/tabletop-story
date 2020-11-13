@@ -86,9 +86,25 @@ class GameCharacter(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     name = db.Column(db.String(127), nullable=False)
-    image = db.Column(db.String(127), nullable=True)
+    image = db.Column(db.String(127), nullable=False)
     data_keys = db.Column(db.String(1024), nullable=False)
     data_vals = db.Column(db.String(4096), nullable=False)
+    visual_design = db.Column(db.String(512), nullable=False)
+
+    def __init__(self, **kwargs):
+        if "visual_design" not in kwargs:
+            kwargs["visual_design"] = str(
+                {
+                    "body": "0",
+                    "head_accessory": "None",
+                }
+            )
+        super().__init__(**kwargs)
+
+    @property
+    def design(self):
+        """Returns dict of visual design configuration for this character"""
+        return literal_eval(self.visual_design)
 
     def keys(self):
         return self.data_keys[2:-2].split("', '")

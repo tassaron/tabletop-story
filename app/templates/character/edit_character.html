@@ -37,6 +37,16 @@
 								{% endif %}
 							</div>
 
+							{# visual design #}
+							<div class="form-group form-horizontal">
+								{{ form.visual_body.label(class="form-control-label") }}
+								{{ form.visual_body(class="form-control form-control-sm") }}
+							</div>
+							<div class="form-group form-horizontal">
+								{{ form.visual_head_accessory.label(class="form-control-label") }}
+								{{ form.visual_head_accessory(class="form-control form-control-sm") }}
+							</div>
+
 							{# age #}
 							<div class="form-group form-inline">
 								{{ form.age.label(class="form-control-label") }}

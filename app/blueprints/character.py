@@ -22,6 +22,7 @@ from tabletop_story.forms import (
 )
 from tabletop_story.routes import ability_modifier
 from tabletop_story.plugins import db
+from .charimg import charimg
 from dnd_character import Character
 from dnd_character.classes import CLASSES
 from dnd_character.spellcasting import spells_for_class_level, SRD_spells
@@ -184,13 +185,21 @@ def edit_character(character_id, selected_field):
                 data[field] = form._fields[field].data
             del data["csrf_token"]
             del data["submit"]
-            # But we must reassign class_features and skills to different names
+
+            # But we must reassign class_features to different names
             data["class_features_enabled"] = [
                 not data.pop(f"class_feature_{i}")
                 for i in range(len(data["class_features"]))
             ]
-            new_data = {}
+            # Then remove the design bits and put them in their own dict
+            design = {}
             removals = []
+            for field in data:
+                if field.startswith("visual_"):
+                    removals.append(field)
+                    design[field[7:]] = data[field]
+            # Then remove skill fields and put them into the skills dict
+            new_data = {}
             for field in data:
                 if not field.startswith("skills_"):
                     continue
@@ -210,6 +219,7 @@ def edit_character(character_id, selected_field):
             for field in removals:
                 data.pop(field)
             data.update(new_data)
+            # Remove the spells_known fields and put them into the dict
             data["spells_known"] = {}
             for i in range(cantrips):
                 cantrip = f"spells_known_lvl0_{i}"
@@ -228,13 +238,17 @@ def edit_character(character_id, selected_field):
             # Now we have a valid dict to make a new Character
             db_character.name = form.name.data
             db_character.update_data(data)
+            db_character.visual_design = str(design)
             db.session.add(db_character)
             db.session.commit()
             return redirect(url_for(".view_character", character_id=character_id))
 
     character = db_character.character
+    design = db_character.design
     # Fill form with existing character data
     filled_form = {
+        "visual_body": design["body"],
+        "visual_head_accessory": design["head_accessory"],
         "name": character.name,
         "age": character.age,
         "gender": character.gender,
@@ -341,7 +355,7 @@ def view_character(character_id):
         character=character,
         can_edit=can_edit,
         character_id=character_id,
-        character_img=db_character.image,
+        character_img=charimg(*list(db_character.design.values())),
         spells=SRD_spells,
         spell_levels=0
         if character.spells_known is None
