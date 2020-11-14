@@ -2,6 +2,33 @@
 {% block title %}Edit {{ character.name }}{% endblock %}
 
 
+{% block script %}
+<script>
+	function update() {
+		var design = [$("#visual_body").val(), $("#visual_head_accessory").val()]
+		fetch(`${window.location.origin}/character/img`, {
+			method: "POST",
+			credentials: "same-origin",
+			body: JSON.stringify(design),
+			cache: "no-cache",
+			headers: new Headers({
+				"content-type": "application/json"
+			})
+		}).then(function (response) {
+			response.json().then(function (data) {
+				$("#charimg").attr("src", "{{ url_for('static', filename='/img/character/') }}" + data);
+			})
+		})
+	};
+	$(function () {
+		$('#visual_body').on('change', function () { update(); });
+		$('#visual_head_accessory').on('change', function () { update(); });
+	}
+	);
+</script>
+{% endblock %}
+
+
 {% block content %}
 <div class="row">
 	<a class="btn btn-secondary" href="/character/edit/{{character_id}}/inventory">Edit Inventory</a>&nbsp;
@@ -9,8 +36,8 @@
 </div>
 <div class="row">&nbsp;</div>
 <div class="row">
-	<a href="/character/view/{{character_id}}"><img style="padding:0.5rem; max-height: 100px;"
-			src="{{url_for('static', filename='/img/character/')+character_img}}" alt="{{character.name}}"></a><br>
+	<a href="/character/view/{{character_id}}"><img id="charimg" style="padding:0.5rem; max-height: 100px;"
+			src="{{ url_for('static', filename='/img/character/') }}{{character_img}}" alt="{{character.name}}"></a><br>
 	<form action="" method="POST">
 		{{ form.hidden_tag() }}
 		<fieldset class="form-group form-horizontal">

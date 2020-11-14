@@ -1,6 +1,11 @@
 {% extends 'base.html' %}
 {% block title %}{{ character.name }}{% endblock %}
 
+{% block meta %}
+<meta property="og:title" content="{{character.name}}">
+<meta property="og:description" content="{{character.description}}">
+<meta property="og:image" content="{{url_for('static', filename='/img/character/')+character_img}}">{% endblock %}
+
 {% block content %}
 <div class="row">&nbsp;</div>
 <div class="row">

@@ -7,6 +7,8 @@ from flask import (
     flash,
     current_app,
     abort,
+    make_response,
+    jsonify,
 )
 import flask_login
 from wtforms import BooleanField, SelectField
@@ -69,7 +71,6 @@ def create_character_chosen(class_key):
         name=new_char.name,
         data_keys=str(new_char.keys()),
         data_vals=str(new_char.values()),
-        image="potato.jpg",
     )
     db.session.add(db_char)
     db.session.commit()
@@ -323,7 +324,7 @@ def edit_character(character_id, selected_field):
         form=form,
         selected_field=selected_field,
         character_id=character_id,
-        character_img=db_character.image,
+        character_img=charimg(*list(design.values())),
         class_features=[
             form._fields[f"class_feature_{i}"]
             for i in range(len(character.class_features))
@@ -335,6 +336,13 @@ def edit_character(character_id, selected_field):
         if not character.class_spellcasting
         else [form._fields[spell_slot] for spell_slot in spell_slots],
     )
+
+
+@blueprint.route("/img", methods=["POST"])
+def get_charimg():
+    data = request.get_json()
+    response = make_response(jsonify(charimg(*data)), 200)
+    return response
 
 
 @blueprint.route("/view/<character_id>")

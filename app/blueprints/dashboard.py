@@ -2,6 +2,7 @@ from flask import *
 import flask_login
 from tabletop_story.plugins import bcrypt, db
 from tabletop_story.models import GameCharacter
+from tabletop_story.blueprints import charimg
 
 
 blueprint = Blueprint(
@@ -47,8 +48,8 @@ def index():
         )
         characters = [row.character for row in db_characters]
         for i, character in enumerate(characters):
-            img = db_characters[i].image
-            character.image = img if img is not None else "potato.jpg"
+            img = charimg.charimg(*list(db_characters[i].design.values()))
+            character.image = img
             character.dbid = db_characters[i].id
 
     return render_template(

@@ -86,7 +86,6 @@ class GameCharacter(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     name = db.Column(db.String(127), nullable=False)
-    image = db.Column(db.String(127), nullable=False)
     data_keys = db.Column(db.String(1024), nullable=False)
     data_vals = db.Column(db.String(4096), nullable=False)
     visual_design = db.Column(db.String(512), nullable=False)
