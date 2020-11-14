@@ -121,65 +121,73 @@ def edit_character(character_id, selected_field):
     elif db_character.user_id != int(flask_login.current_user.get_id()):
         abort(403)
 
-    data = db_character.as_dict()
+    def create_edit_character_form(data):
+        """
+        Subclass the edit form so we can add fields dynamically.
+        Returns a tuple: (the subclass, number of cantrips, and list of non-cantrip spell choices)
+        """
 
-    # Subclass the edit form so we can add fields dynamically
-    class ThisEditCharacterForm(EditCharacterForm):
-        pass
+        class ThisEditCharacterForm(EditCharacterForm):
+            pass
 
-    for i, class_feature in enumerate(data["class_features"].values()):
-        setattr(
-            ThisEditCharacterForm,
-            f"class_feature_{i}",
-            BooleanField(class_feature["name"]),
-        )
-    cantrips = 0
-    spell_slots = []
-    if data["class_spellcasting"]:
-        if "cantrips_known" in data["class_spellcasting"]:
-            cantrips = data["class_spellcasting"]["cantrips_known"]
-            for i in range(cantrips):
-                available_cantrips = list(
-                    spells_for_class_level(data["class_index"], 0)
-                )
-                setattr(
-                    ThisEditCharacterForm,
-                    f"spells_known_lvl0_{i}",
-                    SelectField(
-                        f"Cantrip #{str(i+1)}",
-                        choices=[
-                            (spell_name, SRD_spells[spell_name]["name"])
-                            for spell_name in available_cantrips
-                        ],
-                    ),
-                )
-        for spell_level in range(1, 10):
-            try:
-                num_spells = data["class_spellcasting"][
-                    f"spell_slots_level_{spell_level}"
-                ]
-            except KeyError:
-                # Half-spellcasters have less spell slot levels, so ignore this for now
-                break
-            for spell_num in range(num_spells):
-                label = f"spells_known_lvl{spell_level}_{spell_num}"
-                spell_slots.append(label)
-                setattr(
-                    ThisEditCharacterForm,
-                    label,
-                    SelectField(
-                        f"Level {spell_level} Spell Slot #{str(spell_num+1)}",
-                        choices=[
-                            (spell_name, SRD_spells[spell_name]["name"])
-                            for spell_name in spells_for_class_level(
-                                data["class_index"], spell_level
-                            )
-                        ],
-                    ),
-                )
+        for i, class_feature in enumerate(data["class_features"].values()):
+            setattr(
+                ThisEditCharacterForm,
+                f"class_feature_{i}",
+                BooleanField(class_feature["name"]),
+            )
+        cantrips = 0
+        spell_slots = []
+        if data["class_spellcasting"]:
+            if "cantrips_known" in data["class_spellcasting"]:
+                cantrips = data["class_spellcasting"]["cantrips_known"]
+                for i in range(cantrips):
+                    available_cantrips = list(
+                        spells_for_class_level(data["class_index"], 0)
+                    )
+                    setattr(
+                        ThisEditCharacterForm,
+                        f"spells_known_lvl0_{i}",
+                        SelectField(
+                            f"Cantrip #{str(i+1)}",
+                            choices=[
+                                (spell_name, SRD_spells[spell_name]["name"])
+                                for spell_name in available_cantrips
+                            ],
+                        ),
+                    )
+            for spell_level in range(1, 10):
+                try:
+                    num_spells = data["class_spellcasting"][
+                        f"spell_slots_level_{spell_level}"
+                    ]
+                except KeyError:
+                    # Half-spellcasters have less spell slot levels, so ignore this for now
+                    break
+                for spell_num in range(num_spells):
+                    label = f"spells_known_lvl{spell_level}_{spell_num}"
+                    spell_slots.append(label)
+                    setattr(
+                        ThisEditCharacterForm,
+                        label,
+                        SelectField(
+                            f"Level {spell_level} Spell Slot #{str(spell_num+1)}",
+                            choices=[
+                                (spell_name, SRD_spells[spell_name]["name"])
+                                for spell_name in spells_for_class_level(
+                                    data["class_index"], spell_level
+                                )
+                            ],
+                        ),
+                    )
+        return ThisEditCharacterForm, cantrips, spell_slots
 
-    if request.method == "POST":
-        form = ThisEditCharacterForm()
+    def extract_and_apply_edit_character_form(form, data):
+        """
+        Receives the dictionary for the previous character.
+        Extracts data from the edit_character form and applies it to this dict.
+        Returns a tuple: (valid dict for making a new Character, visual_design dict)
+        """
         if form.validate_on_submit():
             # Most fields match up with attributes of Character
             for field in form._fields:
@@ -236,87 +244,105 @@ def edit_character(character_id, selected_field):
                     data["spells_known"][spell_level].append(chosen_spell)
                 else:
                     data["spells_known"][spell_level] = [chosen_spell]
-            # Now we have a valid dict to make a new Character
-            db_character.name = form.name.data
-            db_character.update_data(data)
-            db_character.visual_design = str(design)
-            db.session.add(db_character)
-            db.session.commit()
-            return redirect(url_for(".view_character", character_id=character_id))
+            return data, design
+
+    def create_filled_form_dict(character, design, cantrips, spell_slots):
+        """
+        Receives Character object, visual_design dict, number of cantrips, list of non-cantrips
+        Returns a dict of the filled edit_character form
+        """
+        filled_form = {
+            "visual_body": design["body"],
+            "visual_head_accessory": design["head_accessory"],
+            "name": character.name,
+            "age": character.age,
+            "gender": character.gender,
+            "description": character.description,
+            "biography": character.biography,
+            "class_name": character.class_name,
+            "alignment": character.alignment,
+            "constitution": character.constitution,
+            "strength": character.strength,
+            "dexterity": character.dexterity,
+            "wisdom": character.wisdom,
+            "intelligence": character.intelligence,
+            "charisma": character.charisma,
+            "skills_strength_athletics": character.skills_strength["athletics"],
+            "skills_dexterity_acrobatics": character.skills_dexterity["acrobatics"],
+            "skills_dexterity_raistlin": character.skills_dexterity["sleight-of-hand"],
+            "skills_dexterity_stealth": character.skills_dexterity["stealth"],
+            "skills_wisdom_hagrid": character.skills_wisdom["animal-handling"],
+            "skills_wisdom_insight": character.skills_wisdom["insight"],
+            "skills_wisdom_medicine": character.skills_wisdom["medicine"],
+            "skills_wisdom_perception": character.skills_wisdom["perception"],
+            "skills_wisdom_survival": character.skills_wisdom["survival"],
+            "skills_intelligence_arcana": character.skills_intelligence["arcana"],
+            "skills_intelligence_history": character.skills_intelligence["history"],
+            "skills_intelligence_investigation": character.skills_intelligence[
+                "investigation"
+            ],
+            "skills_intelligence_nature": character.skills_intelligence["nature"],
+            "skills_intelligence_religion": character.skills_intelligence["religion"],
+            "skills_charisma_deception": character.skills_charisma["deception"],
+            "skills_charisma_intimidation": character.skills_charisma["intimidation"],
+            "skills_charisma_performance": character.skills_charisma["performance"],
+            "skills_charisma_persuasion": character.skills_charisma["persuasion"],
+        }
+        filled_form.update(
+            {
+                f"class_feature_{i}": not character.class_features_enabled[i]
+                for i in range(len(character.class_features))
+            }
+        )
+        for spell_slot in spell_slots:
+            spell_level, spell_num = spell_slot[16:].split("_")
+            try:
+                chosen_spell = character.spells_known[int(spell_level)][int(spell_num)]
+            except (KeyError, TypeError, IndexError):
+                # default value for blank spell slots
+                chosen_spell = list(
+                    spells_for_class_level(character.class_index, int(spell_level))
+                )[int(spell_num)]
+
+            filled_form[spell_slot] = (chosen_spell, SRD_spells[chosen_spell]["name"])
+        if cantrips:
+            filled_form.update(
+                {
+                    f"spells_known_lvl0_{i}": (
+                        available_cantrips[i],
+                        SRD_spells[available_cantrips[i]]["name"],
+                    )
+                    if character.spells_known is None
+                    or i >= len(character.spells_known[0])
+                    else (
+                        character.spells_known[0][i],
+                        SRD_spells[character.spells_known[0][i]]["name"],
+                    )
+                    for i in range(cantrips)
+                }
+            )
+        return filled_form
+
+    data = db_character.as_dict()
+    ThisEditCharacterForm, cantrips, spell_slots = create_edit_character_form(data)
+
+    if request.method == "POST":
+        form = ThisEditCharacterForm()
+        data, design = extract_and_apply_edit_character_form(form, data)
+        # Now we have a valid dict to make a new Character
+        db_character.name = form.name.data
+        db_character.update_data(data)
+        db_character.visual_design = str(design)
+        db.session.add(db_character)
+        db.session.commit()
+        return redirect(url_for(".view_character", character_id=character_id))
 
     character = db_character.character
     design = db_character.design
-    # Fill form with existing character data
-    filled_form = {
-        "visual_body": design["body"],
-        "visual_head_accessory": design["head_accessory"],
-        "name": character.name,
-        "age": character.age,
-        "gender": character.gender,
-        "description": character.description,
-        "biography": character.biography,
-        "class_name": character.class_name,
-        "alignment": character.alignment,
-        "constitution": character.constitution,
-        "strength": character.strength,
-        "dexterity": character.dexterity,
-        "wisdom": character.wisdom,
-        "intelligence": character.intelligence,
-        "charisma": character.charisma,
-        "skills_strength_athletics": character.skills_strength["athletics"],
-        "skills_dexterity_acrobatics": character.skills_dexterity["acrobatics"],
-        "skills_dexterity_raistlin": character.skills_dexterity["sleight-of-hand"],
-        "skills_dexterity_stealth": character.skills_dexterity["stealth"],
-        "skills_wisdom_hagrid": character.skills_wisdom["animal-handling"],
-        "skills_wisdom_insight": character.skills_wisdom["insight"],
-        "skills_wisdom_medicine": character.skills_wisdom["medicine"],
-        "skills_wisdom_perception": character.skills_wisdom["perception"],
-        "skills_wisdom_survival": character.skills_wisdom["survival"],
-        "skills_intelligence_arcana": character.skills_intelligence["arcana"],
-        "skills_intelligence_history": character.skills_intelligence["history"],
-        "skills_intelligence_investigation": character.skills_intelligence[
-            "investigation"
-        ],
-        "skills_intelligence_nature": character.skills_intelligence["nature"],
-        "skills_intelligence_religion": character.skills_intelligence["religion"],
-        "skills_charisma_deception": character.skills_charisma["deception"],
-        "skills_charisma_intimidation": character.skills_charisma["intimidation"],
-        "skills_charisma_performance": character.skills_charisma["performance"],
-        "skills_charisma_persuasion": character.skills_charisma["persuasion"],
-    }
-    filled_form.update(
-        {
-            f"class_feature_{i}": not character.class_features_enabled[i]
-            for i in range(len(character.class_features))
-        }
-    )
-    for spell_slot in spell_slots:
-        spell_level, spell_num = spell_slot[16:].split("_")
-        try:
-            chosen_spell = character.spells_known[int(spell_level)][int(spell_num)]
-        except (KeyError, TypeError, IndexError):
-            # default value for blank spell slots
-            chosen_spell = list(
-                spells_for_class_level(character.class_index, int(spell_level))
-            )[int(spell_num)]
 
-        filled_form[spell_slot] = (chosen_spell, SRD_spells[chosen_spell]["name"])
-    if cantrips:
-        filled_form.update(
-            {
-                f"spells_known_lvl0_{i}": (
-                    available_cantrips[i],
-                    SRD_spells[available_cantrips[i]]["name"],
-                )
-                if character.spells_known is None or i >= len(character.spells_known[0])
-                else (
-                    character.spells_known[0][i],
-                    SRD_spells[character.spells_known[0][i]]["name"],
-                )
-                for i in range(cantrips)
-            }
-        )
+    filled_form = create_filled_form_dict(character, design, cantrips, spell_slots)
     form = ThisEditCharacterForm(formdata=MultiDict(filled_form))
+
     return render_template(
         "edit_character.html",
         logged_in=True,
