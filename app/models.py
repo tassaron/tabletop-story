@@ -132,7 +132,9 @@ class GameCharacter(db.Model):
             kwargs["visual_design"] = str(
                 {
                     "body": "0",
-                    "head_accessory": "None",
+                    "head": "headoval",
+                    "face": "faceclosedsmile",
+                    "hat": "None",
                 }
             )
         super().__init__(**kwargs)

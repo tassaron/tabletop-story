@@ -17,3 +17,7 @@ A webapp to help me play Dungeons & Dragons with my friends.
 1. `git pull` the new code
 1. Activate the venv and `pip install .`
 1. `flask db upgrade` to apply any database migrations
+
+
+## Inkscape SVGs
+`character.svg` is an Inkscape SVG with layers. I toggle the visibility of layers and export to PNGs which go into `app/static/img/character` for use in the actual app.

@@ -253,7 +253,9 @@ def edit_character(character_id, selected_field):
         """
         filled_form = {
             "visual_body": design["body"],
-            "visual_head_accessory": design["head_accessory"],
+            "visual_head": design["head"],
+            "visual_face": design["face"],
+            "visual_hat": design["hat"],
             "name": character.name,
             "age": character.age,
             "gender": character.gender,
@@ -306,6 +308,9 @@ def edit_character(character_id, selected_field):
 
             filled_form[spell_slot] = (chosen_spell, SRD_spells[chosen_spell]["name"])
         if cantrips:
+            available_cantrips = list(
+                spells_for_class_level(data["class_index"], 0)
+            )
             filled_form.update(
                 {
                     f"spells_known_lvl0_{i}": (

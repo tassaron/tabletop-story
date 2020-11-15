@@ -122,13 +122,45 @@ class EditCharacterForm(FlaskForm):
     skills_charisma_persuasion = BooleanField("Charisma: Persuasion")
     # character visual design
     visual_body = SelectField(
-        "Body Type: ",
-        choices=[(0, "Neutral"), (1, "Feminine"), (2, "Masculine")],
+        "Body Shape: ",
+        choices=[
+            (0, "Loaf"),
+            (1, "Trapezoid 1"),
+            (2, "Trapezoid 2"),
+            (3, "Hourglass"),
+            (4, "Egg"),
+            (5, "Rectangle"),
+        ],
         validate_choice=False,
     )
-    visual_head_accessory = SelectField(
+    visual_head = SelectField(
+        "Head Shape: ",
+        choices=[
+            ("headoval", "Oval"),
+            ("headcircle", "Circle"),
+            ("headsquare", "Square"),
+        ],
+        validate_choice=False,
+    )
+    visual_face = SelectField(
+        "Facial Expression: ",
+        choices=[
+            ("faceclosedsmile", "Smile"),
+            ("faceopensmile", "Open Smile"),
+            ("faceclosedfrown", "Frown"),
+        ],
+        validate_choice=False,
+    )
+    visual_hat = SelectField(
         "Hat: ",
-        choices=[(None, "None"), ("crown", "Crown"), ("elfhat", "Elf Hat")],
+        choices=[
+            (None, "None"),
+            ("hatcrown", "Crown"),
+            ("hatelf", "Elf Hat"),
+            ("hatwinter", "Winter Hat"),
+            ("hatwizard", "Wizard Hat"),
+            ("hatmuffintop", "Muffintop"),
+        ],
         validate_choice=False,
     )
     submit = SubmitField("💾 Save Changes")
