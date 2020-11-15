@@ -3,8 +3,11 @@
 
 {% block meta %}
 <meta property="og:title" content="{{character.name}}">
+<meta property="og:type" content="website">
 <meta property="og:description" content="{{character.description}}">
-<meta property="og:image" content="{{url_for('static', filename='/img/character/')+character_img}}">{% endblock %}
+<meta property="og:image" content="{{ url_root }}{{ url_for('static', filename='img/character/')+character_img }}">
+<meta property="og:url" content="{{ url_root }}{{ url_for('.view_character', character_id=character_id) }}">
+{% endblock %}
 
 {% block content %}
 <div class="row">&nbsp;</div>
@@ -18,7 +21,7 @@
                 {% endif %}
             </div>
             <div class="card-body">
-                <img class="card-img-top" src="{{url_for('static', filename='/img/character/')+character_img}}"
+                <img class="card-img-top" src="{{url_for('static', filename='img/character/')+character_img}}"
                     alt="{{character.name}}">
                 <p>Alignment: {{character.alignment|alignment}}</p>
                 <p>Age: {{character.age}}</p>

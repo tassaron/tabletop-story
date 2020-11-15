@@ -308,9 +308,7 @@ def edit_character(character_id, selected_field):
 
             filled_form[spell_slot] = (chosen_spell, SRD_spells[chosen_spell]["name"])
         if cantrips:
-            available_cantrips = list(
-                spells_for_class_level(data["class_index"], 0)
-            )
+            available_cantrips = list(spells_for_class_level(data["class_index"], 0))
             filled_form.update(
                 {
                     f"spells_known_lvl0_{i}": (
@@ -390,6 +388,7 @@ def view_character(character_id):
     return render_template(
         "view_character.html",
         logged_in=logged_in,
+        url_root=request.url_root[:-1],
         page_description=character.description,
         character=character,
         can_edit=can_edit,
