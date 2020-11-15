@@ -16,3 +16,8 @@ def view_spell(spell):
         SRD_disclaimer=True,
         spell=SRD_spells[spell],
     )
+
+
+@blueprint.route("/get/<spell>")
+def get_spell(spell):
+    return SRD_spells[spell]
