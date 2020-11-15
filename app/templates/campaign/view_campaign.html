@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block title %}{{ campaign.name }}{% endblock %}
+
+{% block content %}
+{% if can_edit %}
+<a style="float:right" href="/campaign/edit/{{campaign_id}}" class="btn">📝</a>
+{% endif %}
+<h2>{{ campaign.name }}</h2>
+{% endblock %}

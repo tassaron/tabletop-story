@@ -8,8 +8,43 @@ from wtforms import (
     SelectField,
     IntegerField,
 )
-from wtforms.validators import DataRequired, Length, Email, EqualTo, NumberRange
+from wtforms.validators import (
+    DataRequired,
+    Length,
+    Email,
+    EqualTo,
+    NumberRange,
+    Optional,
+)
 from dnd_character.equipment import SRD_equipment
+
+
+class EditCampaignForm(FlaskForm):
+    name = StringField("Name", validators=[Length(min=1, max=127)])
+    character1 = IntegerField(
+        "First Character ID", validators=[NumberRange(min=1), Optional()]
+    )
+    character2 = IntegerField(
+        "Second Character ID", validators=[NumberRange(min=1), Optional()]
+    )
+    character3 = IntegerField(
+        "Third Character ID", validators=[NumberRange(min=1), Optional()]
+    )
+    character4 = IntegerField(
+        "Fourth Character ID", validators=[NumberRange(min=1), Optional()]
+    )
+    character5 = IntegerField(
+        "Fifth Character ID", validators=[NumberRange(min=1), Optional()]
+    )
+    character6 = IntegerField(
+        "Sixth Character ID", validators=[NumberRange(min=1), Optional()]
+    )
+    submit = SubmitField("💾 Save Changes")
+
+
+class CreateCampaignForm(FlaskForm):
+    name = StringField("Name", validators=[Length(min=1, max=127)])
+    submit = SubmitField("Create Campaign 📖")
 
 
 class DeleteCharacterForm(FlaskForm):

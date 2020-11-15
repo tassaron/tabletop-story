@@ -2,11 +2,16 @@ from setuptools import setup
 
 setup(
     name="Tabletop Story",
-    version="20.11.12",  # year.month.day
-    packages=["tabletop_story", "tabletop_story.blueprints"],
+    version="20.11.14",  # year.month.day
+    packages=[
+        "tabletop_story",
+        "tabletop_story.blueprints",
+        "tabletop_story.dnd_campaign",
+    ],
     package_dir={
         "tabletop_story": "app",
         "tabletop_story.blueprints": "app/blueprints",
+        "tabletop_story.dnd_campaign": "app/dnd_campaign",
     },
     include_package_data=True,
     install_requires=[

@@ -2,6 +2,7 @@ from .plugins import plugins
 from itsdangerous import TimedJSONWebSignatureSerializer
 import os
 from dnd_character import Character
+from .dnd_campaign import Combat
 from ast import literal_eval
 
 # plugins = create_plugins()
@@ -66,16 +67,52 @@ class GameCampaign(db.Model):
     A campaign of D&D with 1 gamemaster and 2-6 players
     """
 
-    gamemaster = db.Column(
-        db.Integer, db.ForeignKey("user.id"), primary_key=True, nullable=False
-    )
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    name = db.Column(db.String(127), nullable=False)
+    gamemaster = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     # the gamemaster is a user, but the players are characters
-    character1 = db.Column(db.String(255), nullable=False)
-    character2 = db.Column(db.String(255), nullable=False)
-    character3 = db.Column(db.String(255), nullable=False)
-    character4 = db.Column(db.String(255), nullable=False)
-    character5 = db.Column(db.String(255), nullable=False)
-    character6 = db.Column(db.String(255), nullable=False)
+    character1 = db.Column(
+        db.Integer, db.ForeignKey("game_character.id"), nullable=True
+    )
+    character2 = db.Column(
+        db.Integer, db.ForeignKey("game_character.id"), nullable=True
+    )
+    character3 = db.Column(
+        db.Integer, db.ForeignKey("game_character.id"), nullable=True
+    )
+    character4 = db.Column(
+        db.Integer, db.ForeignKey("game_character.id"), nullable=True
+    )
+    character5 = db.Column(
+        db.Integer, db.ForeignKey("game_character.id"), nullable=True
+    )
+    character6 = db.Column(
+        db.Integer, db.ForeignKey("game_character.id"), nullable=True
+    )
+    # string literal for a dict which creates a Combat object
+    combat_data = db.Column(db.String(1024), nullable=False)
+    # string literal for some npc definition
+    npc_data = db.Column(db.String(1024), nullable=False)
+
+    def __init__(self, **kwargs):
+        if "combat_data" not in kwargs:
+            kwargs["combat_data"] = str(Combat())
+        if "npc_data" not in kwargs:
+            kwargs["npc_data"] = "{}"
+        super().__init__(**kwargs)
+
+    def combat(self):
+        return Combat(**literal_eval(self.combat_data))
+
+    def characters(self):
+        return [
+            self.character1,
+            self.character2,
+            self.character3,
+            self.character4,
+            self.character5,
+            self.character6,
+        ]
 
 
 class GameCharacter(db.Model):
