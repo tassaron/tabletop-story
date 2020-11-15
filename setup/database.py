@@ -74,6 +74,15 @@ def prompt_deletion(func, uri):
     return func()
 
 
+def reset_db():
+    db.create_all()
+    GameCharacter.__table__.drop(db.engine)
+    GameCampaign.__table__.drop(db.engine)
+    db.create_all()
+    db.session.commit()
+    print("Dropped all tables except User")
+
+
 if __name__ == "__main__":
     import argparse
 
@@ -83,6 +92,9 @@ if __name__ == "__main__":
     actions.add_argument("new", help="create a blank db file", nargs="?")
     actions.add_argument(
         "test", help="create a new db with filler data for testing", nargs="?"
+    )
+    actions.add_argument(
+        "reset", help="drop all tables from database except Users", nargs="?"
     )
     parser.add_argument(
         "--db",
@@ -98,5 +110,10 @@ if __name__ == "__main__":
     elif args.new == "test":
         with app.app_context():
             prompt_deletion(create_test_db, args.db)
+
+    elif args.new == "reset":
+        with app.app_context():
+            reset_db()
+
     else:
         parser.print_help()
