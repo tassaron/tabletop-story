@@ -74,6 +74,7 @@ def create_character_chosen(class_key):
     )
     db.session.add(db_char)
     db.session.commit()
+    edit_character(character_id=db_char.id, selected_field=None, autosubmit=True)
     return redirect(url_for(".edit_character", character_id=db_char.id))
 
 
@@ -110,7 +111,7 @@ def delete_character(character_id):
 )
 @blueprint.route("/edit/<character_id>/<selected_field>", methods=["GET", "POST"])
 @flask_login.login_required
-def edit_character(character_id, selected_field):
+def edit_character(character_id, selected_field, autosubmit=False):
     try:
         character_id = int(character_id)
     except TypeError:
@@ -182,13 +183,13 @@ def edit_character(character_id, selected_field):
                     )
         return ThisEditCharacterForm, cantrips, spell_slots
 
-    def extract_and_apply_edit_character_form(form, data):
+    def extract_and_apply_edit_character_form(form, data, autosubmit=False):
         """
         Receives the dictionary for the previous character.
         Extracts data from the edit_character form and applies it to this dict.
         Returns a tuple: (valid dict for making a new Character, visual_design dict)
         """
-        if form.validate_on_submit():
+        if autosubmit or form.validate_on_submit():
             # Most fields match up with attributes of Character
             for field in form._fields:
                 data[field] = form._fields[field].data
@@ -329,22 +330,35 @@ def edit_character(character_id, selected_field):
     data = db_character.as_dict()
     ThisEditCharacterForm, cantrips, spell_slots = create_edit_character_form(data)
 
-    if request.method == "POST":
+    if autosubmit:
+        filled_form = create_filled_form_dict(
+            db_character.character,
+            db_character.design,
+            cantrips,
+            spell_slots,
+        )
+        form = ThisEditCharacterForm(formdata=MultiDict(filled_form))
+    elif request.method == "POST":
         form = ThisEditCharacterForm()
-        data, design = extract_and_apply_edit_character_form(form, data)
+    if request.method == "POST" or autosubmit:
         # Now we have a valid dict to make a new Character
+        data, design = extract_and_apply_edit_character_form(
+            form, data, autosubmit=True
+        )
         db_character.name = form.name.data
         db_character.update_data(data)
         db_character.visual_design = str(design)
         db.session.add(db_character)
         db.session.commit()
-        return redirect(url_for(".view_character", character_id=character_id))
+        if not autosubmit:
+            return redirect(url_for(".view_character", character_id=character_id))
 
     character = db_character.character
     design = db_character.design
 
-    filled_form = create_filled_form_dict(character, design, cantrips, spell_slots)
-    form = ThisEditCharacterForm(formdata=MultiDict(filled_form))
+    if not autosubmit:
+        filled_form = create_filled_form_dict(character, design, cantrips, spell_slots)
+        form = ThisEditCharacterForm(formdata=MultiDict(filled_form))
 
     return render_template(
         "edit_character.html",
@@ -577,4 +591,5 @@ def edit_character_experience(character_id, number):
             f"Depleted {str(number*-1)} experience point{plural} from {char.name}",
             "info",
         )
+    edit_character(character_id=character_id, selected_field=None, autosubmit=True)
     return redirect(url_for(".view_character", character_id=character_id))
