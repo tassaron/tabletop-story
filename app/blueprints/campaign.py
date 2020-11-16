@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, abort, redirect, url_for
 from flask_login import login_required, current_user
 from werkzeug.datastructures import MultiDict
-from tabletop_story.models import GameCampaign, GameCharacter
+from tabletop_story.models import GameCampaign, GameCharacter, CampaignLocation
 from tabletop_story.forms import CreateCampaignForm, EditCampaignForm
 from tabletop_story.plugins import db
 
@@ -26,6 +26,7 @@ def create_campaign():
         "create_campaign.html",
         logged_in=True,
         form=form,
+        title="Campaign",
     )
 
 
@@ -79,11 +80,13 @@ def view_campaign(campaign_id):
         else:
             # none of this user's characters are invited to this campaign
             abort(403)
+
+    locations = CampaignLocation.query.filter_by(campaign_id=campaign_id).all()
     return render_template(
         "view_campaign.html",
         logged_in=True,
         can_edit=is_gamemaster,
-        campaign_id=campaign_id,
         campaign=campaign,
         combat=campaign.combat,
+        locations=locations,
     )

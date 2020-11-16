@@ -62,9 +62,39 @@ class User(db.Model):
         return str(self.id)
 
 
+class SceneNPC(db.Model):
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    scene_id = db.Column(db.Integer, db.ForeignKey("location_scene.id"), nullable=False)
+    name = db.Column(db.String(127), nullable=False)
+    # string literal for a dict
+    data = db.Column(db.String(2048), nullable=False)
+
+
+class LocationScene(db.Model):
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    location_id = db.Column(
+        db.Integer, db.ForeignKey("campaign_location.id"), nullable=False
+    )
+    name = db.Column(db.String(127), nullable=False)
+    description = db.Column(db.String(2048), nullable=True)
+
+
+class CampaignLocation(db.Model):
+    """
+    A location within a GameCampaign which has a name, description, and scenes
+    """
+
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    campaign_id = db.Column(
+        db.Integer, db.ForeignKey("game_campaign.id"), nullable=False
+    )
+    name = db.Column(db.String(127), nullable=False)
+    description = db.Column(db.String(2048), nullable=True)
+
+
 class GameCampaign(db.Model):
     """
-    A campaign of D&D with 1 gamemaster and 2-6 players
+    A campaign of D&D with 1 gamemaster (User) and 2-6 GameCharacters
     """
 
     id = db.Column(db.Integer, primary_key=True, nullable=False)
@@ -91,14 +121,10 @@ class GameCampaign(db.Model):
     )
     # string literal for a dict which creates a Combat object
     combat_data = db.Column(db.String(1024), nullable=False)
-    # string literal for some npc definition
-    npc_data = db.Column(db.String(1024), nullable=False)
 
     def __init__(self, **kwargs):
         if "combat_data" not in kwargs:
             kwargs["combat_data"] = str(Combat())
-        if "npc_data" not in kwargs:
-            kwargs["npc_data"] = "{}"
         super().__init__(**kwargs)
 
     def combat(self):

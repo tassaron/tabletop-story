@@ -2,8 +2,20 @@
 {% block title %}{{ campaign.name }}{% endblock %}
 
 {% block content %}
-{% if can_edit %}
-<a style="float:right" href="/campaign/edit/{{campaign_id}}" class="btn">📝</a>
-{% endif %}
 <h2>{{ campaign.name }}</h2>
+{% if can_edit %}
+<a style="float:right" href="/campaign/edit/{{campaign.id}}" class="btn">📝</a><br>
+<a data-toggle="collapse" href="#location_list" class="btn btn-primary">Show All Locations</a>
+<div id="location_list" class="collapse">
+    <ul>
+        {% for location in locations %}
+        <li><a
+                href="{{ url_for('campaign/location.view_campaign_location', location_id=location.id) }}">{{ location.name }}</a>
+        </li>
+        {% endfor %}
+        <li><a href="{{ url_for('campaign/location.create_campaign_location', campaign_id=campaign.id) }}"> ➕ Add New
+                Location</a></li>
+    </ul>
+</div>
+{% endif %}
 {% endblock %}

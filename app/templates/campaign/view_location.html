@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block title %}"{{location.name}}" Location from "{{ campaign.name }}"{% endblock %}
+
+{% block content %}
+<a class="btn btn-secondary" href="{{ url_for('campaign.view_campaign', campaign_id=campaign.id) }}">&lt; Back</a>
+<a style="float:right" href="{{ url_for('campaign/location.edit_campaign_location', location_id=location.id) }}"
+    class="btn">📝</a>
+<h2>"{{location.name}}" Location from "{{ campaign.name }}"</h2>
+<p>{{ location.description }}</p>
+{% endblock %}

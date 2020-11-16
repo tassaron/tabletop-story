@@ -2,6 +2,7 @@
 {% block title %}Edit Player Characters of "{{ campaign.name }}"{% endblock %}
 
 {% block content %}
+<a class="btn btn-secondary" href="/campaign/location/{{campaign_id}}/create">Create Location 🏗🌄</a>
 <form action="" method="POST">
 	{{ form.hidden_tag() }}
 	<fieldset class="form-group">
