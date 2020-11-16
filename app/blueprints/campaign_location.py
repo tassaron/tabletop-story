@@ -1,14 +1,60 @@
-from flask import Blueprint, render_template, abort, redirect, url_for
+from flask import Blueprint, render_template, abort, redirect, url_for, request
 from flask_login import login_required, current_user
+from wtforms import SelectField
 from werkzeug.datastructures import MultiDict
-from tabletop_story.models import GameCampaign, CampaignLocation
-from tabletop_story.forms import CreateCampaignForm, EditLocationForm
+from tabletop_story.models import GameCampaign, CampaignLocation, LocationScene
+from tabletop_story.forms import GenericCreateForm, GenericEditForm, GenericForm
 from tabletop_story.plugins import db
+from is_safe_url import is_safe_url
 
 
 blueprint = Blueprint(
     "campaign/location", __name__, template_folder="../templates/campaign"
 )
+
+
+@blueprint.route("/<campaign_id>/activate", methods=["GET", "POST"])
+@login_required
+def activate_campaign_location(campaign_id):
+    campaign = GameCampaign.query.get(campaign_id)
+    user_id = int(current_user.get_id())
+    if campaign is None:
+        abort(404)
+    elif campaign.gamemaster != user_id:
+        abort(403)
+
+    # subclass a generic form and add this campaign's list of locations
+    class CampaignLocationListForm(GenericForm):
+        pass
+
+    locations = [
+        (location.id, location.name)
+        for location in CampaignLocation.query.filter_by(campaign_id=campaign_id).all()
+    ]
+    setattr(
+        CampaignLocationListForm,
+        "location",
+        SelectField(
+            "Choose a Location",
+            choices=[(0, "None"), *locations],
+        ),
+    )
+
+    form = CampaignLocationListForm()
+    if form.validate_on_submit():
+        if campaign.active_location != form.location.data:
+            campaign.active_location = form.location.data
+            campaign.set_combat(0)
+            db.session.add(campaign)
+            db.session.commit()
+        return redirect(url_for("campaign.view_campaign", campaign_id=campaign_id))
+
+    form = CampaignLocationListForm(
+        formdata=MultiDict({"location": campaign.active_location})
+    )
+    return render_template(
+        "activate_location.html", logged_in=True, form=form, campaign=campaign
+    )
 
 
 @blueprint.route("/<campaign_id>/create", methods=["GET", "POST"])
@@ -21,7 +67,7 @@ def create_campaign_location(campaign_id):
     elif campaign.gamemaster != user_id:
         abort(403)
 
-    form = CreateCampaignForm()
+    form = GenericCreateForm()
     if form.validate_on_submit():
         location = CampaignLocation(
             name=form.name.data,
@@ -37,7 +83,7 @@ def create_campaign_location(campaign_id):
         )
 
     return render_template(
-        "create_campaign.html",
+        "create_generic.html",
         logged_in=True,
         form=form,
         title="Location",
@@ -57,24 +103,24 @@ def edit_campaign_location(location_id):
     if user_id != campaign.gamemaster:
         abort(403)
 
-    form = EditLocationForm()
+    form = GenericEditForm()
     if form.validate_on_submit():
         location.name = form.name.data
         location.description = form.description.data
         db.session.add(location)
         db.session.commit()
-        return redirect(
-            url_for(
-                ".view_campaign_location",
-                location_id=location_id,
-            )
+        next_page = request.args.get("next")
+        return (
+            redirect(next_page)
+            if next_page and is_safe_url(next_page, url_for("dashboard.index"))
+            else redirect(url_for(".view_campaign_location", location_id=location_id))
         )
 
     filled_form = {
         "name": location.name,
         "description": location.description,
     }
-    form = EditLocationForm(formdata=MultiDict(filled_form))
+    form = GenericEditForm(formdata=MultiDict(filled_form))
     return render_template(
         "edit_location.html",
         logged_in=True,
@@ -98,9 +144,11 @@ def view_campaign_location(location_id):
     if campaign.gamemaster != int(current_user.get_id()):
         abort(403)
 
+    scenes = LocationScene.query.filter_by(location_id=location_id).all()
     return render_template(
         "view_location.html",
         logged_in=True,
         campaign=campaign,
         location=location,
+        scenes=scenes,
     )

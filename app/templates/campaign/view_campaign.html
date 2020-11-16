@@ -2,20 +2,65 @@
 {% block title %}{{ campaign.name }}{% endblock %}
 
 {% block content %}
-<h2>{{ campaign.name }}</h2>
+<h2>Campaign: {{ campaign.name }}</h2>
+
+{# Gamemaster controls #}
 {% if can_edit %}
 <a style="float:right" href="/campaign/edit/{{campaign.id}}" class="btn">📝</a><br>
-<a data-toggle="collapse" href="#location_list" class="btn btn-primary">Show All Locations</a>
+<a data-toggle="collapse" href="#location_list" class="btn btn-primary">Show All</a>
+<a href="/campaign/location/{{ campaign.id }}/activate" class="btn btn-primary">Set Current Location</a>
+{% if active_location %}
+<a href="/location/scene/{{ active_location.id }}/activate" class="btn btn-primary">Set Current Scene</a>
+{% endif %}
 <div id="location_list" class="collapse">
-    <ul>
+    <ul class="list-group">
         {% for location in locations %}
-        <li><a
+        <li{% if active_location.id == location.id %} style="background-color: lightblue" {% endif %}>
+            Location: <a
                 href="{{ url_for('campaign/location.view_campaign_location', location_id=location.id) }}">{{ location.name }}</a>
-        </li>
-        {% endfor %}
-        <li><a href="{{ url_for('campaign/location.create_campaign_location', campaign_id=campaign.id) }}"> ➕ Add New
-                Location</a></li>
+            <ul>
+                {% for scene in scenes[location.id] %}
+                <li{% if combat.scene_id == scene.id %} style="font-weight:bold;" {% endif %}>
+                    Scene: <a
+                        href="{{ url_for('location/scene.view_location_scene', scene_id=scene.id) }}">{{ scene.name }}</a>
+                    <ul>
+                        {% for npc in npcs[scene.id] %}
+                        <li class="list-item"><a
+                                href="{{ url_for('scene/npc.view_scene_npc', npc_id=npc.id) }}">{{ npc.name }}</a>
+                        </li>
+                        {% endfor %}
+                        <li class="list-item"><a
+                                href="{{ url_for('scene/npc.create_scene_npc', scene_id=scene.id) }}{{ next_page }}">
+                                ➕ Add New
+                                NPC</a></li>
+                    </ul>
+                    </li>
+                    {% endfor %}
+                    <li class="list-item"><a
+                            href="{{ url_for('location/scene.create_location_scene', location_id=location.id) }}{{ next_page }}">
+                            ➕ Add New
+                            Scene</a></li>
+            </ul>
+            </li>
+            {% endfor %}
+            <li class="list-item"><a
+                    href="{{ url_for('campaign/location.create_campaign_location', campaign_id=campaign.id) }}{{ next_page }}">
+                    ➕ Add New
+                    Location</a></li>
     </ul>
+</div>
+{% endif %}
+
+{# Everyone #}
+{% if active_location %}
+<div id="active_location">
+    <h4>Current location: {{ active_location.name }}</h4>
+    <em>{{active_location.description}}</em>
+</div>
+{% endif %}
+{% if active_scene %}
+<div id="active_scene">
+    <em>{{active_scene.description}}</em>
 </div>
 {% endif %}
 {% endblock %}

@@ -1,6 +1,7 @@
 class Combat:
-    def __init__(self, active=False):
-        active = active
+    def __init__(self, scene_id=0, active=False):
+        self.scene_id = int(scene_id)
+        self.active = active
 
     def __str__(self):
         data = {

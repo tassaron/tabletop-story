@@ -19,9 +19,8 @@ from wtforms.validators import (
 from dnd_character.equipment import SRD_equipment
 
 
-class EditLocationForm(FlaskForm):
+class EditNPCForm(FlaskForm):
     name = StringField("Name", validators=[Length(min=1, max=127)])
-    description = TextAreaField("Notes")
     submit = SubmitField("💾 Save Changes")
 
 
@@ -48,7 +47,17 @@ class EditCampaignForm(FlaskForm):
     submit = SubmitField("💾 Save Changes")
 
 
-class CreateCampaignForm(FlaskForm):
+class GenericForm(FlaskForm):
+    submit = SubmitField("OK")
+
+
+class GenericEditForm(FlaskForm):
+    name = StringField("Name", validators=[Length(min=1, max=127)])
+    description = TextAreaField("Notes")
+    submit = SubmitField("💾 Save Changes")
+
+
+class GenericCreateForm(FlaskForm):
     name = StringField("Name", validators=[Length(min=1, max=127)])
     submit = SubmitField("Create 📖")
 

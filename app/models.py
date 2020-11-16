@@ -100,6 +100,9 @@ class GameCampaign(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     name = db.Column(db.String(127), nullable=False)
     gamemaster = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    active_location = db.Column(
+        db.Integer, db.ForeignKey("campaign_location.id"), nullable=False
+    )
     # the gamemaster is a user, but the players are characters
     character1 = db.Column(
         db.Integer, db.ForeignKey("game_character.id"), nullable=True
@@ -127,8 +130,11 @@ class GameCampaign(db.Model):
             kwargs["combat_data"] = str(Combat())
         super().__init__(**kwargs)
 
-    def combat(self):
+    def get_combat(self):
         return Combat(**literal_eval(self.combat_data))
+
+    def set_combat(self, scene_id):
+        self.combat_data = str(Combat(scene_id=scene_id))
 
     def characters(self):
         return [

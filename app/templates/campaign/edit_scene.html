@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
-{% block title %}Edit "{{ location.name }}" Location in "{{ campaign.name }}"{% endblock %}
+{% block title %}Edit "{{ scene.name }}" Scene in "{{ location.name }}"{% endblock %}
 
 {% block content %}
-<a class="btn btn-secondary" href="/location/scene/{{location.id}}/create">Create Scene in Location 🎭</a>
+<a class="btn btn-secondary" href="/scene/npc/{{scene.id}}/create">Create NPC in Scene 🎭</a>
 <form action="" method="POST">
 	{{ form.hidden_tag() }}
 	<fieldset class="form-group">
-		<legend class="border-top border-bottom mb-4">Edit "{{ location.name }}" Location in "{{ campaign.name }}"
+		<legend class="border-top border-bottom mb-4">Edit "{{ scene.name }}" Scene in "{{ location.name }}" Location
 		</legend>
 		<div class="form-group">
 			{{ form.name.label(class="form-control-label") }}
@@ -28,7 +28,8 @@
 	</fieldset>
 	<div class="form-group">
 		{{ form.submit(class="btn btn-success") }}
-		<a class="btn btn-danger" href="/campaign/location/view/{{location.id}}">Cancel</a>
+		<a class="btn btn-danger"
+			href="{{ url_for('location/scene.view_location_scene', scene_id=scene.id) }}">Cancel</a>
 	</div>
 </form>
 {% endblock %}

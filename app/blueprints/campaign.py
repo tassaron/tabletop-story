@@ -1,9 +1,19 @@
 from flask import Blueprint, render_template, abort, redirect, url_for
 from flask_login import login_required, current_user
 from werkzeug.datastructures import MultiDict
-from tabletop_story.models import GameCampaign, GameCharacter, CampaignLocation
-from tabletop_story.forms import CreateCampaignForm, EditCampaignForm
+from tabletop_story.models import (
+    GameCampaign,
+    GameCharacter,
+    CampaignLocation,
+    LocationScene,
+    SceneNPC,
+)
+from tabletop_story.forms import GenericCreateForm, EditCampaignForm
 from tabletop_story.plugins import db
+import logging
+
+
+LOG = logging.getLogger(__package__)
 
 
 blueprint = Blueprint("campaign", __name__, template_folder="../templates/campaign")
@@ -12,18 +22,20 @@ blueprint = Blueprint("campaign", __name__, template_folder="../templates/campai
 @blueprint.route("/create", methods=["GET", "POST"])
 @login_required
 def create_campaign():
-    form = CreateCampaignForm()
+    form = GenericCreateForm()
 
     if form.validate_on_submit():
         campaign = GameCampaign(
-            name=form.name.data, gamemaster=int(current_user.get_id())
+            name=form.name.data,
+            gamemaster=int(current_user.get_id()),
+            active_location=0,
         )
         db.session.add(campaign)
         db.session.commit()
         return redirect(url_for(".edit_campaign", campaign_id=campaign.id))
 
     return render_template(
-        "create_campaign.html",
+        "create_generic.html",
         logged_in=True,
         form=form,
         title="Campaign",
@@ -81,12 +93,33 @@ def view_campaign(campaign_id):
             # none of this user's characters are invited to this campaign
             abort(403)
 
-    locations = CampaignLocation.query.filter_by(campaign_id=campaign_id).all()
+    locations = []
+    scenes = {}
+    npcs = {}
+    if is_gamemaster:
+        locations = CampaignLocation.query.filter_by(campaign_id=campaign_id).all()
+        scenes = {
+            location.id: LocationScene.query.filter_by(location_id=location.id).all()
+            for location in locations
+        }
+        for scene_list in scenes.values():
+            for scene in scene_list:
+                npcs[scene.id] = SceneNPC.query.filter_by(scene_id=scene.id).all()
+    next_page = f"?next={url_for('.view_campaign', campaign_id=campaign_id)}"
+    active_location = CampaignLocation.query.get(campaign.active_location)
+    combat = campaign.get_combat()
+    active_scene = LocationScene.query.get(combat.scene_id)
+    LOG.info(combat)
     return render_template(
         "view_campaign.html",
         logged_in=True,
         can_edit=is_gamemaster,
         campaign=campaign,
-        combat=campaign.combat,
+        combat=combat,
+        active_location=active_location,
+        active_scene=active_scene,
         locations=locations,
+        scenes=scenes,
+        npcs=npcs,
+        next_page=next_page,
     )

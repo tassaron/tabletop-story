@@ -7,4 +7,14 @@
     class="btn">📝</a>
 <h2>"{{location.name}}" Location from "{{ campaign.name }}"</h2>
 <p>{{ location.description }}</p>
+<div id="scene_list">
+    <ul>
+        {% for scene in scenes %}
+        <li><a href="{{ url_for('location/scene.view_location_scene', scene_id=scene.id) }}">{{ scene.name }}</a>
+        </li>
+        {% endfor %}
+        <li><a href="{{ url_for('location/scene.create_location_scene', location_id=location.id) }}"> ➕ Add New
+                Scene</a></li>
+    </ul>
+</div>
 {% endblock %}

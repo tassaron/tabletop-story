@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Activate Scene from "{{ location.name }}"{% endblock %}
+
+{% block content %}
+<form action="" method="POST">
+	{{ form.hidden_tag() }}
+	<fieldset class="form-group">
+		<legend class="border-top border-bottom mb-4">Activate Scene from "{{ location.name }}"</legend>
+		<div class="form-group">
+			{% if active_scene != None %}
+			<small class="text-muted">
+				Re-activate the active scene ("{{ active_scene.name }}") to reset combat.
+			</small>
+			{% endif %}
+			{{ form.scene.label(class="form-control-label") }}
+			{{ form.scene(class="form-control form-control-lg") }}
+		</div>
+	</fieldset>
+	<div class="form-group">
+		{{ form.submit(class="btn btn-success") }}
+		<a class="btn btn-danger" href="/campaign/view/{{campaign.id}}">Cancel</a>
+	</div>
+</form>
+{% endblock %}

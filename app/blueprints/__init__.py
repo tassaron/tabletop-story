@@ -5,6 +5,8 @@ from . import (
     character,
     campaign,
     campaign_location,
+    location_scene,
+    scene_npc,
     spells,
     monsters,
 )
@@ -18,6 +20,8 @@ def register_blueprints(app):
         character.blueprint,
         campaign.blueprint,
         campaign_location.blueprint,
+        location_scene.blueprint,
+        scene_npc.blueprint,
         spells.blueprint,
         monsters.blueprint,
     ):

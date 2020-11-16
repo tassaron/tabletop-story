@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block title %}"{{ scene.name }}" Scene in "{{ location.name }}"{% endblock %}
+
+{% block content %}
+<a class="btn btn-secondary"
+    href="{{ url_for('campaign/location.view_campaign_location', location_id=location.id) }}">&lt; Back</a>
+<a style="float:right" href="{{ url_for('location/scene.edit_location_scene', scene_id=scene.id) }}" class="btn">📝</a>
+<h2>"{{ scene.name }}" Scene in "{{location.name}}" Location from "{{ campaign.name }}"</h2>
+<p>{{ scene.description }}</p>
+<div id="npc_list">
+    <ul>
+        {% for npc in npcs %}
+        <li><a href="{{ url_for('scene/npc.view_scene_npc', npc_id=npc.id) }}">{{ npc.name }}</a>
+        </li>
+        {% endfor %}
+        <li><a href="{{ url_for('scene/npc.create_scene_npc', scene_id=scene.id) }}"> ➕ Add New
+                NPC</a></li>
+    </ul>
+</div>
+{% endblock %}
