@@ -5,7 +5,7 @@
 <h2>Campaign: {{ campaign.name }}</h2>
 
 {# Gamemaster controls #}
-{% if can_edit %}
+{% if is_gamemaster %}
 <a style="float:right" href="/campaign/edit/{{campaign.id}}" class="btn">📝</a><br>
 <a data-toggle="collapse" href="#location_list" class="btn btn-primary">Show All</a>
 <a href="/campaign/location/{{ campaign.id }}/activate" class="btn btn-primary">Set Current Location</a>
@@ -51,7 +51,7 @@
 </div>
 {% endif %}
 
-{# Everyone #}
+{# Location/Scene information #}
 {% if active_location %}
 <div id="active_location">
     <h4>Current location: {{ active_location.name }}</h4>
@@ -63,4 +63,48 @@
     <em>{{active_scene.description}}</em>
 </div>
 {% endif %}
-{% endblock %}
+
+{# Character cards #}
+<div id="campaign_characters">
+    <div class="row">
+        {% for character in characters %}
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <strong>{{character.name}}</strong> (Level {{character.level}} {{character.class_name}})
+                    <a href="/character/edit/{{character.dbid}}" class="btn">📝</a>
+                </div>
+                <div class="card-body"><a href="{{ url_for('character.view_character', character_id=character.dbid) }}">
+                        <img style="float: left; max-width:150px;" class="card-img-top"
+                            src="{{url_for('static', filename='img/character/')+character.image}}"
+                            alt="{{character.name}}"></a>
+                    Proficiency bonus: {{character.prof_bonus}}<br>
+                    CON: {{character.constitution}} ({{character.constitution|ability_modifier}})<br>
+                    STR: {{character.strength}} ({{character.strength|ability_modifier}})<br>
+                    DEX: {{character.dexterity}} ({{character.dexterity|ability_modifier}})<br>
+                    WIS: {{character.wisdom}} ({{character.wisdom|ability_modifier}})<br>
+                    INT: {{character.intelligence}} ({{character.intelligence|ability_modifier}})<br>
+                    CHA: {{character.charisma}} ({{character.charisma|ability_modifier}})
+                    <br>Saving throws:{% for throw in character.saving_throws %} {{throw}}{% endfor %}</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% if other_characters %}
+    <div class="row">
+        {% for character in other_characters %}
+        {% if character != None %}
+        <div class="col-lg-4 col-md-6 mb-4" style="position: relative; text-align: center"><a
+                href="/character/view/{{character.id}}"><img style="max-width:150px"
+                    src="{{ url_for('static', filename='img/character/')+character.image }}"></a>
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: bold;">
+                {{character.name}}</div>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+    {% endif %}
+
+
+    {% endblock %}

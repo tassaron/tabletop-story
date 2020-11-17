@@ -10,6 +10,7 @@ from tabletop_story.models import (
 )
 from tabletop_story.forms import GenericCreateForm, EditCampaignForm
 from tabletop_story.plugins import db
+from tabletop_story.blueprints import charimg
 import logging
 
 
@@ -84,14 +85,42 @@ def view_campaign(campaign_id):
         abort(404)
     user_id = int(current_user.get_id())
     is_gamemaster = user_id == campaign.gamemaster
-    if not is_gamemaster:
-        characters = GameCharacter.query.filter_by(user_id=user_id).all()
-        for character in characters:
-            if character in campaign.characters:
-                break
-        else:
+
+    if is_gamemaster:
+        # the gamemaster can edit every character
+        editable_characters = [
+            GameCharacter.query.get(char_id) if char_id is not None else char_id
+            for char_id in campaign.characters()
+        ]
+        other_characters = []
+    else:
+        # get list of characters belonging to this player
+        all_user_characters = GameCharacter.query.filter_by(user_id=user_id).all()
+        editable_characters = []
+        other_characters = campaign.characters()
+        for db_character in all_user_characters:
+            if db_character.id in campaign.characters():
+                editable_characters.append(db_character)
+                other_characters.remove(db_character.id)
+        if not editable_characters:
             # none of this user's characters are invited to this campaign
             abort(403)
+        other_characters = [
+            GameCharacter.query.get(char_id) if char_id is not None else char_id
+            for char_id in other_characters[:]
+        ]
+
+    characters = []
+    for db_character in editable_characters:
+        if db_character is not None:
+            character = db_character.character
+            character.image = charimg.charimg(*list(db_character.design.values()))
+            character.dbid = db_character.id
+            characters.append(character)
+
+    for db_character in other_characters:
+        if db_character is not None:
+            db_character.image = charimg.charimg(*list(db_character.design.values()))
 
     locations = []
     scenes = {}
@@ -109,11 +138,13 @@ def view_campaign(campaign_id):
     active_location = CampaignLocation.query.get(campaign.active_location)
     combat = campaign.get_combat()
     active_scene = LocationScene.query.get(combat.scene_id)
+
     LOG.info(combat)
+
     return render_template(
         "view_campaign.html",
         logged_in=True,
-        can_edit=is_gamemaster,
+        is_gamemaster=is_gamemaster,
         campaign=campaign,
         combat=combat,
         active_location=active_location,
@@ -122,4 +153,6 @@ def view_campaign(campaign_id):
         scenes=scenes,
         npcs=npcs,
         next_page=next_page,
+        characters=characters,
+        other_characters=other_characters,
     )

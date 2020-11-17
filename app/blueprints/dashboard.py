@@ -48,8 +48,7 @@ def index():
         )
         characters = [row.character for row in db_characters]
         for i, character in enumerate(characters):
-            img = charimg.charimg(*list(db_characters[i].design.values()))
-            character.image = img
+            character.image = charimg.charimg(*list(db_characters[i].design.values()))
             character.dbid = db_characters[i].id
 
     return render_template(
