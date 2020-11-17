@@ -66,7 +66,15 @@ def edit_campaign(campaign_id):
         db.session.commit()
         return redirect(url_for(".view_campaign", campaign_id=campaign_id))
 
-    filled_form = {"name": campaign.name}
+    filled_form = {
+        "name": campaign.name,
+        "character1": "" if campaign.character1 is None else campaign.character1,
+        "character2": "" if campaign.character2 is None else campaign.character2,
+        "character3": "" if campaign.character3 is None else campaign.character3,
+        "character4": "" if campaign.character4 is None else campaign.character4,
+        "character5": "" if campaign.character5 is None else campaign.character5,
+        "character6": "" if campaign.character6 is None else campaign.character6,
+    }
     form = EditCampaignForm(formdata=MultiDict(filled_form))
     return render_template(
         "edit_campaign.html",
