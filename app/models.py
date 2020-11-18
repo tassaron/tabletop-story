@@ -165,7 +165,8 @@ class GameCharacter(db.Model):
                 {
                     "body": "0",
                     "head": "headoval",
-                    "face": "faceclosedsmile",
+                    "face": "faceneutral",
+                    "hair": "None",
                     "hat": "None",
                 }
             )

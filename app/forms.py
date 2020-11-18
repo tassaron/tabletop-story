@@ -160,9 +160,25 @@ class EditCharacterForm(FlaskForm):
     visual_face = SelectField(
         "Facial Expression: ",
         choices=[
+            ("faceneutral", "Neutral"),
             ("faceclosedsmile", "Smile"),
             ("faceopensmile", "Open Smile"),
             ("faceclosedfrown", "Frown"),
+            ("faceopenfrown", "Open Frown"),
+            ("faceslightfrown", "Slight Frown"),
+            ("facesmirk", "Smirk"),
+            ("facecloud", "Eugh"),
+            ("faceshocked", "Shocked"),
+        ],
+        validate_choice=False,
+    )
+    visual_hair = SelectField(
+        "Hair: ",
+        choices=[
+            (None, "None"),
+            ("hairlongmess", "Long Mess"),
+            ("hairnancy", "Nancy"),
+            ("hairwings", "Wings"),
         ],
         validate_choice=False,
     )

@@ -5,7 +5,13 @@
 {% block script %}
 <script>
 	function update() {
-		var design = [$("#visual_body").val(), $("#visual_head").val(), $("#visual_face").val(), $("#visual_hat").val()]
+		var design = [
+			$("#visual_body").val(),
+			$("#visual_head").val(),
+			$("#visual_face").val(),
+			$("#visual_hair").val(),
+			$("#visual_hat").val()
+		]
 		fetch(`${window.location.origin}/character/img`, {
 			method: "POST",
 			credentials: "same-origin",
@@ -24,6 +30,7 @@
 		$('#visual_body').on('change', function () { update(); });
 		$('#visual_head').on('change', function () { update(); });
 		$('#visual_face').on('change', function () { update(); });
+		$('#visual_hair').on('change', function () { update(); });
 		$('#visual_hat').on('change', function () { update(); });
 	}
 	);
@@ -78,6 +85,10 @@
 							<div class="form-group form-horizontal">
 								{{ form.visual_face.label(class="form-control-label") }}
 								{{ form.visual_face(class="form-control form-control-sm") }}
+							</div>
+							<div class="form-group form-horizontal">
+								{{ form.visual_hair.label(class="form-control-label") }}
+								{{ form.visual_hair(class="form-control form-control-sm") }}
 							</div>
 							<div class="form-group form-horizontal">
 								{{ form.visual_hat.label(class="form-control-label") }}

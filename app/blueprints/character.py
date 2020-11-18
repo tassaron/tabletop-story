@@ -256,6 +256,7 @@ def edit_character(character_id, selected_field, autosubmit=False):
             "visual_body": design["body"],
             "visual_head": design["head"],
             "visual_face": design["face"],
+            "visual_hair": design["hair"],
             "visual_hat": design["hat"],
             "name": character.name,
             "age": character.age,
