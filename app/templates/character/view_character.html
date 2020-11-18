@@ -132,6 +132,7 @@ CHA: {{character.charisma}} ({{character.charisma|ability_modifier}})</pre>
                 {% if can_edit %}
                 <a style="float:right" href="/character/edit/{{character_id}}/spellcasting" class="btn">📝</a>
                 {% endif %}
+                <p><strong>Spell Save DC: {{ spell_save_dc }}</strong></p>
                 <p><strong>Spells Known:</strong>
                     {% if character.spells_known == None %}
                     <br>This character doesn't have any spells yet! ✨

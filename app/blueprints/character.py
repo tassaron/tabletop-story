@@ -400,6 +400,12 @@ def view_character(character_id):
         can_edit = True
 
     character = db_character.character
+    spellcasting_stat = {
+        "cha": character.charisma,
+        "int": character.intelligence,
+        "wis": character.wisdom,
+        None: 0,
+    }
     return render_template(
         "view_character.html",
         logged_in=logged_in,
@@ -418,6 +424,9 @@ def view_character(character_id):
         passive_perception=10
         + character.skills_wisdom["perception"]
         + int(ability_modifier(character.wisdom)),
+        spell_save_dc=8
+        + ability_modifier(spellcasting_stat[character.spellcasting_stat])
+        + character.prof_bonus,
         skills={
             "athletics": (
                 character.prof_bonus if character.skills_strength["athletics"] else 0
