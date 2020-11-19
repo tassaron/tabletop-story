@@ -187,6 +187,8 @@ class GameCharacter(db.Model):
         return dict(zip(self.keys(), self.values()))
 
     def update_data(self, data):
+        # remove armour class so it will be recalculated properly
+        del data["armour_class"]
         new = Character(**data)
         self.data_keys = str(new.keys())
         self.data_vals = str(new.values())
@@ -194,8 +196,7 @@ class GameCharacter(db.Model):
     @property
     def character(self):
         """
-        Turn two strings in the database into a dict without using eval!
-        Then we can use the dict to create a real Character object
+        Return a real Character object using the data in this database row
         """
         i = 0
         return Character(**self.as_dict())

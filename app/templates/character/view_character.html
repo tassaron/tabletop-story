@@ -39,6 +39,10 @@
         <a style="float:right" href="/character/edit/{{character_id}}/ability" class="btn">📝</a>
         {% endif %}
         <h4><strong>Level {{character.level}} {{character.class_name}}</strong></h4>
+        <p>
+            <strong>AC:</strong> {{character.armour_class}}<br>
+            <strong>HP:</strong>&nbsp;{{character.hp}}/{{character.max_hp}}
+        </p>
         <pre>CON: {{character.constitution}} ({{character.constitution|ability_modifier}})
 STR: {{character.strength}} ({{character.strength|ability_modifier}})
 DEX: {{character.dexterity}} ({{character.dexterity|ability_modifier}})
