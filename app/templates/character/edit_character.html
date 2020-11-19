@@ -188,6 +188,22 @@
 						{% else %}
 						<div class="collapse" id="ability">
 							{% endif %}
+
+							{# hit points #}
+							<div class="form-group form-inline">
+								{{ form.hp.label(class="form-control-label pr-4") }}
+								{% if form.hp.errors %}
+								{{ form.hp(class="form-control form-control-sm is-invalid pr-4") }}
+								<div class="invalid-feedback">
+									{% for error in form.hp.errors %}
+									<span>{{ error }}</span>
+									{% endfor %}
+								</div>
+								{% else %}
+								{{ form.hp(class="form-control form-control-sm pr-4") }}
+								{% endif %}
+							</div>
+
 							{# ability scores #}
 							<div class="form-group form-inline">
 								{{ form.constitution.label(class="form-control-label pr-4") }}

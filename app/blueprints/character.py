@@ -11,7 +11,8 @@ from flask import (
     jsonify,
 )
 import flask_login
-from wtforms import BooleanField, SelectField
+from wtforms import BooleanField, SelectField, IntegerField
+from wtforms.validators import NumberRange
 from werkzeug.datastructures import MultiDict
 import logging
 
@@ -130,6 +131,12 @@ def edit_character(character_id, selected_field, autosubmit=False):
 
         class ThisEditCharacterForm(EditCharacterForm):
             pass
+
+        setattr(
+            ThisEditCharacterForm,
+            "hp",
+            IntegerField("HP", validators=[NumberRange(min=0, max=data["max_hp"])]),
+        )
 
         for i, class_feature in enumerate(data["class_features"].values()):
             setattr(
@@ -265,6 +272,7 @@ def edit_character(character_id, selected_field, autosubmit=False):
             "biography": character.biography,
             "class_name": character.class_name,
             "alignment": character.alignment,
+            "hp": character.hp,
             "constitution": character.constitution,
             "strength": character.strength,
             "dexterity": character.dexterity,
@@ -341,7 +349,7 @@ def edit_character(character_id, selected_field, autosubmit=False):
         form = ThisEditCharacterForm(formdata=MultiDict(filled_form))
     elif request.method == "POST":
         form = ThisEditCharacterForm()
-    if request.method == "POST" or autosubmit:
+    if autosubmit or (request.method == "POST" and form.validate_on_submit()):
         # Now we have a valid dict to make a new Character
         data, design = extract_and_apply_edit_character_form(
             form, data, autosubmit=True
@@ -357,7 +365,7 @@ def edit_character(character_id, selected_field, autosubmit=False):
     character = db_character.character
     design = db_character.design
 
-    if not autosubmit:
+    if not autosubmit and request.method == "GET":
         filled_form = create_filled_form_dict(character, design, cantrips, spell_slots)
         form = ThisEditCharacterForm(formdata=MultiDict(filled_form))
 
