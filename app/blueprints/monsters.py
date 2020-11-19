@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, abort
+from flask import Blueprint, render_template, abort, jsonify
 from flask_login import current_user
 from dnd_character.monsters import SRD_monsters
 
@@ -16,3 +16,18 @@ def view_monster(monster):
         SRD_disclaimer=True,
         monster=SRD_monsters[monster],
     )
+
+
+@blueprint.route("/get/<monster>/<attr>")
+def get_monster(monster, attr):
+    if attr == "card":
+        monster_json = SRD_monsters[monster]
+        monster_json["html"] = render_template(
+            "view_monster.html",
+            monster=SRD_monsters[monster],
+            embedded_card=True,
+        )
+        return monster_json
+    elif attr not in monster:
+        abort(400)
+    return jsonify(SRD_monsters[monster][attr])

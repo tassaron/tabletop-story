@@ -69,6 +69,9 @@ class SceneNPC(db.Model):
     # string literal for a dict
     data = db.Column(db.String(2048), nullable=False)
 
+    def as_dict(self):
+        return literal_eval(self.data)
+
 
 class LocationScene(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False)

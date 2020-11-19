@@ -1,6 +1,8 @@
+{% if not embedded_card %}
 {% set selected = 3 %}
 {% extends 'base.html' %}
 {% block title %}D&D 5e Monster "{{monster["name"]}}"{% endblock %}
+{% endif %}
 
 {% block content %}
 <div class="col-lg-8 mb-4">
