@@ -597,7 +597,9 @@ def edit_character_experience(character_id, number):
     except ValueError:
         abort(400)
     char = db_character.character
+    difference = char.max_hp - char.hp
     char.experience += number
+    char.hp = char.max_hp - difference
     db_character.update_data(dict(char))
     db.session.add(db_character)
     db.session.commit()
@@ -609,5 +611,6 @@ def edit_character_experience(character_id, number):
             f"Depleted {str(number*-1)} experience point{plural} from {char.name}",
             "info",
         )
-    edit_character(character_id=character_id, selected_field=None, autosubmit=True)
+    # autosubmitting edit_character would be nice but it ruins flash() and isn't strictly needed
+    # edit_character(character_id=character_id, selected_field=None, autosubmit=True)
     return redirect(url_for(".view_character", character_id=character_id))
