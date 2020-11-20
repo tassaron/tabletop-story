@@ -19,6 +19,22 @@
             })
         })
     };
+
+    function toggle_list_view() {
+        if ($('#list-toggle').text() == "Show List") {
+            $('#list-toggle').text("Hide List");
+        } else {
+            $('#list-toggle').text("Show List");
+        }
+    };
+    $(function () {
+        $('#template').on('change', function () { update($('#template').val()); });
+    }
+    );
+    $(function () {
+        $('#list-toggle').on('click', function () { toggle_list_view(); });
+    }
+    );
 </script>
 {% endblock %}
 
@@ -29,12 +45,12 @@
 {# Gamemaster controls #}
 {% if is_gamemaster %}
 <a style="float:right" href="/campaign/edit/{{campaign.id}}" class="btn">📝</a><br>
-<a data-toggle="collapse" href="#location_list" class="btn btn-primary">Show All</a>
+<a data-toggle="collapse" href="#location_list" class="btn btn-primary" id="list-toggle">Hide List</a>
 <a href="/campaign/location/{{ campaign.id }}/activate" class="btn btn-primary">Set Current Location</a>
 {% if active_location %}
 <a href="/location/scene/{{ active_location.id }}/activate" class="btn btn-primary">Set Current Scene</a>
 {% endif %}
-<div id="location_list" class="collapse">
+<div id="location_list" class="collapse show">
     <ul class="list-group">
         {% for location in locations %}
         <li{% if active_location.id == location.id %} style="background-color: lightblue" {% endif %}>
@@ -95,9 +111,9 @@
         <div class="col-lg-4 col-md-6 mb-4">
             <div class="card h-100">
                 <div class="card-header">
-                    <strong>{{character.name}}</strong> (Level {{character.level}} {{character.class_name}})
-                    <a href="/character/edit/{{character.dbid}}" class="btn">📝</a>
-                </div>
+                    <a style="float:left;" href="/character/edit/{{character.dbid}}"
+                        class="btn">📝</a>&nbsp;<strong>{{character.name}}</strong>
+                    (Level&nbsp;{{character.level}}&nbsp;{{character.class_name}})</div>
                 <div class="card-body"><a href="{{ url_for('character.view_character', character_id=character.dbid) }}">
                         <img style="float: left; max-width:150px;" class="card-img-top"
                             src="{{url_for('static', filename='img/character/')+character.image}}"
