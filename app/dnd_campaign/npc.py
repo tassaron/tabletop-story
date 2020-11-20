@@ -9,16 +9,19 @@ class NPC:
             armour_class=template["armor_class"],
             passive_perception=template["senses"]["passive_perception"],
             proficiencies=[
-                f'{proficiency["proficiency"]["name"]} {proficiency["value"]}'
+                f'{proficiency["proficiency"]["name"]}: {proficiency["value"]}'
                 for proficiency in template["proficiencies"]
             ],
             hit_points=template["hit_points"],
+            max_hit_points=template["hit_points"],
             experience=template["xp"],
             actions=[
-                f'{action["name"]} {action["desc"]}' for action in template["actions"]
+                f'{action["name"]}: {action["desc"]}' for action in template["actions"]
             ],
-            abilities=[
-                f'{abil["name"]} {abil["desc"]}'
+            abilities=[]
+            if "special_abilities" not in template
+            else [
+                f'{abil["name"]}: {abil["desc"]}'
                 for abil in template["special_abilities"]
             ],
             constitution=template["constitution"],
@@ -37,6 +40,7 @@ class NPC:
         passive_perception: int,
         proficiencies: list,
         hit_points: int,
+        max_hit_points: int,
         experience: int,
         actions: list,
         abilities: list,
@@ -53,6 +57,7 @@ class NPC:
         self.passive_perception = passive_perception
         self.proficiencies = proficiencies
         self.hit_points = hit_points
+        self.max_hit_points = max_hit_points
         self.experience = experience
         self.actions = actions
         self.abilities = abilities

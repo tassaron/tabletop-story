@@ -1,9 +1,57 @@
+{% if not embedded_card %}
 {% extends 'base.html' %}
 {% block title %}"{{ npc.name }}" NPC in "{{ scene.name }}"{% endblock %}
+{% endif %}
 
 {% block content %}
+{% if not embedded_card %}
 <a class="btn btn-secondary" href="{{ url_for('location/scene.view_location_scene', scene_id=scene.id) }}">&lt; Back</a>
-<a style="float:right" href="{{ url_for('scene/npc.edit_scene_npc', npc_id=npc.id) }}" class="btn">📝</a>
 <h2>"{{ npc.name }}" NPC in "{{ scene.name }}" Scene in "{{location.name}}" Location from "{{ campaign.name }}"</h2>
-<p>{{ npc.description }}</p>
+<a style="float:right" href="{{ url_for('scene/npc.edit_scene_npc', npc_id=npc.id) }}" class="btn">📝</a>
+{% endif %}
+<div class="col-lg-8 mb-4">
+    <div class="card h-100">
+        <div class="card-body">
+            {{npc.description}}
+            <div class="alert alert-info">
+                <span style="float:right">INT: {{npc.intelligence}}
+                    {{npc.intelligence|ability_modifier}}<br>
+                    WIS: {{npc.wisdom}} {{npc.wisdom|ability_modifier}}<br>
+                    CHA: {{npc.charisma}} {{npc.charisma|ability_modifier}}</span>
+                CON: {{npc.constitution}} {{npc.constitution|ability_modifier}}<br>
+                STR: {{npc.strength}} {{npc.strength|ability_modifier}}<br>
+                DEX: {{npc.dexterity}} {{npc.dexterity|ability_modifier}}
+            </div>
+            <ul>
+                <li><strong>Hit Points:</strong> {{npc.hit_points}}/{{npc.max_hit_points}}</li>
+                <li><strong>Armour Class:</strong> {{npc.armour_class}}</li>
+                <li><strong>Passive Perception:</strong> {{npc.passive_perception}}</li>
+                <li><strong>Proficiencies:</strong>
+                    <ul>
+                        {% for prof in npc.proficiencies %}
+                        <li>{{prof}}</li>
+                        {% endfor %}
+                    </ul>
+                </li><br>
+                <li><strong>Special Abilities:</strong>
+                    <ul>
+                        {% for abil in npc.abilities %}
+                        <li>{{abil}}</li>
+                        {% endfor %}
+                    </ul>
+                </li><br>
+                <li><strong>Actions:</strong>
+                    <ul>
+                        {% for action in npc.actions %}
+                        <li>{{action}}</li>
+                        {% endfor %}
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <div class="card-footer">
+            <small class="text-muted">Suggested XP reward: {{npc.experience}}</small>
+        </div>
+    </div>
+</div>
 {% endblock %}

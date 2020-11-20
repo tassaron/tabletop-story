@@ -12,7 +12,7 @@
         ).then(function (response) {
             response.json().then(function (data) {
                 if ($(`#npc-${npc_id}`).html() == data["name"]) {
-                    $(`#npc-${npc_id}`).html($(`#npc-${npc_id}`).html() + '<br>' + data['html']);
+                    $(`#npc-${npc_id}`).html(`&nbsp;<strong>${$(`#npc-${npc_id}`).html()}</strong>` + '<br>' + data['html']);
                 } else {
                     $(`#npc-${npc_id}`).html(data["name"]);
                 }
@@ -47,7 +47,8 @@
                         href="{{ url_for('location/scene.view_location_scene', scene_id=scene.id) }}">{{ scene.name }}</a>
                     <ul>
                         {% for npc in npcs[scene.id] %}
-                        <li class="list-item"><a href="{{ url_for('scene/npc.edit_scene_npc', npc_id=npc.id) }}"
+                        <li class="list-item"><a
+                                href="{{ url_for('scene/npc.edit_scene_npc', npc_id=npc.id) }}{{ next_page }}"
                                 style="float:left">📝</a>
                             <div id="npc-{{npc.id}}" onclick="update({{npc.id}})">{{npc.name}}</div>
                         </li>

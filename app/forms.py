@@ -21,6 +21,23 @@ from dnd_character.equipment import SRD_equipment
 
 class EditNPCForm(FlaskForm):
     name = StringField("Name", validators=[Length(min=1, max=127)])
+    description = StringField("Description", validators=[Length(min=0, max=255)])
+    hit_points = IntegerField("Hit points", validators=[NumberRange(min=0)])
+    max_hit_points = IntegerField("Hit point maximum", validators=[NumberRange(min=1)])
+    armour_class = IntegerField("Armour class", validators=[NumberRange(min=0)])
+    passive_perception = IntegerField(
+        "Passive perception", validators=[NumberRange(min=0)]
+    )
+    constitution = IntegerField("CON", validators=[NumberRange(min=0)])
+    strength = IntegerField("STR", validators=[NumberRange(min=0)])
+    dexterity = IntegerField("DEX", validators=[NumberRange(min=0)])
+    wisdom = IntegerField("WIS", validators=[NumberRange(min=0)])
+    intelligence = IntegerField("INT", validators=[NumberRange(min=0)])
+    charisma = IntegerField("CHA", validators=[NumberRange(min=0)])
+    experience = IntegerField("Recommended XP value", validators=[NumberRange(min=0)])
+    actions = TextAreaField("Actions")
+    abilities = TextAreaField("Special Abilities")
+    proficiencies = TextAreaField("Proficiencies")
     submit = SubmitField("💾 Save Changes")
 
 

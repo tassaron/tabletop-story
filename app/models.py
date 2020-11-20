@@ -2,7 +2,7 @@ from .plugins import plugins
 from itsdangerous import TimedJSONWebSignatureSerializer
 import os
 from dnd_character import Character
-from .dnd_campaign import Combat
+from .dnd_campaign import Combat, NPC
 from ast import literal_eval
 
 # plugins = create_plugins()
@@ -71,6 +71,10 @@ class SceneNPC(db.Model):
 
     def as_dict(self):
         return literal_eval(self.data)
+
+    @property
+    def npc(self):
+        return NPC(**self.as_dict())
 
 
 class LocationScene(db.Model):
