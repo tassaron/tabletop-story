@@ -52,7 +52,21 @@ def activate_location_scene(location_id):
 
     form = LocationSceneListForm()
     if form.validate_on_submit():
-        campaign.set_combat(form.scene.data)
+        characters = []
+        for c in (
+            campaign.character1,
+            campaign.character2,
+            campaign.character3,
+            campaign.character4,
+            campaign.character5,
+            campaign.character6,
+        ):
+            if c is not None:
+                characters.append(c)
+        campaign.set_combat(
+            form.scene.data,
+            characters,
+        )
         db.session.add(campaign)
         db.session.commit()
         return redirect(url_for("campaign.view_campaign", campaign_id=campaign.id))

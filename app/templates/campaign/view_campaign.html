@@ -50,6 +50,8 @@
 {% if active_location %}
 <a href="/location/scene/{{ active_location.id }}/activate" class="btn btn-primary">Set Current Scene</a>
 {% endif %}
+<a href="/campaign/combat/{{campaign.id}}/toggle"
+    class="btn btn-primary">{% if combat.active == True %}Stop{% else %}Start{% endif %} Combat</a>
 <div id="location_list" class="collapse show">
     <ul class="list-group">
         {% for location in locations %}

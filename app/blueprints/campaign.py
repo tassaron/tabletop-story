@@ -164,3 +164,20 @@ def view_campaign(campaign_id):
         characters=characters,
         other_characters=other_characters,
     )
+
+
+@blueprint.route("/combat/<campaign_id>/toggle")
+@login_required
+def toggle_combat(campaign_id):
+    campaign = GameCampaign.query.get(campaign_id)
+    if campaign is None:
+        abort(404)
+    user_id = int(current_user.get_id())
+    if user_id != campaign.gamemaster:
+        abort(403)
+    combat = campaign.get_combat()
+    combat.active = not combat.active
+    campaign.combat_data = str(combat)
+    db.session.add(campaign)
+    db.session.commit()
+    return str(combat)

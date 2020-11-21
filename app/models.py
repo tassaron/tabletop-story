@@ -85,6 +85,10 @@ class LocationScene(db.Model):
     name = db.Column(db.String(127), nullable=False)
     description = db.Column(db.String(2048), nullable=True)
 
+    @property
+    def npcs(self):
+        return SceneNPC.query.filter_by(scene_id=self.id).all()
+
 
 class CampaignLocation(db.Model):
     """
@@ -140,8 +144,19 @@ class GameCampaign(db.Model):
     def get_combat(self):
         return Combat(**literal_eval(self.combat_data))
 
-    def set_combat(self, scene_id):
-        self.combat_data = str(Combat(scene_id=scene_id))
+    def set_combat(self, scene_id, characters):
+        scene = LocationScene.query.get(scene_id)
+        characters = [GameCharacter.query.get(char_id) for char_id in characters]
+        self.combat_data = str(
+            Combat(
+                scene_id=scene_id,
+                characters=[
+                    (character.id, character.character.dexterity)
+                    for character in characters
+                ],
+                npcs=[(npc.id, npc.npc.dexterity) for npc in scene.npcs],
+            )
+        )
 
     def characters(self):
         return [

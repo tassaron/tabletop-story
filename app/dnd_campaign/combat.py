@@ -65,10 +65,10 @@ class Combat:
             while roll in final_order:
                 roll += 1
             final_order[roll] = char
-        final_order = {
-            k: v for k, v in sorted(final_order.items(), key=lambda item: item[1])
+        sorted_final_order = {
+            k: final_order[k] for k in reversed(sorted(final_order.keys()))
         }
-        self.turn_sequence = list(final_order.values())
+        self.turn_sequence = list(sorted_final_order.values())
 
     def set_characters(self, characters: list):
         """Receives a list of dnd_character.Character objects"""
