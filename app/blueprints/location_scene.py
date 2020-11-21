@@ -10,6 +10,7 @@ from tabletop_story.models import (
 )
 from tabletop_story.forms import GenericCreateForm, GenericEditForm, GenericForm
 from tabletop_story.plugins import db
+from .campaign_location import activate_campaign_location_post
 from is_safe_url import is_safe_url
 
 
@@ -18,9 +19,23 @@ blueprint = Blueprint(
 )
 
 
+@blueprint.route("/<location_id>/activate/<scene_id>")
+@login_required
+def activate_location_scene_post(location_id, scene_id):
+    location = CampaignLocation.query.get(location_id)
+    if location is not None:
+        campaign = GameCampaign.query.get(location.campaign_id)
+        if campaign is not None:
+            scene = LocationScene.query.get(scene_id)
+            scene = 0 if scene is None else scene.location_id
+            if campaign.active_location != scene:
+                activate_campaign_location_post(campaign.id, location_id)
+    return activate_location_scene(location_id, scene_id)
+
+
 @blueprint.route("/<location_id>/activate", methods=["GET", "POST"])
 @login_required
-def activate_location_scene(location_id):
+def activate_location_scene(location_id, scene_id=None):
     location = CampaignLocation.query.get(location_id)
     if location is None:
         abort(404)
@@ -33,25 +48,28 @@ def activate_location_scene(location_id):
     if campaign.active_location != int(location_id):
         abort(400)
 
-    # subclass a generic form and add this location's list of scenes
-    class LocationSceneListForm(GenericForm):
-        pass
+    if scene_id is None:
+        # subclass a generic form and add this location's list of scenes
+        class LocationSceneListForm(GenericForm):
+            pass
 
-    scenes = [
-        (scene.id, scene.name)
-        for scene in LocationScene.query.filter_by(location_id=location_id).all()
-    ]
-    setattr(
-        LocationSceneListForm,
-        "scene",
-        SelectField(
-            "Choose a Scene",
-            choices=[(0, "None"), *scenes],
-        ),
-    )
+        scenes = [
+            (scene.id, scene.name)
+            for scene in LocationScene.query.filter_by(location_id=location_id).all()
+        ]
+        setattr(
+            LocationSceneListForm,
+            "scene",
+            SelectField(
+                "Choose a Scene",
+                choices=[(0, "None"), *scenes],
+            ),
+        )
+        form = LocationSceneListForm()
 
-    form = LocationSceneListForm()
-    if form.validate_on_submit():
+    if scene_id is not None or form.validate_on_submit():
+        if request.method == "POST":
+            scene_id = form.scene.data
         characters = []
         for c in (
             campaign.character1,
@@ -64,7 +82,7 @@ def activate_location_scene(location_id):
             if c is not None:
                 characters.append(c)
         campaign.set_combat(
-            form.scene.data,
+            scene_id,
             characters,
         )
         db.session.add(campaign)
@@ -139,11 +157,11 @@ def edit_location_scene(scene_id):
         scene.description = form.description.data
         db.session.add(scene)
         db.session.commit()
-        return redirect(
-            url_for(
-                ".view_location_scene",
-                scene_id=scene_id,
-            )
+        next_page = request.args.get("next")
+        return (
+            redirect(next_page)
+            if next_page and is_safe_url(next_page, url_for("dashboard.index"))
+            else redirect(url_for(".view_location_scene", scene_id=scene_id))
         )
 
     filled_form = {

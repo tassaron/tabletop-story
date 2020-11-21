@@ -12,9 +12,12 @@
         ).then(function (response) {
             response.json().then(function (data) {
                 if ($(`#npc-${npc_id}`).html() == data["name"]) {
-                    $(`#npc-${npc_id}`).html(`&nbsp;<strong>${$(`#npc-${npc_id}`).html()}</strong>` + '<br>' + data['html']);
+                    $(`#npc-${npc_id}`).html(`📎<strong>${$(`#npc-${npc_id}`).html()}</strong>`);
+                    $('#npc_cards').html($('#npc_cards').html() +
+                        `<div style="width:80%" id="npc_card-${npc_id}"><a data-toggle="collapse" class="btn btn-secondary" href="#npc_card_tog${npc_id}">${data["name"]}</a><div class="collapse" id="npc_card_tog${npc_id}">${data['html']}</div></div>`)
                 } else {
                     $(`#npc-${npc_id}`).html(data["name"]);
+                    $(`#npc_card-${npc_id}`).remove()
                 }
             })
         })
@@ -22,19 +25,18 @@
 
     function toggle_list_view() {
         if ($('#list-toggle').text() == "Show List") {
-            $('#list-toggle').text("Hide List");
+            $('#list-toggle').text("🗂️ Hide List");
         } else {
-            $('#list-toggle').text("Show List");
+            $('#list-toggle').text("🗂️ Show List");
         }
     };
-    $(function () {
-        $('#template').on('change', function () { update($('#template').val()); });
-    }
-    );
     $(function () {
         $('#list-toggle').on('click', function () { toggle_list_view(); });
     }
     );
+    $(document).ready(function () {
+        {% for npc in npcs[combat.scene_id] %} update({{ npc.id }}); {% endfor %}
+    });
 </script>
 {% endblock %}
 
@@ -45,24 +47,29 @@
 {# Gamemaster controls #}
 {% if is_gamemaster %}
 <a style="float:right" href="/campaign/edit/{{campaign.id}}" class="btn">📝</a><br>
-<a data-toggle="collapse" href="#location_list" class="btn btn-primary" id="list-toggle">Hide List</a>
+<a data-toggle="collapse" href="#location_list" class="btn btn-primary" id="list-toggle">🗂️ Hide List</a>
 <a href="/campaign/location/{{ campaign.id }}/activate" class="btn btn-primary">Set Current Location</a>
 {% if active_location %}
 <a href="/location/scene/{{ active_location.id }}/activate" class="btn btn-primary">Set Current Scene</a>
 {% endif %}
+{% if combat.scene_id > 0 %}
 <a href="/campaign/combat/{{campaign.id}}/toggle"
-    class="btn btn-primary">{% if combat.active == True %}Stop{% else %}Start{% endif %} Combat</a>
+    class="btn btn-primary">{% if combat.active == True %}Stop{% else %}Start{% endif %} Combat</a>{% endif %}
 <div id="location_list" class="collapse show">
     <ul class="list-group">
         {% for location in locations %}
-        <li{% if active_location.id == location.id %} style="background-color: lightblue" {% endif %}>
+        {% if active_location.id == location.id %}<li style="background-color: lightblue"><a
+                href="/campaign/location/{{campaign.id}}/activate/0">🔳</a>{% else %}
+        <li><a href="/campaign/location/{{campaign.id}}/activate/{{location.id}}">🔲</a>{% endif %}
             Location: <a
-                href="{{ url_for('campaign/location.view_campaign_location', location_id=location.id) }}">{{ location.name }}</a>
+                href="{{ url_for('campaign/location.edit_campaign_location', location_id=location.id) }}{{ next_page }}">{{ location.name }}</a>
             <ul>
                 {% for scene in scenes[location.id] %}
-                <li{% if combat.scene_id == scene.id %} style="font-weight:bold;" {% endif %}>
+                {% if combat.scene_id == scene.id %}<li style="font-weight:bold;"><a
+                        href="/location/scene/{{location.id}}/activate/0">🔳</a>{% else %}
+                <li><a href="/location/scene/{{location.id}}/activate/{{scene.id}}">🔲</a>{% endif %}
                     Scene: <a
-                        href="{{ url_for('location/scene.view_location_scene', scene_id=scene.id) }}">{{ scene.name }}</a>
+                        href="{{ url_for('location/scene.edit_location_scene', scene_id=scene.id) }}{{ next_page }}">{{ scene.name }}</a>
                     <ul>
                         {% for npc in npcs[scene.id] %}
                         <li class="list-item"><a
@@ -76,19 +83,19 @@
                                 ➕ Add New
                                 NPC</a></li>
                     </ul>
-                    </li>
-                    {% endfor %}
-                    <li class="list-item"><a
-                            href="{{ url_for('location/scene.create_location_scene', location_id=location.id) }}{{ next_page }}">
-                            ➕ Add New
-                            Scene</a></li>
+                </li>
+                {% endfor %}
+                <li class="list-item"><a
+                        href="{{ url_for('location/scene.create_location_scene', location_id=location.id) }}{{ next_page }}">
+                        ➕ Add New
+                        Scene</a></li>
             </ul>
-            </li>
-            {% endfor %}
-            <li class="list-item"><a
-                    href="{{ url_for('campaign/location.create_campaign_location', campaign_id=campaign.id) }}{{ next_page }}">
-                    ➕ Add New
-                    Location</a></li>
+        </li>
+        {% endfor %}
+        <li class="list-item"><a
+                href="{{ url_for('campaign/location.create_campaign_location', campaign_id=campaign.id) }}{{ next_page }}">
+                ➕ Add New
+                Location</a></li>
     </ul>
 </div>
 {% endif %}
@@ -97,56 +104,62 @@
 {% if active_location %}
 <div id="active_location">
     <h4>Current location: {{ active_location.name }}</h4>
+    {% if active_location.description != None %}
     <em>{{active_location.description}}</em>
+    {% endif %}
 </div>
 {% endif %}
-{% if active_scene %}
+{% if active_scene and active_scene.description != None %}
 <div id="active_scene">
     <em>{{active_scene.description}}</em>
 </div>
 {% endif %}
 
+
+<div class="row" id="npc_cards">
+</div>
+
+
 {# Character cards #}
-<div id="campaign_characters">
-    <div class="row">
-        {% for character in characters %}
-        <div class="col-lg-4 col-md-6 mb-4">
-            <div class="card h-100">
-                <div class="card-header">
-                    <a style="float:left;" href="/character/edit/{{character.dbid}}"
-                        class="btn">📝</a>&nbsp;<strong>{{character.name}}</strong>
-                    (Level&nbsp;{{character.level}}&nbsp;{{character.class_name}})</div>
-                <div class="card-body"><a href="{{ url_for('character.view_character', character_id=character.dbid) }}">
-                        <img style="float: left; max-width:150px;" class="card-img-top"
-                            src="{{url_for('static', filename='img/character/')+character.image}}"
-                            alt="{{character.name}}"></a>
-                    Proficiency bonus: {{character.prof_bonus}}<br>
-                    CON: {{character.constitution}} ({{character.constitution|ability_modifier}})<br>
-                    STR: {{character.strength}} ({{character.strength|ability_modifier}})<br>
-                    DEX: {{character.dexterity}} ({{character.dexterity|ability_modifier}})<br>
-                    WIS: {{character.wisdom}} ({{character.wisdom|ability_modifier}})<br>
-                    INT: {{character.intelligence}} ({{character.intelligence|ability_modifier}})<br>
-                    CHA: {{character.charisma}} ({{character.charisma|ability_modifier}})
-                    <br>Saving throws:{% for throw in character.saving_throws %} {{throw}}{% endfor %}</p>
-                </div>
+<div class="row" id="campaign_characters">
+    {% for character in characters %}
+    <div class="col-lg-4 col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <a style="float:left;" href="/character/edit/{{character.dbid}}"
+                    class="btn">📝</a>&nbsp;<strong>{{character.name}}</strong>
+                (Level&nbsp;{{character.level}}&nbsp;{{character.class_name}})</div>
+            <div class="card-body"><a href="{{ url_for('character.view_character', character_id=character.dbid) }}">
+                    <img style="float: left; max-width:150px;" class="card-img-top"
+                        src="{{url_for('static', filename='img/character/')+character.image}}"
+                        alt="{{character.name}}"></a>
+                Proficiency bonus: {{character.prof_bonus}}<br>
+                CON: {{character.constitution}} ({{character.constitution|ability_modifier}})<br>
+                STR: {{character.strength}} ({{character.strength|ability_modifier}})<br>
+                DEX: {{character.dexterity}} ({{character.dexterity|ability_modifier}})<br>
+                WIS: {{character.wisdom}} ({{character.wisdom|ability_modifier}})<br>
+                INT: {{character.intelligence}} ({{character.intelligence|ability_modifier}})<br>
+                CHA: {{character.charisma}} ({{character.charisma|ability_modifier}})
+                <br>Saving throws:{% for throw in character.saving_throws %} {{throw}}{% endfor %}
             </div>
         </div>
-        {% endfor %}
     </div>
-    {% if other_characters %}
-    <div class="row">
-        {% for character in other_characters %}
-        {% if character != None %}
-        <div class="col-lg-4 col-md-6 mb-4" style="position: relative; text-align: center"><a
-                href="/character/view/{{character.id}}"><img style="max-width:150px"
-                    src="{{ url_for('static', filename='img/character/')+character.image }}"></a>
-            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: bold;">
-                {{character.name}}</div>
-        </div>
-        {% endif %}
-        {% endfor %}
+    {% endfor %}
+</div>
+{% if other_characters %}
+<div class="row">
+    {% for character in other_characters %}
+    {% if character != None %}
+    <div class="col-lg-4 col-md-6 mb-4" style="position: relative; text-align: center"><a
+            href="/character/view/{{character.id}}"><img style="max-width:150px"
+                src="{{ url_for('static', filename='img/character/')+character.image }}"></a>
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: bold;">
+            {{character.name}}</div>
     </div>
     {% endif %}
+    {% endfor %}
+</div>
+{% endif %}
 
 
-    {% endblock %}
+{% endblock %}

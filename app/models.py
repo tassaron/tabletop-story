@@ -87,7 +87,10 @@ class LocationScene(db.Model):
 
     @property
     def npcs(self):
-        return SceneNPC.query.filter_by(scene_id=self.id).all()
+        npcs = SceneNPC.query.filter_by(scene_id=self.id).all()
+        if None in npcs:
+            npcs.pop(npcs.index(None))
+        return npcs
 
 
 class CampaignLocation(db.Model):
@@ -154,7 +157,9 @@ class GameCampaign(db.Model):
                     (character.id, character.character.dexterity)
                     for character in characters
                 ],
-                npcs=[(npc.id, npc.npc.dexterity) for npc in scene.npcs],
+                npcs=[]
+                if scene is None
+                else [(npc.id, npc.npc.dexterity) for npc in scene.npcs],
             )
         )
 

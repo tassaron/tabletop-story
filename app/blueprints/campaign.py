@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, abort, redirect, url_for
+from flask import Blueprint, render_template, abort, redirect, url_for, flash
 from flask_login import login_required, current_user
 from werkzeug.datastructures import MultiDict
 from tabletop_story.models import (
@@ -176,8 +176,11 @@ def toggle_combat(campaign_id):
     if user_id != campaign.gamemaster:
         abort(403)
     combat = campaign.get_combat()
+    if combat.scene_id == 0:
+        abort(400)
     combat.active = not combat.active
     campaign.combat_data = str(combat)
     db.session.add(campaign)
     db.session.commit()
-    return str(combat)
+    flash(str(combat))
+    return redirect(url_for(".view_campaign", campaign_id=campaign_id))

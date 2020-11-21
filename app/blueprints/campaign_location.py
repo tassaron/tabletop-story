@@ -13,9 +13,15 @@ blueprint = Blueprint(
 )
 
 
+@blueprint.route("/<campaign_id>/activate/<location_id>")
+@login_required
+def activate_campaign_location_post(campaign_id, location_id):
+    return activate_campaign_location(campaign_id, location_id)
+
+
 @blueprint.route("/<campaign_id>/activate", methods=["GET", "POST"])
 @login_required
-def activate_campaign_location(campaign_id):
+def activate_campaign_location(campaign_id, location_id=None):
     campaign = GameCampaign.query.get(campaign_id)
     user_id = int(current_user.get_id())
     if campaign is None:
@@ -23,28 +29,33 @@ def activate_campaign_location(campaign_id):
     elif campaign.gamemaster != user_id:
         abort(403)
 
-    # subclass a generic form and add this campaign's list of locations
-    class CampaignLocationListForm(GenericForm):
-        pass
+    if location_id is None:
+        # subclass a generic form and add this campaign's list of locations
+        class CampaignLocationListForm(GenericForm):
+            pass
 
-    locations = [
-        (location.id, location.name)
-        for location in CampaignLocation.query.filter_by(campaign_id=campaign_id).all()
-    ]
-    setattr(
-        CampaignLocationListForm,
-        "location",
-        SelectField(
-            "Choose a Location",
-            choices=[(0, "None"), *locations],
-        ),
-    )
+        locations = [
+            (location.id, location.name)
+            for location in CampaignLocation.query.filter_by(
+                campaign_id=campaign_id
+            ).all()
+        ]
+        setattr(
+            CampaignLocationListForm,
+            "location",
+            SelectField(
+                "Choose a Location",
+                choices=[(0, "None"), *locations],
+            ),
+        )
+        form = CampaignLocationListForm()
 
-    form = CampaignLocationListForm()
-    if form.validate_on_submit():
-        if campaign.active_location != form.location.data:
-            campaign.active_location = form.location.data
-            campaign.set_combat(0)
+    if location_id is not None or form.validate_on_submit():
+        if request.method == "POST":
+            location_id = form.location.data
+        if campaign.active_location != location_id:
+            campaign.active_location = location_id
+            campaign.set_combat(0, [])
             db.session.add(campaign)
             db.session.commit()
         return redirect(url_for("campaign.view_campaign", campaign_id=campaign_id))
