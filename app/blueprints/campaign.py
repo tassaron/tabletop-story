@@ -147,8 +147,6 @@ def view_campaign(campaign_id):
     combat = campaign.get_combat()
     active_scene = LocationScene.query.get(combat.scene_id)
 
-    LOG.info(combat)
-
     return render_template(
         "view_campaign.html",
         logged_in=True,
@@ -178,9 +176,15 @@ def toggle_combat(campaign_id):
     combat = campaign.get_combat()
     if combat.scene_id == 0:
         abort(400)
-    combat.active = not combat.active
+    new_state = not combat.active
+    combat.active = new_state
     campaign.combat_data = str(combat)
     db.session.add(campaign)
     db.session.commit()
-    flash(str(combat))
+    flash(
+        "Combat has ended."
+        if new_state == False
+        else "Combat has begun! Initiative has been rolled for all players and NPCs in the current scene 🎲",
+        "info",
+    )
     return redirect(url_for(".view_campaign", campaign_id=campaign_id))

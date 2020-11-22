@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, abort, redirect, url_for, request
+from flask import Blueprint, render_template, abort, redirect, url_for, request, flash
 from flask_login import login_required, current_user
 from wtforms import SelectField
 from werkzeug.datastructures import MultiDict
@@ -55,6 +55,9 @@ def activate_campaign_location(campaign_id, location_id=None):
             location_id = form.location.data
         if campaign.active_location != location_id:
             campaign.active_location = location_id
+            combat = campaign.get_combat()
+            if combat.active:
+                flash("Combat ended because the active location changed.", "danger")
             campaign.set_combat(0, [])
             db.session.add(campaign)
             db.session.commit()

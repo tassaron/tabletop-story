@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, abort, redirect, url_for, request
+from flask import Blueprint, render_template, abort, redirect, url_for, request, flash
 from flask_login import login_required, current_user
 from wtforms import SelectField
 from werkzeug.datastructures import MultiDict
@@ -81,6 +81,9 @@ def activate_location_scene(location_id, scene_id=None):
         ):
             if c is not None:
                 characters.append(c)
+        combat = campaign.get_combat()
+        if combat.active:
+            flash("Combat ended because the active scene changed.", "danger")
         campaign.set_combat(
             scene_id,
             characters,

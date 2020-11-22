@@ -42,6 +42,9 @@
 
 
 {% block content %}
+{% if combat.active %}
+{% include 'view_combat.html' %}
+{% endif %}
 <h2>Campaign: {{ campaign.name }}</h2>
 
 {# Gamemaster controls #}
