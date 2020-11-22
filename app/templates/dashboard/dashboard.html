@@ -8,6 +8,9 @@ Tabletop Story
 {% block content %}
 <div class="row">
     <div class="col">
+        {% if not logged_in %}
+        <a class="btn btn-success" href="/account/register">Sign Up</a><br>
+        {% endif %}
         <div class="row">
             {% if not err %}
             {% if characters|length == 0 %}
@@ -49,15 +52,53 @@ Tabletop Story
             <div class="col-lg-3 col-md-6 mb-4">
                 <div class="card h-100">
                     <div class="card-body text-center">
-                        <a href="/character/create" class="btn btn-primary">Create New Character</a>
+                        <a href="/character/create" class="btn btn-primary">
+                            🕴️ Create New Character</a>
                     </div>
                 </div>
             </div>
-            {% endif %}{% endif %}
+            {% endif %}
         </div>
-        <!-- /.row -->
+        <div class="row">
 
+            {% if campaigns|length == 0 %}
+            {# Create New Campaign #}
+            <div class="col col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">For Gamemasters too</h5>
+                        <p class="card-text">Keep track of initiative order, hit points, and all the locations and NPCs
+                            in your campaign 🌄
+                        </p>
+                        <a href="/campaign/create" class="btn btn-primary">Create a campaign</a>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <h4>Your Campaigns:</h4>
+            {% for campaign in campaigns %}
+            {# List Campaigns #}
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <a href="/campaign/view/{{ campaign.id }}" class="btn btn-primary">{{ campaign.name }}</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <a href="/campaign/create" class="btn btn-primary">📖 Create New Campaign</a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        {% endif %}
     </div>
+    <!-- /.row -->
 
 </div>
 {% endblock %}
