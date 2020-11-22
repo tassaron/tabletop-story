@@ -1,15 +1,19 @@
-{% set selected = 3 %}
+{% if not embedded_card %}
+{% set selected = 4 %}
 {% extends 'base.html' %}
 {% block title %}D&D 5e Spell "{{spell["name"]}}"{% endblock %}
+{% endif %}
 
 {% block content %}
 <div class="col-lg-8 mb-4">
     <div class="card h-100">
-        <div class="card-header">
+        <div class="card-header" id="spell-card-head">
             <h3>{{spell["name"]}}</h3> <small class="text-muted">Spell Level
                 {{spell["level"]}}</small>
+            {% if embedded_card %}<a href="/spells/view/{{ spell['index'] }}" class="btn"
+                style="float:right">🔗</a>{% endif %}
         </div>
-        <div class="card-body">
+        <div class="card-body" id="spell-card-body">
             <ul>
                 <li><strong>Range:</strong> {{spell["range"]}}</li>
                 <li><strong>Components:</strong>&nbsp;{% for component in spell["components"] %}{{component}}&nbsp;{% endfor %}
@@ -30,10 +34,11 @@
                 ritual{% endif %}{% if "concentration" in spell %}, concentration{% endif %}</small>
         </div>
     </div>
+    {% if not embedded_card %}
     This spell is available to:<ul>
         {% for classs in spell["classes"] %}
         <li>{{classs["name"]}}</li>
         {% endfor %}
-    </ul>
+    </ul>{% endif %}
 </div>
 {% endblock %}

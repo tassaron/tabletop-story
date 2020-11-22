@@ -6,7 +6,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description"
-        content="{% if page_description %}{{ page_description }}{% else %}an assistant to playing Dungeons & Dragons 5e{% endif %}">
+        content="{% if page_description %}{{ page_description }}{% else %}an assistant to playing Dungeons &amp; Dragons 5e{% endif %}">
     <meta name="author" content="Tabletop Story">
     {% block meta %}{% endblock %}
 
@@ -80,6 +80,22 @@
                     <li class="nav-item">
                         <a class="nav-link" href="/rules">
                             How to Play
+                        </a>
+                    </li>
+                    {% endif %}
+                    {% if selected == 4 %}
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/spells">
+                            Spells
+                            <span class="sr-only">
+                                (current)
+                            </span>
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/spells">
+                            Spells
                         </a>
                     </li>
                     {% endif %}

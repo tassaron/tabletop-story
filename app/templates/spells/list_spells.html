@@ -1,0 +1,52 @@
+{% set selected = 4 %}
+{% extends 'base.html' %}
+{% block title %}D&D 5e {{ class_name }} Spell List{% endblock %}
+
+
+{% block script %}
+<script>
+    function update(spell_id) {
+        window.scrollTo(0, 0);
+        $('#spell-card-head').text(spell_id);
+        $('#spell-card-body').text("Loading...");
+        fetch(
+            `${window.location.origin}/spells/get/${spell_id}`, {
+            method: "GET"
+        }
+        ).then(function (response) {
+            response.json().then(function (data) {
+                $('#selected_spell_card').html(data["html"]);
+            })
+        })
+    };
+</script>
+{% endblock %}
+
+
+{% block content %}
+<div class="row" id="selected_spell_card">
+    <div class="col-lg-8 mb-4">
+        <div class="card h-100">
+            <div class="card-header" id="spell-card-head">{{class_name}} Spell List</div>
+            <div class="card-body" id="spell-card-body">Select a spell and its information will appear here.</div>
+            <div class="card-footer">&nbsp;</div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    {% for spell_level in spells %}
+    <p>
+    <h4>Level {{ loop.index - 1}} Spells</h4>
+    <ul>
+        {% for spell in spell_level %}
+        <li>
+            <div class="btn btn-outline-secondary" id="#card-{{ spell['index'] }}"
+                onclick="update(`{{ spell['index'] }}`)">{{ spell["name"] }}</div>
+        </li>
+        {% endfor %}
+    </ul>
+    </p>
+    {% endfor %}
+    </p>
+</div>
+{% endblock %}

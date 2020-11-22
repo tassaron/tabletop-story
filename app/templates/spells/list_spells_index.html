@@ -1,0 +1,38 @@
+{% set selected = 4 %}
+{% extends 'base.html' %}
+{% block title %}D&D 5e Spell Lists{% endblock %}
+
+
+{% block content %}
+<div class="row">
+    <h2>Spell Lists for Spellcasters</h2>
+</div>
+<div class="row">
+    <ul>
+        <li>
+            <a class="btn btn-outline-secondary" href="/spells/list/bard">Bard</a>
+        </li>
+        <li>
+            <a class="btn btn-outline-secondary" href="/spells/list/cleric">Cleric</a>
+        </li>
+        <li>
+            <a class="btn btn-outline-secondary" href="/spells/list/druid">Druid</a>
+        </li>
+        <li>
+            <a class="btn btn-outline-secondary" href="/spells/list/paladin">Paladin</a>
+        </li>
+        <li>
+            <a class="btn btn-outline-secondary" href="/spells/list/ranger">Ranger</a>
+        </li>
+        <li>
+            <a class="btn btn-outline-secondary" href="/spells/list/sorcerer">Sorcerer</a>
+        </li>
+        <li>
+            <a class="btn btn-outline-secondary" href="/spells/list/warlock">Warlock</a>
+        </li>
+        <li>
+            <a class="btn btn-outline-secondary" href="/spells/list/wizard">Wizard</a>
+        </li>
+    </ul>
+</div>
+{% endblock %}
