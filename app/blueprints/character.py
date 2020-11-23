@@ -22,6 +22,7 @@ from tabletop_story.forms import (
     DeleteCharacterForm,
     EditCharacterRemoveInventoryForm,
     EditCharacterAddInventoryForm,
+    EditCharacterExperienceForm,
 )
 from tabletop_story.routes import ability_modifier
 from tabletop_story.plugins import db
@@ -41,6 +42,43 @@ blueprint = Blueprint(
     static_folder="../static",
     template_folder="../templates/character",
 )
+
+
+def validate_character_view(character_id, allow_gamemaster=True, abort=abort):
+    """
+    Ensures that the user has permission to edit the given character_id.
+    The original creator of the character always gets through this function.
+    If allow_gamemaster is True (default), then a user who created a campaign
+    which has this character as a member will also be allowed through.
+    Otherwise, this function will abort with an appropriate 400, 403, or 404
+    """
+    try:
+        character_id = int(character_id)
+    except TypeError:
+        abort(400)
+    user_id = int(flask_login.current_user.get_id())
+    db_character = GameCharacter.query.get(character_id)
+    if db_character is None:
+        abort(404)
+    elif db_character.user_id != user_id:
+        if not allow_gamemaster:
+            abort(403)
+        # This user does not own the character. Check if the user is a relevant gamemaster
+        for campaign in GameCampaign.query.filter_by(gamemaster=user_id).all():
+            if any(
+                [
+                    campaign.character1 == character_id,
+                    campaign.character2 == character_id,
+                    campaign.character3 == character_id,
+                    campaign.character4 == character_id,
+                    campaign.character5 == character_id,
+                    campaign.character6 == character_id,
+                ]
+            ):
+                break
+            else:
+                abort(403)
+    return user_id, db_character
 
 
 @blueprint.route("/create")
@@ -82,15 +120,9 @@ def create_character_chosen(class_key):
 @blueprint.route("/delete/<character_id>", methods=["GET", "POST"])
 @flask_login.login_required
 def delete_character(character_id):
-    try:
-        character_id = int(character_id)
-    except TypeError:
-        abort(400)
-    db_character = GameCharacter.query.get(character_id)
-    if db_character is None:
-        abort(404)
-    if db_character.user_id != int(flask_login.current_user.get_id()):
-        abort(403)
+    user_id, db_character = validate_character_view(
+        character_id, allow_gamemaster=False
+    )
     form = DeleteCharacterForm()
     if form.validate_on_submit() and form.name.data == db_character.name:
         db.session.delete(db_character)
@@ -113,30 +145,7 @@ def delete_character(character_id):
 @blueprint.route("/edit/<character_id>/<selected_field>", methods=["GET", "POST"])
 @flask_login.login_required
 def edit_character(character_id, selected_field, autosubmit=False):
-    try:
-        character_id = int(character_id)
-    except TypeError:
-        abort(400)
-    user_id = int(flask_login.current_user.get_id())
-    db_character = GameCharacter.query.get(character_id)
-    if db_character is None:
-        abort(404)
-    elif db_character.user_id != user_id:
-        # This user does not own the character. Check if the user is a relevant gamemaster
-        for campaign in GameCampaign.query.filter_by(gamemaster=user_id).all():
-            if any(
-                [
-                    campaign.character1 == character_id,
-                    campaign.character2 == character_id,
-                    campaign.character3 == character_id,
-                    campaign.character4 == character_id,
-                    campaign.character5 == character_id,
-                    campaign.character6 == character_id,
-                ]
-            ):
-                break
-            else:
-                abort(403)
+    user_id, db_character = validate_character_view(character_id)
 
     def create_edit_character_form(data):
         """
@@ -417,10 +426,14 @@ def view_character(character_id):
     db_character = GameCharacter.query.get(character_id)
     if db_character is None:
         abort(404)
-    can_edit = False
-    logged_in = flask_login.current_user.is_authenticated
-    if logged_in and db_character.user_id == int(flask_login.current_user.get_id()):
+    editable = validate_character_view(character_id, abort=lambda x: False)
+    if editable:
+        user_id, db_character = editable
+        logged_in = True
         can_edit = True
+    else:
+        can_edit = False
+        logged_in = flask_login.current_user.is_authenticated
 
     character = db_character.character
     spellcasting_stat = {
@@ -536,11 +549,7 @@ def view_character(character_id):
 @blueprint.route("/edit/<character_id>/inventory", methods=["GET", "POST"])
 @flask_login.login_required
 def edit_character_inventory(character_id):
-    db_character = GameCharacter.query.get(character_id)
-    if db_character is None:
-        abort(404)
-    if db_character.user_id != int(flask_login.current_user.get_id()):
-        abort(403)
+    user_id, db_character = validate_character_view(character_id)
     character = db_character.character
 
     # Subclass the remove-item form so we can add the select field
@@ -583,9 +592,7 @@ def edit_character_inventory(character_id):
             f"<li>{line}</li>"
             for line in character.player_options["starting_equipment"]
         ]
-        message = (
-            f"Your class recommends this starting equipment: <ul>{''.join(lines)}</ul>"
-        )
+        message = f"{character.name}'s class recommends this starting equipment: <ul>{''.join(lines)}</ul>"
     else:
         message = ""
 
@@ -599,18 +606,26 @@ def edit_character_inventory(character_id):
     )
 
 
+@blueprint.route("/edit/<character_id>/exp", methods=["GET", "POST"])
+@flask_login.login_required
+def edit_character_choose_experience(character_id):
+    user_id, db_character = validate_character_view(character_id)
+    form = EditCharacterExperienceForm()
+    if form.validate_on_submit():
+        return edit_character_experience(character_id, form.experience.data)
+
+    return render_template(
+        "edit_character_exp.html",
+        logged_in=True,
+        form=form,
+        character=db_character.character,
+    )
+
+
 @blueprint.route("/edit/<character_id>/exp/<number>")
 @flask_login.login_required
 def edit_character_experience(character_id, number):
-    db_character = GameCharacter.query.get(character_id)
-    if db_character is None:
-        abort(404)
-    if db_character.user_id != int(flask_login.current_user.get_id()):
-        abort(403)
-    try:
-        number = int(number)
-    except ValueError:
-        abort(400)
+    user_id, db_character = validate_character_view(character_id)
     char = db_character.character
     difference = char.max_hp - char.hp
     char.experience += number

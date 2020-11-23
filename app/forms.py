@@ -19,6 +19,13 @@ from wtforms.validators import (
 from dnd_character.equipment import SRD_equipment
 
 
+class EditCharacterExperienceForm(FlaskForm):
+    experience = IntegerField(
+        "Experience Amount:", validators=[NumberRange(min=-550000, max=550000)]
+    )
+    submit = SubmitField("Submit")
+
+
 class EditNPCForm(FlaskForm):
     name = StringField("Name", validators=[Length(min=1, max=127)])
     description = StringField("Description", validators=[Length(min=0, max=255)])

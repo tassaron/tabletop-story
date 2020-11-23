@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}Modify Experience for {{ character.name }}{% endblock %}
+
+{% block content %}
+{% if character.level < 20 %}<div class="alert alert-info">{{ character.name }} needs another
+	{{ character.experience.to_next_level }}XP to reach level {{ character.level + 1 }} 📈</div>{% endif %}
+<form action="" method="POST">
+	{{ form.hidden_tag() }}
+	<fieldset class="form-group">
+		<legend class="border-top border-bottom mb-4">Modify {{character.name}}'s Experience Points</legend>
+		<div class="form-group">
+			{{ form.experience.label(class="form-control-label") }}
+			{% if form.experience.errors %}
+			{{ form.experience(class="form-control form-control-lg is-invalid") }}
+			<div class="invalid-feedback">
+				{% for error in form.experience.errors %}
+				<span>{{ error }}</span>
+				{% endfor %}
+			</div>
+			{% else %}
+			{{ form.experience(class="form-control form-control-lg") }}
+			{% endif %}
+		</div>
+	</fieldset>
+	<div class="form-group">
+		{{ form.submit(class="btn btn-primary") }}
+	</div>
+</form>
+{% endblock %}
