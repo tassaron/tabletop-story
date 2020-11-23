@@ -112,7 +112,7 @@
     {% endif %}
 </div>
 {% endif %}
-{% if active_scene and active_scene.description != None %}
+{% if is_gamemaster and active_scene and active_scene.description != None %}
 <div id="active_scene">
     <em>{{active_scene.description}}</em>
 </div>

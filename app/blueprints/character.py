@@ -56,7 +56,9 @@ def validate_character_view(character_id, allow_gamemaster=True, abort=abort):
         character_id = int(character_id)
     except TypeError:
         abort(400)
-    user_id = int(flask_login.current_user.get_id())
+    user_id = flask_login.current_user.get_id()
+    if user_id is not None and user_id != "None":
+        user_id = int(user_id)
     db_character = GameCharacter.query.get(character_id)
     if db_character is None:
         abort(404)
@@ -426,14 +428,11 @@ def view_character(character_id):
     db_character = GameCharacter.query.get(character_id)
     if db_character is None:
         abort(404)
-    editable = validate_character_view(character_id, abort=lambda x: False)
-    if editable:
-        user_id, db_character = editable
-        logged_in = True
-        can_edit = True
-    else:
-        can_edit = False
-        logged_in = flask_login.current_user.is_authenticated
+    user_id, db_character = validate_character_view(
+        character_id, allow_gamemaster=False, abort=lambda x: (False, False)
+    )
+    can_edit = user_id == db_character.user_id
+    logged_in = flask_login.current_user.is_authenticated
 
     character = db_character.character
     spellcasting_stat = {

@@ -25,7 +25,8 @@
 			{% endif %}
 		</div>
 		<div class="form-group">
-			{{ form.description.label(class="form-control-label") }}
+			{{ form.description.label(class="form-control-label") }}<small class="text-muted">(This text
+				<strong>is</strong> shown to players when the location is active.)</small>
 			{{ form.description(class="form-control form-control-lg") }}
 		</div>
 	</fieldset>
