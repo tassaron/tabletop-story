@@ -2,7 +2,12 @@ from flask import Blueprint, render_template, abort, redirect, url_for, request,
 from flask_login import login_required, current_user
 from wtforms import SelectField
 from werkzeug.datastructures import MultiDict
-from tabletop_story.models import GameCampaign, CampaignLocation, LocationScene
+from tabletop_story.models import (
+    GameCampaign,
+    CampaignLocation,
+    LocationScene,
+    SceneNPC,
+)
 from tabletop_story.forms import GenericCreateForm, GenericEditForm, GenericForm
 from tabletop_story.plugins import db
 from is_safe_url import is_safe_url
@@ -165,4 +170,37 @@ def view_campaign_location(location_id):
         campaign=campaign,
         location=location,
         scenes=scenes,
+    )
+
+
+@blueprint.route("/delete/<location_id>", methods=["GET", "POST"])
+@login_required
+def delete_campaign_location(location_id):
+    location = CampaignLocation.query.get(location_id)
+    if location is None:
+        abort(404)
+    campaign = GameCampaign.query.get(location.campaign_id)
+    if campaign is None:
+        abort(404)
+    if campaign.gamemaster != int(current_user.get_id()):
+        abort(403)
+
+    form = GenericForm()
+    if form.validate_on_submit():
+        combat = campaign.get_combat()
+        if campaign.active_location == location_id:
+            activate_campaign_location_post(campaign.id, location_id)
+        db.session.delete(location)
+        for scene in LocationScene.query.filter_by(location_id=location_id).all():
+            for npc in SceneNPC.query.filter_by(scene_id=scene.id).all():
+                db.session.delete(npc)
+            db.session.delete(scene)
+        db.session.commit()
+        return redirect(url_for("campaign.view_campaign", campaign_id=campaign.id))
+
+    return render_template(
+        "delete_npc.html",
+        logged_in=True,
+        npc=location,
+        form=form,
     )

@@ -229,6 +229,8 @@ def delete_location_scene(scene_id):
         if combat.scene_id == scene_id:
             activate_location_scene_post(scene.location_id, scene_id)
         db.session.delete(scene)
+        for npc in SceneNPC.query.filter_by(scene_id=scene_id).all():
+            db.session.delete(npc)
         db.session.commit()
         return redirect(
             url_for("campaign/location.view_campaign_location", location_id=location.id)

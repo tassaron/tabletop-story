@@ -2,7 +2,10 @@
 {% block title %}Edit "{{ location.name }}" Location in "{{ campaign.name }}"{% endblock %}
 
 {% block content %}
-<a class="btn btn-secondary" href="/location/scene/{{location.id}}/create">Create Scene in Location 🎭</a>
+<div class="row">
+	<a class="btn btn-secondary" href="/location/scene/{{location.id}}/create">Create Scene in Location 🎭</a>&nbsp;
+	<a class="btn btn-danger" href="{{ url_for('.delete_campaign_location', location_id=location.id) }}">Delete</a>
+</div>
 <form action="" method="POST">
 	{{ form.hidden_tag() }}
 	<fieldset class="form-group">
