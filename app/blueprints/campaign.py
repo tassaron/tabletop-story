@@ -62,23 +62,23 @@ def edit_campaign(campaign_id):
             campaign.character1 = char1.id
 
         char2 = GameCharacter.query.get(form.character2.data)
-        if char2 and char2.character.uid == form.char2uid.data:
+        if char2 and str(char2.character.uid) == form.char2uid.data:
             campaign.character2 = char2.id
 
         char3 = GameCharacter.query.get(form.character3.data)
-        if char3 and char3.character.uid == form.char3uid.data:
+        if char3 and str(char3.character.uid) == form.char3uid.data:
             campaign.character3 = char3.id
 
         char4 = GameCharacter.query.get(form.character4.data)
-        if char4 and char4.character.uid == form.char4uid.data:
+        if char4 and str(char4.character.uid) == form.char4uid.data:
             campaign.character4 = char4.id
 
         char5 = GameCharacter.query.get(form.character5.data)
-        if char5 and char5.character.uid == form.char5uid.data:
+        if char5 and str(char5.character.uid) == form.char5uid.data:
             campaign.character5 = char5.id
 
         char6 = GameCharacter.query.get(form.character6.data)
-        if char6 and char6.character.uid == form.char6uid.data:
+        if char6 and str(char6.character.uid) == form.char6uid.data:
             campaign.character6 = char6.id
         db.session.add(campaign)
         db.session.commit()

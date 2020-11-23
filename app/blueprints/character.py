@@ -655,3 +655,12 @@ def view_character_secret(character_id):
         "success",
     )
     return redirect(url_for(".edit_character", character_id=character_id))
+
+
+@blueprint.route("/view/<character_id>/share")
+def view_character_share(character_id):
+    flash(
+        f"Copy this link to share: {request.url_root[:-1]}{url_for('.view_character', character_id=character_id)}",
+        "info",
+    )
+    return redirect(url_for(".view_character", character_id=character_id))
