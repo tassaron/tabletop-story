@@ -278,7 +278,7 @@ def copy_scene_npc(npc_id):
     )
 
 
-@blueprint.route("/move<npc_id>", methods=["GET", "POST"])
+@blueprint.route("/move/<npc_id>", methods=["GET", "POST"])
 @login_required
 def move_scene_npc(npc_id):
     npc = SceneNPC.query.get(npc_id)

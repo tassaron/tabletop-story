@@ -644,3 +644,14 @@ def edit_character_experience(character_id, number):
     # autosubmitting edit_character would be nice but it ruins flash() and isn't strictly needed
     # edit_character(character_id=character_id, selected_field=None, autosubmit=True)
     return redirect(url_for(".view_character", character_id=character_id))
+
+
+@blueprint.route("/view/<character_id>/secret")
+@flask_login.login_required
+def view_character_secret(character_id):
+    user_id, db_character = validate_character_view(character_id)
+    flash(
+        f"Your gamemaster will need your secret code when adding your character to a campaign.\n{db_character.name}'s secret code is {str(db_character.character.uid)}",
+        "success",
+    )
+    return redirect(url_for(".edit_character", character_id=character_id))

@@ -3,8 +3,9 @@
 
 {% block content %}
 <div class="row">
-	<a class="btn btn-secondary" href="{{ url_for('.copy_scene_npc', npc_id=npc.id) }}">Copy</a>&nbsp;
-	<a class="btn btn-secondary" href="{{ url_for('.move_scene_npc', npc_id=npc.id) }}">Move</a>&nbsp;
+	{# {{ url_for('.copy_scene_npc', npc_id=npc.id) }} #}
+	<a class="btn btn-secondary">Copy</a>&nbsp;
+	<a class="btn btn-secondary">Move</a>&nbsp;
 	<a class="btn btn-danger" href="{{ url_for('.delete_scene_npc', npc_id=npc.id) }}">Delete</a>
 </div>
 <div class="row">&nbsp;</div>
