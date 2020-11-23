@@ -2,7 +2,10 @@
 {% block title %}Edit "{{ scene.name }}" Scene in "{{ location.name }}"{% endblock %}
 
 {% block content %}
-<a class="btn btn-secondary" href="/scene/npc/{{scene.id}}/create">Create NPC in Scene 🎭</a>
+<div class="row">
+	<a class="btn btn-secondary" href="/scene/npc/{{scene.id}}/create">Create NPC in Scene 🎭</a>&nbsp;
+	<a class="btn btn-danger" href="{{ url_for('.delete_location_scene', scene_id=scene.id) }}">Delete</a>
+</div>
 <form action="" method="POST">
 	{{ form.hidden_tag() }}
 	<fieldset class="form-group">

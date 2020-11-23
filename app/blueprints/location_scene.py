@@ -206,3 +206,37 @@ def view_location_scene(scene_id):
         scene=scene,
         npcs=npcs,
     )
+
+
+@blueprint.route("/delete/<scene_id>", methods=["GET", "POST"])
+@login_required
+def delete_location_scene(scene_id):
+    scene = LocationScene.query.get(scene_id)
+    if scene is None:
+        abort(404)
+    location = CampaignLocation.query.get(scene.location_id)
+    if location is None:
+        abort(404)
+    campaign = GameCampaign.query.get(location.campaign_id)
+    if campaign is None:
+        abort(404)
+    if campaign.gamemaster != int(current_user.get_id()):
+        abort(403)
+
+    form = GenericForm()
+    if form.validate_on_submit():
+        combat = campaign.get_combat()
+        if combat.scene_id == scene_id:
+            activate_location_scene_post(scene.location_id, scene_id)
+        db.session.delete(scene)
+        db.session.commit()
+        return redirect(
+            url_for("campaign/location.view_campaign_location", location_id=location.id)
+        )
+
+    return render_template(
+        "delete_npc.html",
+        logged_in=True,
+        npc=scene,
+        form=form,
+    )
