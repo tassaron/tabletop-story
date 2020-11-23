@@ -95,3 +95,8 @@ class Combat:
 
     def __str__(self):
         return str(self.as_dict())
+
+    def next(self):
+        self.turn_index += 1
+        if self.turn_index == len(self.turn_sequence):
+            self.turn_index = 0

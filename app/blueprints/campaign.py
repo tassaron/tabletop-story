@@ -145,6 +145,13 @@ def view_campaign(campaign_id):
     next_page = f"?next={url_for('.view_campaign', campaign_id=campaign_id)}"
     active_location = CampaignLocation.query.get(campaign.active_location)
     combat = campaign.get_combat()
+    combatants = [
+        SceneNPC.query.get(combatant.id)
+        if combatant.type == 1
+        else GameCharacter.query.get(combatant.id)
+        for combatant in combat.turn_sequence
+    ]
+    combat.turn_sequence = combatants
     active_scene = LocationScene.query.get(combat.scene_id)
 
     return render_template(
@@ -187,4 +194,23 @@ def toggle_combat(campaign_id):
         else "Combat has begun! Initiative has been rolled for all players and NPCs in the current scene 🎲",
         "info",
     )
+    return redirect(url_for(".view_campaign", campaign_id=campaign_id))
+
+
+@blueprint.route("/combat/<campaign_id>/next")
+@login_required
+def next_combat(campaign_id):
+    campaign = GameCampaign.query.get(campaign_id)
+    if campaign is None:
+        abort(404)
+    user_id = int(current_user.get_id())
+    if user_id != campaign.gamemaster:
+        abort(403)
+    combat = campaign.get_combat()
+    if combat.scene_id == 0 or not combat.active:
+        abort(400)
+    combat.next()
+    campaign.combat_data = str(combat)
+    db.session.add(campaign)
+    db.session.commit()
     return redirect(url_for(".view_campaign", campaign_id=campaign_id))

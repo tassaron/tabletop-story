@@ -1,1 +1,13 @@
-{{combat}}
+<div class="row py-4 border border-1">
+    <div class="col">
+        <h3>Initiative:</h3><a href=" /campaign/combat/{{campaign.id}}/next" class="btn btn-secondary">Next
+            Turn</a>
+    </div>
+    {% for combatant in combat.turn_sequence %}
+    {% if loop.index - 1 == combat.turn_index %}
+    <div class="col border border-dark text-center py-auto">{{combatant.name}}</div>
+    {% else %}
+    <div class="col text-center py-auto">{{combatant.name}}</div>
+    {% endif %}
+    {% endfor %}
+</div>
