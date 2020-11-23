@@ -648,7 +648,9 @@ def edit_character_experience(character_id, number):
 @blueprint.route("/view/<character_id>/secret")
 @flask_login.login_required
 def view_character_secret(character_id):
-    user_id, db_character = validate_character_view(character_id)
+    user_id, db_character = validate_character_view(
+        character_id, allow_gamemaster=False
+    )
     flash(
         f"Your gamemaster will need your secret code when adding your character to a campaign.\n{db_character.name}'s secret code is {str(db_character.character.uid)}",
         "success",
