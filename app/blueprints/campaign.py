@@ -56,30 +56,36 @@ def edit_campaign(campaign_id):
     form = EditCampaignForm()
     if form.validate_on_submit():
         campaign.name = form.name.data
-
         char1 = GameCharacter.query.get(form.character1.data)
         if char1 and str(char1.character.uid) == form.char1uid.data:
             campaign.character1 = char1.id
-
+        else:
+            campaign.character1 = None
         char2 = GameCharacter.query.get(form.character2.data)
         if char2 and str(char2.character.uid) == form.char2uid.data:
             campaign.character2 = char2.id
-
+        else:
+            campaign.character2 = None
         char3 = GameCharacter.query.get(form.character3.data)
         if char3 and str(char3.character.uid) == form.char3uid.data:
             campaign.character3 = char3.id
-
+        else:
+            campaign.character3 = None
         char4 = GameCharacter.query.get(form.character4.data)
         if char4 and str(char4.character.uid) == form.char4uid.data:
             campaign.character4 = char4.id
-
+        else:
+            campaign.character4 = None
         char5 = GameCharacter.query.get(form.character5.data)
         if char5 and str(char5.character.uid) == form.char5uid.data:
             campaign.character5 = char5.id
-
+        else:
+            campaign.character5 = None
         char6 = GameCharacter.query.get(form.character6.data)
         if char6 and str(char6.character.uid) == form.char6uid.data:
             campaign.character6 = char6.id
+        else:
+            campaign.character6 = None
         db.session.add(campaign)
         db.session.commit()
         return redirect(url_for(".view_campaign", campaign_id=campaign_id))
