@@ -20,19 +20,68 @@
 			{{ form.name(class="form-control form-control-lg") }}
 			{% endif %}
 		</div>
-		<div class="form-group">
-			{{ form.character1.label(class="form-control-label") }}
-			{{ form.character1(class="form-control form-control-lg") }}
-			{{ form.character2.label(class="form-control-label") }}
-			{{ form.character2(class="form-control form-control-lg") }}
-			{{ form.character3.label(class="form-control-label") }}
-			{{ form.character3(class="form-control form-control-lg") }}
-			{{ form.character4.label(class="form-control-label") }}
-			{{ form.character4(class="form-control form-control-lg") }}
-			{{ form.character5.label(class="form-control-label") }}
-			{{ form.character5(class="form-control form-control-lg") }}
-			{{ form.character6.label(class="form-control-label") }}
-			{{ form.character6(class="form-control form-control-lg") }}
+		<div class="alert alert-info">To add players to your campaign, you need their ID (the number part of the URL of
+			their character sheet) and their secret code. This code is only visible to the owner of the character, so
+			you must ask them to send it to you.</div>
+		<div class="form-group row">
+			<div class="col">
+				{{ form.character1.label(class="form-control-label") }}
+				{{ form.character1(class="form-control form-control-lg") }}
+			</div>
+			<div class="col">
+				{{ form.char1uid.label(class="form-control-label") }}
+				{{ form.char1uid(class="form-control form-control-lg") }}
+			</div>
+		</div>
+		<div class="form-group row">
+			<div class="col">
+				{{ form.character2.label(class="form-control-label") }}
+				{{ form.character2(class="form-control form-control-lg") }}
+			</div>
+			<div class="col">
+				{{ form.char2uid.label(class="form-control-label") }}
+				{{ form.char2uid(class="form-control form-control-lg") }}
+			</div>
+		</div>
+		<div class="form-group row">
+			<div class="col">
+				{{ form.character3.label(class="form-control-label") }}
+				{{ form.character3(class="form-control form-control-lg") }}
+			</div>
+			<div class="col">
+				{{ form.char3uid.label(class="form-control-label") }}
+				{{ form.char3uid(class="form-control form-control-lg") }}
+			</div>
+		</div>
+		<div class="form-group row">
+			<div class="col">
+				{{ form.character4.label(class="form-control-label") }}
+				{{ form.character4(class="form-control form-control-lg") }}
+			</div>
+			<div class="col">
+				{{ form.char4uid.label(class="form-control-label") }}
+				{{ form.char4uid(class="form-control form-control-lg") }}
+			</div>
+		</div>
+		<div class="form-group row">
+			<div class="col">
+				{{ form.character5.label(class="form-control-label") }}
+				{{ form.character5(class="form-control form-control-lg") }}
+			</div>
+			<div class="col">
+				{{ form.char5uid.label(class="form-control-label") }}
+				{{ form.char5uid(class="form-control form-control-lg") }}
+			</div>
+		</div>
+		<div class="form-group row">
+			<div class="col">
+				{{ form.character6.label(class="form-control-label") }}
+				{{ form.character6(class="form-control form-control-lg") }}
+			</div>
+			<div class="col">
+				{{ form.char6uid.label(class="form-control-label") }}
+				{{ form.char6uid(class="form-control form-control-lg") }}
+			</div>
 		</div>
 	</fieldset>
 	<div class="form-group">

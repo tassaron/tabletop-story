@@ -46,21 +46,27 @@ class EditCampaignForm(FlaskForm):
     character1 = IntegerField(
         "First Character ID", validators=[NumberRange(min=1), Optional()]
     )
+    char1uid = StringField("Secret")
     character2 = IntegerField(
         "Second Character ID", validators=[NumberRange(min=1), Optional()]
     )
+    char2uid = StringField("Secret")
     character3 = IntegerField(
         "Third Character ID", validators=[NumberRange(min=1), Optional()]
     )
+    char3uid = StringField("Secret")
     character4 = IntegerField(
         "Fourth Character ID", validators=[NumberRange(min=1), Optional()]
     )
+    char4uid = StringField("Secret")
     character5 = IntegerField(
         "Fifth Character ID", validators=[NumberRange(min=1), Optional()]
     )
+    char5uid = StringField("Secret")
     character6 = IntegerField(
         "Sixth Character ID", validators=[NumberRange(min=1), Optional()]
     )
+    char6uid = StringField("Secret")
     submit = SubmitField("💾 Save Changes")
 
 

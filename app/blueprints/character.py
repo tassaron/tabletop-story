@@ -16,7 +16,7 @@ from wtforms.validators import NumberRange
 from werkzeug.datastructures import MultiDict
 import logging
 
-from tabletop_story.models import User, GameCharacter
+from tabletop_story.models import User, GameCharacter, GameCampaign
 from tabletop_story.forms import (
     EditCharacterForm,
     DeleteCharacterForm,
@@ -117,11 +117,26 @@ def edit_character(character_id, selected_field, autosubmit=False):
         character_id = int(character_id)
     except TypeError:
         abort(400)
+    user_id = int(flask_login.current_user.get_id())
     db_character = GameCharacter.query.get(character_id)
     if db_character is None:
         abort(404)
-    elif db_character.user_id != int(flask_login.current_user.get_id()):
-        abort(403)
+    elif db_character.user_id != user_id:
+        # This user does not own the character. Check if the user is a relevant gamemaster
+        for campaign in GameCampaign.query.filter_by(gamemaster=user_id).all():
+            if any(
+                [
+                    campaign.character1 == character_id,
+                    campaign.character2 == character_id,
+                    campaign.character3 == character_id,
+                    campaign.character4 == character_id,
+                    campaign.character5 == character_id,
+                    campaign.character6 == character_id,
+                ]
+            ):
+                break
+            else:
+                abort(403)
 
     def create_edit_character_form(data):
         """
