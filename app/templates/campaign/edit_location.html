@@ -32,7 +32,8 @@
 	</fieldset>
 	<div class="form-group">
 		{{ form.submit(class="btn btn-success") }}
-		<a class="btn btn-danger" href="/campaign/location/view/{{location.id}}">Cancel</a>
+		<a class="btn btn-danger"
+			href="{% if next_page %}{{ next_page }}{% else %}/campaign/location/view/{{location.id}}{% endif %}">Cancel</a>
 	</div>
 </form>
 {% endblock %}

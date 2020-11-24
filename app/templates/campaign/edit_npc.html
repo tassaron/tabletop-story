@@ -225,7 +225,8 @@
 		</fieldset>
 		<div class="form-group">
 			{{ form.submit(class="btn btn-success") }}
-			<a class="btn btn-danger" href="{{ url_for('scene/npc.view_scene_npc', npc_id=npc.id) }}">Cancel</a>
+			<a class="btn btn-danger"
+				href="{% if next_page %}{{ next_page }}{% else %}{{ url_for('scene/npc.view_scene_npc', npc_id=npc.id) }}{% endif %}">Cancel</a>
 		</div>
 	</form>
 </div>

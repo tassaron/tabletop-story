@@ -94,6 +94,9 @@ def edit_scene_npc(npc_id):
         abort(403)
 
     form = EditNPCForm()
+    next_page = request.args.get("next")
+    if next_page:
+        is_safe_url(next_page, url_for("dashboard.index"))
     if form.validate_on_submit():
         npc.name = form.name.data
         # Most fields match up with attributes of Character
@@ -109,10 +112,9 @@ def edit_scene_npc(npc_id):
         npc.data = str(data)
         db.session.add(npc)
         db.session.commit()
-        next_page = request.args.get("next")
         return (
             redirect(next_page)
-            if next_page and is_safe_url(next_page, url_for("dashboard.index"))
+            if next_page
             else redirect(url_for(".view_scene_npc", npc_id=npc.id))
         )
 
@@ -145,6 +147,7 @@ def edit_scene_npc(npc_id):
         location=location,
         scene=scene,
         npc=npc,
+        next_page=next_page,
     )
 
 

@@ -377,7 +377,8 @@
 		</fieldset>
 		<div class="form-group">
 			{{ form.submit(class="btn btn-info") }}
-			<a class="btn btn-danger" href="/character/view/{{character_id}}">Cancel</a>
+			<a class="btn btn-danger"
+				href="{% if next_page %}{{ next_page }}{% else %}/character/view/{{character_id}}{% endif %}">Cancel</a>
 		</div>
 	</form>
 </div>

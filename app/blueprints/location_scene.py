@@ -155,15 +155,17 @@ def edit_location_scene(scene_id):
         abort(403)
 
     form = GenericEditForm()
+    next_page = request.args.get("next")
+    if next_page:
+        is_safe_url(next_page, url_for("dashboard.index"))
     if form.validate_on_submit():
         scene.name = form.name.data
         scene.description = form.description.data
         db.session.add(scene)
         db.session.commit()
-        next_page = request.args.get("next")
         return (
             redirect(next_page)
-            if next_page and is_safe_url(next_page, url_for("dashboard.index"))
+            if next_page
             else redirect(url_for(".view_location_scene", scene_id=scene_id))
         )
 
@@ -179,6 +181,7 @@ def edit_location_scene(scene_id):
         campaign=campaign,
         location=location,
         scene=scene,
+        next_page=next_page,
     )
 
 

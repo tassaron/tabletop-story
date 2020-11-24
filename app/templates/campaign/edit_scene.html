@@ -33,7 +33,7 @@
 	<div class="form-group">
 		{{ form.submit(class="btn btn-success") }}
 		<a class="btn btn-danger"
-			href="{{ url_for('location/scene.view_location_scene', scene_id=scene.id) }}">Cancel</a>
+			href="{% if next_page %}{{ next_page }}{% else %}{{ url_for('location/scene.view_location_scene', scene_id=scene.id) }}{% endif %}">Cancel</a>
 	</div>
 </form>
 {% endblock %}

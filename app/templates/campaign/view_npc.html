@@ -8,8 +8,8 @@
 <a class="btn btn-secondary" href="{{ url_for('location/scene.view_location_scene', scene_id=scene.id) }}">&lt; Back</a>
 <h2>"{{ npc.name }}" NPC in "{{ scene.name }}" Scene in "{{location.name}}" Location from "{{ campaign.name }}"</h2>
 <a style="float:right" href="{{ url_for('scene/npc.edit_scene_npc', npc_id=npc.id) }}" class="btn">📝</a>
-{% endif %}
 <div class="col-lg-8 mb-4">
+    {% endif %}
     <div class="card h-100">
         <div class="card-body">
             {{npc.description}}
@@ -53,5 +53,6 @@
             <small class="text-muted">Suggested XP reward: {{npc.experience}}</small>
         </div>
     </div>
-</div>
+    {% if not embedded_card %}
+</div>{% endif %}
 {% endblock %}

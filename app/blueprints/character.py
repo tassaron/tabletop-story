@@ -15,6 +15,7 @@ from wtforms import BooleanField, SelectField, IntegerField
 from wtforms.validators import NumberRange
 from werkzeug.datastructures import MultiDict
 import logging
+from is_safe_url import is_safe_url
 
 from tabletop_story.models import User, GameCharacter, GameCampaign
 from tabletop_story.forms import (
@@ -375,6 +376,10 @@ def edit_character(character_id, selected_field, autosubmit=False):
         form = ThisEditCharacterForm(formdata=MultiDict(filled_form))
     elif request.method == "POST":
         form = ThisEditCharacterForm()
+
+    next_page = request.args.get("next")
+    if next_page:
+        is_safe_url(next_page, url_for("dashboard.index"))
     if autosubmit or (request.method == "POST" and form.validate_on_submit()):
         # Now we have a valid dict to make a new Character
         data, design = extract_and_apply_edit_character_form(
@@ -386,7 +391,11 @@ def edit_character(character_id, selected_field, autosubmit=False):
         db.session.add(db_character)
         db.session.commit()
         if not autosubmit:
-            return redirect(url_for(".view_character", character_id=character_id))
+            return (
+                redirect(next_page)
+                if next_page
+                else redirect(url_for(".view_character", character_id=character_id))
+            )
 
     character = db_character.character
     design = db_character.design
@@ -413,6 +422,7 @@ def edit_character(character_id, selected_field, autosubmit=False):
         spell_slots=[]
         if not character.class_spellcasting
         else [form._fields[spell_slot] for spell_slot in spell_slots],
+        next_page=next_page,
     )
 
 
@@ -441,6 +451,9 @@ def view_character(character_id):
         "wis": character.wisdom,
         None: 0,
     }
+    next_page = request.args.get("next")
+    if next_page:
+        is_safe_url(next_page, url_for("dashboard.index"))
     return render_template(
         "view_character.html",
         logged_in=logged_in,
@@ -542,6 +555,7 @@ def view_character(character_id):
             )
             + ability_modifier(character.charisma),
         },
+        next_page=next_page,
     )
 
 

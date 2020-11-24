@@ -14,7 +14,7 @@
                 if ($(`#npc-${npc_id}`).html() == data["name"]) {
                     $(`#npc-${npc_id}`).html(`📎<strong>${$(`#npc-${npc_id}`).html()}</strong>`);
                     $('#npc_cards').html($('#npc_cards').html() +
-                        `<div style="width:80%" id="npc_card-${npc_id}"><a data-toggle="collapse" class="btn btn-secondary" href="#npc_card_tog${npc_id}">${data["name"]}</a><div class="collapse" id="npc_card_tog${npc_id}">${data['html']}</div></div>`)
+                        `<div class="col-lg-4" id="npc_card-${npc_id}"><a data-toggle="collapse" class="btn btn-secondary" href="#npc_card_tog${npc_id}">${data["name"]}</a><div class="collapse" id="npc_card_tog${npc_id}">${data['html']}</div></div>`)
                 } else {
                     $(`#npc-${npc_id}`).html(data["name"]);
                     $(`#npc_card-${npc_id}`).remove()
@@ -50,6 +50,22 @@
 {# Gamemaster controls #}
 {% if is_gamemaster %}
 <a style="float:right" href="/campaign/edit/{{campaign.id}}" class="btn">📝</a><br>
+{# Tutorial Alert Section #}
+{% if npcs|length == 0 %}
+<div class="alert alert-primary">
+    {% if locations|length == 0 %}<strong>Add a location to get started!</strong> Use the 🗂️ List to manage all
+    locations, scenes, and NPCs in the entire
+    campaign. This list is only visible to you, the Gamemaster.
+    {% else %}
+    <strong>Now create a scene in this location!</strong> NPCs must be added to scenes, which must be added to
+    locations. Your players can only see themselves, the active location name, and the active location description.
+    Otherwise it is up to you to communicate any Scene
+    Notes and make the players aware of NPCs outside combat. <strong>Combat takes place with NPCs in the active
+        scene.</strong> Everyone can see the initiative tracker while in combat, which will show the turn order for all
+    characters and NPCs in the active scene.
+    {% endif %}
+</div>
+{% endif %}
 <a data-toggle="collapse" href="#location_list" class="btn btn-primary" id="list-toggle">🗂️ Hide List</a>
 <a href="/campaign/location/{{ campaign.id }}/activate" class="btn btn-primary">Set Current Location</a>
 {% if active_location %}
@@ -105,16 +121,16 @@
 
 {# Location/Scene information #}
 {% if active_location %}
-<div id="active_location">
-    <h4>Current location: {{ active_location.name }}</h4>
+<div class="alert" id="active_location">
+    <h4><u>Current location:</u> {{ active_location.name }}</h4>
     {% if active_location.description != None %}
     <em>{{active_location.description}}</em>
     {% endif %}
 </div>
 {% endif %}
 {% if is_gamemaster and active_scene and active_scene.description != None %}
-<div id="active_scene">
-    <em>{{active_scene.description}}</em>
+<div class="alert alert-info" id="active_scene">
+    <strong>Scene Notes for the Gamemaster:</strong> <em>{{active_scene.description}}</em>
 </div>
 {% endif %}
 
@@ -129,13 +145,17 @@
     <div class="col-lg-4 col-md-6 mb-4">
         <div class="card h-100">
             <div class="card-header">
-                <a style="float:left;" href="/character/edit/{{character.dbid}}"
-                    class="btn">📝</a>&nbsp;<strong>{{character.name}}</strong>
+                <strong>{{character.name}}</strong>
                 (Level&nbsp;{{character.level}}&nbsp;{{character.class_name}})</div>
-            <div class="card-body"><a href="{{ url_for('character.view_character', character_id=character.dbid) }}">
+            <div class="card-body"><a
+                    href="{{ url_for('character.view_character', character_id=character.dbid) }}?next={{ url_for('.view_campaign', campaign_id=campaign.id) }}">
                     <img style="float: left; max-width:150px;" class="card-img-top"
                         src="{{url_for('static', filename='img/character/')+character.image}}"
                         alt="{{character.name}}"></a>
+                AC: {{character.armour_class}}<br>
+                HP: {{character.hp}}/{{character.max_hp}}&nbsp;<a
+                    href="/character/edit/{{character.dbid}}/ability?next={{ url_for('.view_campaign', campaign_id=campaign.id) }}"
+                    class="btn">📝</a><br>
                 Proficiency bonus: {{character.prof_bonus}}<br>
                 CON: {{character.constitution}} ({{character.constitution|ability_modifier}})<br>
                 STR: {{character.strength}} ({{character.strength|ability_modifier}})<br>

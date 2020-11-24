@@ -87,6 +87,9 @@ def create_campaign_location(campaign_id):
         abort(403)
 
     form = GenericCreateForm()
+    next_page = request.args.get("next")
+    if next_page:
+        is_safe_url(next_page, url_for("dashboard.index"))
     if form.validate_on_submit():
         location = CampaignLocation(
             name=form.name.data,
@@ -94,10 +97,16 @@ def create_campaign_location(campaign_id):
         )
         db.session.add(location)
         db.session.commit()
-        return redirect(
-            url_for(
-                ".edit_campaign_location",
-                location_id=location.id,
+        return (
+            redirect(
+                f"{url_for('.edit_campaign_location',location_id=location.id)}?next={next_page}"
+            )
+            if next_page
+            else redirect(
+                url_for(
+                    ".edit_campaign_location",
+                    location_id=location.id,
+                )
             )
         )
 
@@ -106,6 +115,7 @@ def create_campaign_location(campaign_id):
         logged_in=True,
         form=form,
         title="Location",
+        next_page=next_page,
     )
 
 
@@ -123,15 +133,17 @@ def edit_campaign_location(location_id):
         abort(403)
 
     form = GenericEditForm()
+    next_page = request.args.get("next")
+    if next_page:
+        is_safe_url(next_page, url_for("dashboard.index"))
     if form.validate_on_submit():
         location.name = form.name.data
         location.description = form.description.data
         db.session.add(location)
         db.session.commit()
-        next_page = request.args.get("next")
         return (
             redirect(next_page)
-            if next_page and is_safe_url(next_page, url_for("dashboard.index"))
+            if next_page
             else redirect(url_for(".view_campaign_location", location_id=location_id))
         )
 
@@ -148,6 +160,7 @@ def edit_campaign_location(location_id):
         campaign=campaign,
         location_id=location_id,
         location=location,
+        next_page=next_page,
     )
 
 
