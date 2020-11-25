@@ -58,7 +58,7 @@ def validate_character_view(character_id, allow_gamemaster=True, abort=abort):
     except TypeError:
         abort(400)
     user_id = flask_login.current_user.get_id()
-    if user_id is not None and user_id != "None":
+    if user_id != "None":
         user_id = int(user_id)
     db_character = GameCharacter.query.get(character_id)
     if db_character is None:
@@ -66,8 +66,11 @@ def validate_character_view(character_id, allow_gamemaster=True, abort=abort):
     elif db_character.user_id != user_id:
         if not allow_gamemaster:
             abort(403)
+        campaigns = GameCampaign.query.filter_by(gamemaster=user_id).all()
+        if not campaigns:
+            abort(403)
         # This user does not own the character. Check if the user is a relevant gamemaster
-        for campaign in GameCampaign.query.filter_by(gamemaster=user_id).all():
+        for campaign in campaigns:
             if any(
                 [
                     campaign.character1 == character_id,
@@ -79,8 +82,8 @@ def validate_character_view(character_id, allow_gamemaster=True, abort=abort):
                 ]
             ):
                 break
-            else:
-                abort(403)
+        else:
+            abort(403)
     return user_id, db_character
 
 
