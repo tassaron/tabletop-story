@@ -230,7 +230,11 @@ def edit_character(character_id, selected_field, autosubmit=False):
             # Most fields match up with attributes of Character
             for field in form._fields:
                 data[field] = form._fields[field].data
-            del data["csrf_token"]
+            try:
+                del data["csrf_token"]
+            except KeyError:
+                if current_app.config["TESTING"]:
+                    pass
             del data["submit"]
 
             # But we must reassign class_features to different names
