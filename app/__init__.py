@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 import os
 import logging
 from .routes import main_routes
+from .errors import error_routes
 
 
 load_dotenv(".env")
@@ -21,7 +22,9 @@ def create_app():
     if "SECRET_KEY" not in os.environ:
         LOG.warning("Creating new SECRET_KEY")
         with open(".env", "a") as f:
-            f.write(f"\nFLASK_APP=tabletop_story.run:app\nSECRET_KEY={os.urandom(24)}\n")
+            f.write(
+                f"\nFLASK_APP=tabletop_story.run:app\nSECRET_KEY={os.urandom(24)}\n"
+            )
     app = Flask("tabletop_story")
     app.config.update(
         SECRET_KEY=os.environ.get("SECRET_KEY", os.urandom(24)),
@@ -40,6 +43,7 @@ def create_app():
         REMEMBER_COOKIE_HTTPONLY=True,
     )
     app.register_blueprint(main_routes)
+    app.register_blueprint(error_routes)
     return app
 
 

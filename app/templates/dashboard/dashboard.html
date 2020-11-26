@@ -8,7 +8,7 @@ Tabletop Story
 {% block content %}
 <div class="row">
     <div class="col">
-        {% if not logged_in %}
+        {% if not logged_in and not err %}
         <a class="btn btn-success" href="/account/register">Sign Up</a><br>
         {% endif %}
         <div class="row">
