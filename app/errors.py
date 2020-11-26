@@ -1,11 +1,8 @@
 import flask_login
-from flask import Blueprint, render_template, flash, redirect, request
+from flask import Blueprint, render_template, flash, request, make_response
 from werkzeug.exceptions import NotFound, Forbidden, InternalServerError, BadRequest
 from time import sleep
-
-import logging
-
-LOG = logging.getLogger(__package__)
+import os
 
 
 error_routes = Blueprint("errors", __name__)
@@ -57,6 +54,9 @@ def critical_error(error):
 
 @error_routes.before_app_request
 def check_for_malicious_bots():
+    if not os.environ.get("TARPIT"):
+        # set tarpit in .env to enable screwing with malicious bots
+        return
     if request.url_rule == None and flask_login.current_user.get_id() == "None":
         if any(
             [
@@ -74,6 +74,9 @@ def check_for_malicious_bots():
                 )
             ]
         ):
-            # try to slow down script kiddies? (probably a bad idea but let's see what happens)
-            sleep(6)
-            return redirect(request.url)
+            # try to slow down script kiddies with invalid json (probably a bad idea but let's see what happens)
+            headers = {
+                "Content-Type": "application/json",
+            }
+            resp = make_response(b"allyourbasearebelongtous", 200, headers)
+            return resp
