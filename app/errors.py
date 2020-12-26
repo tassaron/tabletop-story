@@ -1,11 +1,13 @@
 import flask_login
-from flask import Blueprint, render_template, flash, request, make_response
+from flask import Blueprint, render_template, flash, request, abort
 from werkzeug.exceptions import NotFound, Forbidden, InternalServerError, BadRequest
 from time import sleep
 import os
+import logging
 
 
 error_routes = Blueprint("errors", __name__)
+LOG = logging.getLogger(__package__)
 
 
 @error_routes.app_errorhandler(NotFound)
@@ -54,8 +56,8 @@ def critical_error(error):
 
 @error_routes.before_app_request
 def check_for_malicious_bots():
-    if not os.environ.get("TARPIT"):
-        # set tarpit in .env to enable screwing with malicious bots
+    if not os.environ.get("LOG_EVIL_BOTS"):
+        # set this variable in .env to enable logging of malicious bots
         return
     if request.url_rule == None and flask_login.current_user.get_id() == "None":
         if any(
@@ -71,12 +73,10 @@ def check_for_malicious_bots():
                     "api/",
                     ";",
                     "console",
+                    "main",
+                    "prop",
                 )
             ]
         ):
-            # try to slow down script kiddies with invalid json (probably a bad idea but let's see what happens)
-            headers = {
-                "Content-Type": "application/json",
-            }
-            resp = make_response(b"allyourbasearebelongtous", 200, headers)
-            return resp
+            LOG.warning(f"Probably a malicious bot: {request.remote_addr}")
+            abort(404)
