@@ -25,7 +25,7 @@ setup(
         # "flask_monitoringdashboard",
         "email_validator",
         "is_safe_url",
-        "mistune==2.0.0a5",
+        "mistune==2.0.3",
         "python-dotenv",
         "dnd_character",
         "pillow",
